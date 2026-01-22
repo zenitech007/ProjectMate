@@ -1,0 +1,5 @@
+{
+  "name": "ProjectMate - Nigerian Student Project Assistant",
+  "description": "A comprehensive assistant for Nigerian undergraduate students to generate final year research projects adhering to strict academic formats, featuring AI-powered chapter generation, Paystack integration, and DOCX/PDF exports.",
+  "requestFramePermissions": []
+}

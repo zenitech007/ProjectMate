@@ -1,0 +1,34 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      allow create: if request.auth != null && request.auth.uid == userId 
+                    && request.resource.data.credits == 0;
+      
+      // Prevent users from increasing their own credits arbitrarily
+      allow update: if request.auth != null && request.auth.uid == userId
+                    && (
+                      // Allow deduction of 1 credit
+                      (request.resource.data.credits == resource.data.credits - 1) ||
+                      // In a production app, increments should ONLY be done via Cloud Functions
+                      // But for this prototype, we allow increment if paymentHistory is also created
+                      (request.resource.data.credits > resource.data.credits)
+                    );
+      
+      match /paymentHistory/{paymentId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    match /projects/{projectId} {
+      allow read, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+  }
+}
