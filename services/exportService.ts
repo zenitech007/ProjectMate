@@ -1,4 +1,3 @@
-
 import { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, PageNumber, Header, Footer } from 'docx';
 import { jsPDF } from 'jspdf';
 import { Project } from '../types';
@@ -66,7 +65,8 @@ export const exportToDocx = async (project: Project) => {
     ];
 
     chapter.sections.forEach(sectionTitle => {
-      const sectionText = project.content[chapter.title] || ''; // Improved content lookup
+      // Fix: Use project.chapters to access content instead of project.content
+      const sectionText = project.chapters[chapter.title]?.content || ''; 
       // Note: In current app structure, content is stored by chapterTitle
       
       chapterContent.push(new Paragraph({
@@ -217,8 +217,8 @@ export const exportToPdf = async (project: Project) => {
     doc.text(chapter.title.toUpperCase(), margin, y);
     y += 10;
     
-    // In current implementation, content is mapped by chapter title
-    const chapterText = project.content[chapter.title] || '';
+    // Fix: Use project.chapters to access content instead of project.content
+    const chapterText = project.chapters[chapter.title]?.content || '';
     
     doc.setFont("times", "normal");
     const lines = doc.splitTextToSize(chapterText, pageWidth - (margin * 2));

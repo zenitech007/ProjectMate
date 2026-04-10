@@ -1,7 +1,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, setDoc, onSnapshot, Unsubscribe } from 'firebase/firestore';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 import { auth, db } from '../firebase';
 import { UserProfile } from '../types';
 
@@ -16,10 +17,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const profileUnsubscribeRef = useRef<Unsubscribe | null>(null);
+  const profileUnsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribeAuth = auth.onAuthStateChanged(async (firebaseUser) => {
       // Clean up previous profile listener if it exists
       if (profileUnsubscribeRef.current) {
         profileUnsubscribeRef.current();
@@ -27,10 +28,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (firebaseUser) {
-        const userRef = doc(db, 'users', firebaseUser.uid);
+        const userRef = db.collection('users').doc(firebaseUser.uid);
         
-        profileUnsubscribeRef.current = onSnapshot(userRef, async (docSnap) => {
-          if (docSnap.exists()) {
+        profileUnsubscribeRef.current = userRef.onSnapshot(async (docSnap) => {
+          if (docSnap.exists) {
             setUser(docSnap.data() as UserProfile);
           } else {
             const newProfile: UserProfile = {
@@ -40,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               isPremium: false,
               credits: 0
             };
-            await setDoc(userRef, newProfile);
+            await userRef.set(newProfile);
             setUser(newProfile);
           }
           setLoading(false);
@@ -64,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      await auth.signOut();
     } catch (error) {
       console.error("Logout failed:", error);
     }

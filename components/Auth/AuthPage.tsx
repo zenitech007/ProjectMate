@@ -1,13 +1,8 @@
 
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  updateProfile,
-  GoogleAuthProvider,
-  signInWithPopup
-} from 'firebase/auth';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 import { auth } from '../../firebase';
 
 const AuthPage: React.FC = () => {
@@ -21,9 +16,9 @@ const AuthPage: React.FC = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError('');
-    const provider = new GoogleAuthProvider();
+    const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      await auth.signInWithPopup(provider);
     } catch (err: any) {
       setError(err.message || 'Google Sign-In failed');
     } finally {
@@ -38,11 +33,11 @@ const AuthPage: React.FC = () => {
 
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        await auth.signInWithEmailAndPassword(email, password);
       } else {
-        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        const userCred = await auth.createUserWithEmailAndPassword(email, password);
         if (userCred.user) {
-          await updateProfile(userCred.user, { displayName: name });
+          await userCred.user.updateProfile({ displayName: name });
         }
       }
     } catch (err: any) {

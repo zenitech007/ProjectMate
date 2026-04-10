@@ -1,20 +1,29 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# ProjectMate - Nigerian Student Project Assistant
 
-# Run and deploy your AI Studio app
+A comprehensive assistant for Nigerian undergraduate students to generate final year research projects adhering to strict academic formats.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1DGWx5cr9VUsRfffPa7ZPX1ZSOJfhd9UX
+- **AI-Powered Chapter Generation**: Generate academic content tailored to Nigerian university standards.
+- **Academic Formatting**: Automatic APA 7th Edition referencing and formal PhD-level tone.
+- **Export Options**: Download projects in DOCX and PDF formats.
+- **Premium Features**: Unlock advanced chapters and extensive generation capabilities.
+- **Paystack Integration**: Secure payments for premium access.
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS
+- **Backend**: Firebase (Authentication & Firestore)
+- **AI**: Google Gemini API
+- **Editor**: React Quill
 
+## Setup
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. Clone the repository.
+2. Install dependencies: `npm install`
+3. Set up your environment variables in `.env` (see `.env.example`).
+4. Run the development server: `npm run dev`
+
+## License
+
+MIT

@@ -41,8 +41,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Fix: Move currentContent definition up so it can be used in the useEffect dependency array
-  const currentContent = project?.content?.[activeChapter] || '';
+  // Fix: Use project.chapters to access content instead of project.content
+  const currentContent = project?.chapters?.[activeChapter]?.content || '';
 
   useEffect(() => {
     if (projectId) {
@@ -64,7 +64,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     
     autosaveTimeout.current = window.setTimeout(async () => {
       try {
-        await updateProject(updatedProject.id, { content: updatedProject.content });
+        // Fix: Use chapters instead of content for updateProject payload
+        await updateProject(updatedProject.id, { chapters: updatedProject.chapters });
         setSaveStatus('saved');
       } catch (e) {
         setSaveStatus('unsaved');
@@ -76,7 +77,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     if (!project) return;
     setSaveStatus('saving');
     try {
-      await updateProject(project.id, { content: project.content });
+      // Fix: Use chapters instead of content for updateProject payload
+      await updateProject(project.id, { chapters: project.chapters });
       setSaveStatus('saved');
     } catch (e) {
       setSaveStatus('unsaved');
@@ -110,9 +112,16 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
           if (isCancelled.current) throw new Error('CANCELLED');
           setProject(prev => {
             if (!prev) return prev;
+            // Fix: Update chapters record instead of content
             const updated = {
               ...prev,
-              content: { ...prev.content, [activeChapter]: chunkedText }
+              chapters: { 
+                ...prev.chapters, 
+                [activeChapter]: { 
+                  ...(prev.chapters[activeChapter] || { title: activeChapter, status: 'pending' }), 
+                  content: chunkedText 
+                } 
+              }
             };
             return updated;
           });
@@ -144,7 +153,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     setGenerating(sectionTitle);
     isCancelled.current = false;
     
-    const currentChapterContent = project.content[activeChapter] || '';
+    // Fix: Access content via chapters
+    const currentChapterContent = project.chapters[activeChapter]?.content || '';
     const sectionHeader = currentChapterContent ? `\n\n${sectionTitle.toUpperCase()}\n` : `${sectionTitle.toUpperCase()}\n`;
     
     try {
@@ -159,11 +169,15 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
           accumulatedText = chunk;
           setProject(prev => {
             if (!prev) return prev;
+            // Fix: Update chapters record instead of content
             return {
               ...prev,
-              content: { 
-                ...prev.content, 
-                [activeChapter]: currentChapterContent + sectionHeader + accumulatedText 
+              chapters: { 
+                ...prev.chapters, 
+                [activeChapter]: { 
+                  ...(prev.chapters[activeChapter] || { title: activeChapter, status: 'pending' }), 
+                  content: currentChapterContent + sectionHeader + accumulatedText 
+                } 
               }
             };
           });
@@ -186,9 +200,16 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   const handleManualEdit = (val: string) => {
     if (!project) return;
     setSaveStatus('unsaved');
+    // Fix: Update chapters record instead of content
     const updated = {
       ...project,
-      content: { ...project.content, [activeChapter]: val }
+      chapters: { 
+        ...project.chapters, 
+        [activeChapter]: { 
+          ...(project.chapters[activeChapter] || { title: activeChapter, status: 'completed' }), 
+          content: val 
+        } 
+      }
     };
     setProject(updated);
     triggerAutosave(updated);

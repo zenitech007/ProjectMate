@@ -8,13 +8,15 @@ export interface UserProfile {
   uid: string;
   email: string;
   displayName?: string;
-  isPremium: boolean; // We'll keep this as a "legacy" or "has ever paid" flag
+  isPremium: boolean;
   credits: number;
   lifetime_projects?: number;
 }
 
-export interface ProjectContent {
-  [key: string]: string | undefined;
+export interface Chapter {
+  title: string;
+  content: string;
+  status: 'empty' | 'pending' | 'completed';
 }
 
 export interface ProjectOutline {
@@ -45,14 +47,22 @@ export interface Project {
   institutionName: string;
   faculty: string;
   department: string;
-  content: ProjectContent;
+  chapters: Record<string, Chapter>;
   outline: ProjectOutline[];
   settings: ProjectSettings;
   status: 'draft' | 'completed';
   createdAt: number;
 }
 
-// Added missing academic metadata for the Project Wizard
+export interface TopicHistoryItem {
+  id: string;
+  userId: string;
+  faculty: string;
+  department: string;
+  topics: { title: string; brief: string }[];
+  createdAt: number;
+}
+
 export const Faculty = [
   'Arts', 'Social Sciences', 'Science', 'Engineering', 'Law', 
   'Business Administration', 'Education', 'Environmental Sciences', 
@@ -72,16 +82,3 @@ export const Departments: Record<string, string[]> = {
   'Basic Medical Sciences': ['Anatomy', 'Physiology'],
   'Agriculture': ['Animal Science', 'Crop Science', 'Soil Science', 'Agricultural Economics']
 };
-
-export const SampleInstitutions = [
-  'University of Lagos (UNILAG)',
-  'University of Ibadan (UI)',
-  'Obafemi Awolowo University (OAU)',
-  'Ahmadu Bello University (ABU)',
-  'University of Nigeria, Nsukka (UNN)',
-  'University of Benin (UNIBEN)',
-  'Covenant University',
-  'Lagos State University (LASU)',
-  'Bayero University Kano (BUK)',
-  'Federal University of Technology Akure (FUTA)'
-];

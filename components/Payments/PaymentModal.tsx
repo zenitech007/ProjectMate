@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, ShieldCheck, Zap, Check, Loader2 } from 'lucide-react';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 import { UserProfile } from '../../types';
 import { PREMIUM_PRICE_NGN, PAYSTACK_PUBLIC_KEY, CREDITS_PER_PURCHASE } from '../../constants';
-import { doc, updateDoc, collection, addDoc, serverTimestamp, increment } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 interface PaymentModalProps {
@@ -33,22 +34,22 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
       currency: 'NGN',
       callback: async (response: any) => {
         try {
-          const userRef = doc(db, 'users', user.uid);
+          const userRef = db.collection('users').doc(user.uid);
           
-          // ATOMIC INCREMENT: Add 2 credits and set premium status
-          await updateDoc(userRef, { 
-            credits: increment(CREDITS_PER_PURCHASE),
+          // ATOMIC INCREMENT: Add 2 credits and set premium status using compat syntax
+          await userRef.update({ 
+            credits: firebase.firestore.FieldValue.increment(CREDITS_PER_PURCHASE),
             isPremium: true 
           });
           
           // Log Payment History
-          const historyRef = collection(db, 'users', user.uid, 'paymentHistory');
-          await addDoc(historyRef, {
+          const historyRef = userRef.collection('paymentHistory');
+          await historyRef.add({
             amount: PREMIUM_PRICE_NGN,
             currency: 'NGN',
             credits_added: CREDITS_PER_PURCHASE,
             reference: response.reference,
-            date: serverTimestamp(),
+            date: firebase.firestore.FieldValue.serverTimestamp(),
             status: 'success'
           });
 
