@@ -6,8 +6,14 @@ import {
   AlertCircle, User, IdCard, GraduationCap, ListChecks, 
   PenTool, BrainCircuit, Edit3
 } from 'lucide-react';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import { 
+  doc, 
+  runTransaction, 
+  collection, 
+  addDoc, 
+  serverTimestamp,
+  increment 
+} from 'firebase/firestore';
 import { InstitutionType, Faculty, Departments, UserProfile, Project, ProjectOutline, Chapter, TopicHistoryItem } from '../../types';
 import { generateTopics, generateOutline } from '../../services/geminiService';
 import { useFirestore } from '../../hooks/useFirestore';
@@ -133,7 +139,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
         };
       });
 
-      const newProjectData: Omit<Project, 'id'> = {
+      const newProjectData = {
         userId: user.uid,
         topic: selectedTopic,
         studentName: studentName,
@@ -147,21 +153,41 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
         outline: outline,
         settings: { showPageNumbers: true, showHeader: true, academicFormat: 'standard' },
         status: 'draft',
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        updatedAt: serverTimestamp()
       };
 
-      const projectId = await createProject(newProjectData);
-      
-      const userRef = db.collection('users').doc(user.uid);
-      await userRef.update({ 
-        credits: firebase.firestore.FieldValue.increment(-1),
-        lifetime_projects: firebase.firestore.FieldValue.increment(1)
+      // BUG-3: Atomic transaction for project creation and credit deduction
+      const userRef = doc(db, 'users', user.uid);
+      const projectsCollectionRef = collection(db, 'projects');
+
+      const projectId = await runTransaction(db, async (transaction) => {
+        const userDoc = await transaction.get(userRef);
+        if (!userDoc.exists()) {
+          throw new Error("User profile not found.");
+        }
+
+        const userData = userDoc.data() as UserProfile;
+        if (userData.credits < 1) {
+          throw new Error("Insufficient credits.");
+        }
+
+        const newProjectRef = doc(projectsCollectionRef);
+        
+        // Deduct credit and create project
+        transaction.update(userRef, { 
+          credits: increment(-1),
+          lifetime_projects: increment(1)
+        });
+        transaction.set(newProjectRef, newProjectData);
+
+        return newProjectRef.id;
       });
 
       navigate(`/editor/${projectId}`);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      alert("Failed to initialize project.");
+      alert(e.message || "Failed to initialize project.");
     } finally {
       setSaving(false);
     }

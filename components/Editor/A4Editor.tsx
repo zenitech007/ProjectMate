@@ -36,6 +36,8 @@ const A4Editor = React.forwardRef<ReactQuill, A4EditorProps>(({ value, onChange,
   // I will use 1123px for a realistic multi-page feel.
   const pageMarkers = Array.from({ length: 20 }, (_, i) => i + 1);
 
+  const QuillComponent = ReactQuill as any;
+
   return (
     <div className="min-h-screen bg-slate-100 py-12 flex justify-center overflow-y-auto custom-scrollbar">
       {/* The A4 Sheet Container */}
@@ -66,17 +68,19 @@ const A4Editor = React.forwardRef<ReactQuill, A4EditorProps>(({ value, onChange,
           </div>
         ))}
 
-        <ReactQuill
-          ref={ref}
-          theme="snow"
-          value={value}
-          onChange={onChange}
-          modules={readOnly ? { toolbar: false } : modules}
-          formats={formats}
-          readOnly={readOnly}
-          className="h-full academic-editor"
-          placeholder="Select a section from the sidebar and use the magic wand to draft content..."
-        />
+        {QuillComponent && (
+          <QuillComponent
+            ref={ref}
+            theme="snow"
+            value={value}
+            onChange={onChange}
+            modules={readOnly ? { toolbar: false } : modules}
+            formats={formats}
+            readOnly={readOnly}
+            className="h-full academic-editor"
+            placeholder="Select a section from the sidebar and use the magic wand to draft content..."
+          />
+        )}
         
         <style>{`
           .academic-editor .ql-container.ql-snow {

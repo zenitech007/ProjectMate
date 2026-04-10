@@ -1,11 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, ShieldCheck, Zap, Check, Loader2 } from 'lucide-react';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
 import { UserProfile } from '../../types';
 import { PREMIUM_PRICE_NGN, PAYSTACK_PUBLIC_KEY, CREDITS_PER_PURCHASE } from '../../constants';
-import { db } from '../../firebase';
 
 interface PaymentModalProps {
   user: UserProfile;
@@ -33,34 +30,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
       amount: PREMIUM_PRICE_NGN * 100,
       currency: 'NGN',
       callback: async (response: any) => {
-        try {
-          const userRef = db.collection('users').doc(user.uid);
-          
-          // ATOMIC INCREMENT: Add 2 credits and set premium status using compat syntax
-          await userRef.update({ 
-            credits: firebase.firestore.FieldValue.increment(CREDITS_PER_PURCHASE),
-            isPremium: true 
-          });
-          
-          // Log Payment History
-          const historyRef = userRef.collection('paymentHistory');
-          await historyRef.add({
-            amount: PREMIUM_PRICE_NGN,
-            currency: 'NGN',
-            credits_added: CREDITS_PER_PURCHASE,
-            reference: response.reference,
-            date: firebase.firestore.FieldValue.serverTimestamp(),
-            status: 'success'
-          });
-
-          alert(`Success! ${CREDITS_PER_PURCHASE} Project Credits added to your account.`);
-          onClose();
-        } catch (e) {
-          console.error("Payment sync error:", e);
-          alert("Payment received, but failed to update credits. Ref: " + response.reference);
-        } finally {
-          setLoading(false);
-        }
+        // CRIT-2: Client-side credit granting removed.
+        // Credits are now granted via a secure Paystack Webhook (Cloud Function).
+        alert(`Payment successful! Reference: ${response.reference}. Your credits will be updated shortly once the transaction is verified.`);
+        onClose();
       },
       onClose: () => {
         setLoading(false);

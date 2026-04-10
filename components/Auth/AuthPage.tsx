@@ -1,8 +1,13 @@
 
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
+import { 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  updateProfile 
+} from 'firebase/auth';
 import { auth } from '../../firebase';
 
 const AuthPage: React.FC = () => {
@@ -16,9 +21,9 @@ const AuthPage: React.FC = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError('');
-    const provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new GoogleAuthProvider();
     try {
-      await auth.signInWithPopup(provider);
+      await signInWithPopup(auth, provider);
     } catch (err: any) {
       setError(err.message || 'Google Sign-In failed');
     } finally {
@@ -31,13 +36,20 @@ const AuthPage: React.FC = () => {
     setLoading(true);
     setError('');
 
+    // BUG-5: Weak password validation
+    if (!isLogin && password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      setLoading(false);
+      return;
+    }
+
     try {
       if (isLogin) {
-        await auth.signInWithEmailAndPassword(email, password);
+        await signInWithEmailAndPassword(auth, email, password);
       } else {
-        const userCred = await auth.createUserWithEmailAndPassword(email, password);
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
         if (userCred.user) {
-          await userCred.user.updateProfile({ displayName: name });
+          await updateProfile(userCred.user, { displayName: name });
         }
       }
     } catch (err: any) {

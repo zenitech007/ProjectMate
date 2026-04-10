@@ -33,6 +33,8 @@ const WordEditor = React.forwardRef<ReactQuill, WordEditorProps>(({ value, onCha
   // Visual Page Break markers (approx A4 height)
   const pageMarkers = Array.from({ length: 15 }, (_, i) => (i + 1) * 1123);
 
+  const QuillComponent = ReactQuill as any;
+
   return (
     <div className="flex flex-col h-full overflow-hidden bg-slate-100">
       {/* MS WORD STYLE RIBBON (TOOLBAR) */}
@@ -122,17 +124,19 @@ const WordEditor = React.forwardRef<ReactQuill, WordEditorProps>(({ value, onCha
               <div key={pos} className="page-break-marker" style={{ top: `${pos}px` }} />
             ))}
 
-            <ReactQuill
-              ref={ref}
-              theme="snow"
-              value={value}
-              onChange={onChange}
-              modules={modules}
-              formats={formats}
-              readOnly={readOnly}
-              className="h-full academic-editor"
-              placeholder="Start drafting your research manuscript..."
-            />
+            {QuillComponent && (
+              <QuillComponent
+                ref={ref}
+                theme="snow"
+                value={value}
+                onChange={onChange}
+                modules={modules}
+                formats={formats}
+                readOnly={readOnly}
+                className="h-full academic-editor"
+                placeholder="Start drafting your research manuscript..."
+              />
+            )}
           </div>
         </div>
       </div>

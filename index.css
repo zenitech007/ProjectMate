@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}
+
+@layer components {
+  .toc-row {
+    @apply flex items-center justify-between py-2 px-3 rounded-xl transition-all cursor-pointer;
+  }
+  
+  .toc-leader {
+    @apply flex-grow border-b border-dotted border-slate-200 mx-2 mb-1;
+  }
+}

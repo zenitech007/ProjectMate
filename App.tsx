@@ -9,6 +9,7 @@ import ProjectWizard from './components/ProjectWizard/ProjectWizard';
 import ProjectEditor from './components/Editor/ProjectEditor';
 import UpgradePage from './components/Premium/UpgradePage';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import ErrorBoundary from './components/Layout/ErrorBoundary';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -52,9 +53,11 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <AuthProvider>
-    <AppContent />
-  </AuthProvider>
+  <ErrorBoundary>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  </ErrorBoundary>
 );
 
 export default App;

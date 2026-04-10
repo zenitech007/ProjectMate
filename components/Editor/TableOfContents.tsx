@@ -53,7 +53,7 @@ const SortableSection: React.FC<SortableSectionProps> = ({
     transform,
     transition,
     isDragging
-  } = useSortable({ id: section });
+  } = useSortable({ id: `${chapterTitle}-${section}` });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -122,8 +122,9 @@ const TableOfContents: React.FC<TOCProps> = ({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = outline[chapterIdx].sections.indexOf(active.id as string);
-      const newIndex = outline[chapterIdx].sections.indexOf(over.id as string);
+      const chapterTitle = outline[chapterIdx].title;
+      const oldIndex = outline[chapterIdx].sections.indexOf((active.id as string).replace(`${chapterTitle}-`, ''));
+      const newIndex = outline[chapterIdx].sections.indexOf((over.id as string).replace(`${chapterTitle}-`, ''));
 
       const newSections = arrayMove(outline[chapterIdx].sections, oldIndex, newIndex);
       const newOutline = [...outline];
@@ -194,7 +195,7 @@ const TableOfContents: React.FC<TOCProps> = ({
                   onDragEnd={(event) => handleDragEnd(chapterIdx, event)}
                 >
                   <SortableContext
-                    items={chapter.sections}
+                    items={chapter.sections.map(s => `${chapter.title}-${s}`)}
                     strategy={verticalListSortingStrategy}
                   >
                     {chapter.sections.map((section) => (

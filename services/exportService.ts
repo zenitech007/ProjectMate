@@ -83,7 +83,12 @@ export const exportToDocx = async (project: Project) => {
 
       // Find if we have text specifically for this section or just general chapter text
       // For simplicity in this export, we split chapter content
-      const lines = sectionText.split('\n').filter(l => l.trim());
+      const cleanText = (html: string) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || "";
+      };
+
+      const lines = cleanText(sectionText).split('\n').filter(l => l.trim());
       lines.forEach(line => {
         chapterContent.push(new Paragraph({
           children: [
@@ -220,8 +225,13 @@ export const exportToPdf = async (project: Project) => {
     // Fix: Use project.chapters to access content instead of project.content
     const chapterText = project.chapters[chapter.title]?.content || '';
     
+    const cleanText = (html: string) => {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return doc.body.textContent || "";
+    };
+
     doc.setFont("times", "normal");
-    const lines = doc.splitTextToSize(chapterText, pageWidth - (margin * 2));
+    const lines = doc.splitTextToSize(cleanText(chapterText), pageWidth - (margin * 2));
     lines.forEach((line: string) => {
       if (y > 280) { 
         addFooter(currentPage);

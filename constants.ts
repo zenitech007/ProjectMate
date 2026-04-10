@@ -1,7 +1,7 @@
 
 export const PREMIUM_PRICE_NGN = 5000;
 export const CREDITS_PER_PURCHASE = 2;
-export const PAYSTACK_PUBLIC_KEY = process.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_d9f2fb5e03cf737315670e72ba3cff90b19b0fef';
+export const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
 
 export const ACADEMIC_FORMAT = {
   font: 'Times New Roman',

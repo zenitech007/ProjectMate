@@ -5,7 +5,7 @@ import {
   ChevronLeft, Sparkles, Loader2, Save, Wand2, Trash2, 
   FileText, FileJson, Zap, XCircle, Check, Undo2, Redo2,
   PlusCircle, BookOpen, ArrowRight, Expand, Bot, Send,
-  Wand
+  Wand, AlertCircle
 } from 'lucide-react';
 import { UserProfile, Project, ProjectOutline } from '../../types';
 import { generateSectionContentStream, elaborateContentStream } from '../../services/geminiService';
@@ -26,6 +26,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   const { getProject, updateProject } = useFirestore(user.uid);
   
   const [project, setProject] = useState<Project | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [activeChapter, setActiveChapter] = useState<string>('');
   const [generating, setGenerating] = useState<boolean>(false);
   const [generatingSection, setGeneratingSection] = useState<string | null>(null);
@@ -47,12 +48,20 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         if (proj) {
           setProject(proj);
           setActiveChapter('Title Page');
+        } else {
+          setError("Project not found or you don't have access.");
         }
+      }).catch(err => {
+        console.error("Failed to load project:", err);
+        setError("Failed to load project. Please try again.");
       });
     }
   }, [projectId]);
 
   const triggerAutosave = (updatedProject: Project) => {
+    // BUG-12: Autosave should not trigger during streaming
+    if (generating || elaborating) return;
+
     setSaveStatus('saving');
     if (autosaveTimeout.current) window.clearTimeout(autosaveTimeout.current);
     autosaveTimeout.current = window.setTimeout(async () => {
@@ -75,7 +84,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     const freeChapters = ['CHAPTER ONE: INTRODUCTION', 'Title Page', 'Certification', 'Dedication', 'Acknowledgement', 'Abstract'];
     const isPremiumRequired = !freeChapters.some(c => activeChapter.toUpperCase().includes(c.toUpperCase()));
     
-    if (!user.isPremium && isPremiumRequired) {
+    // Issue 14: Ensure user.credits is validated
+    if (isPremiumRequired && !user.isPremium && user.credits < 1) {
       setShowPayment(true);
       return;
     }
@@ -189,6 +199,19 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     triggerAutosave(updatedProject);
   };
 
+  if (error) return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100 p-6">
+      <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+      <h2 className="text-xl font-black text-slate-900 mb-2">{error}</h2>
+      <button 
+        onClick={() => navigate('/dashboard')}
+        className="bg-green-700 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-800 transition-all"
+      >
+        Back to Dashboard
+      </button>
+    </div>
+  );
+
   if (!project) return (
     <div className="flex items-center justify-center min-h-screen bg-slate-100">
       <div className="flex flex-col items-center">
@@ -294,6 +317,19 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
            </div>
 
            {/* Saving Notification Overlay */}
+           {generating && (
+             <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center space-x-4 z-50">
+               <Loader2 className="h-4 w-4 animate-spin text-green-400" />
+               <span className="text-[10px] font-black uppercase tracking-widest">AI is Writing...</span>
+               <button 
+                 onClick={() => isCancelled.current = true}
+                 className="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all border border-red-500/30"
+               >
+                 Cancel
+               </button>
+             </div>
+           )}
+
            {saveStatus === 'saving' && (
              <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-slate-100 flex items-center space-x-2 z-50 animate-pulse">
                <Loader2 className="h-3 w-3 animate-spin text-slate-400" />

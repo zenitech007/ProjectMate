@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { cleanHTML } from "./htmlCleaner";
 
-const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+const ai = new GoogleGenAI({apiKey: import.meta.env.VITE_GEMINI_API_KEY || ''});
 
 const PHD_SYSTEM_PROMPT = `You are a PhD-level Academic Thesis Writer specializing in the Nigerian Educational System.
 Your writing style is formal, sophisticated, and analytical.
@@ -21,7 +21,7 @@ export const generateTopics = async (institutionType: string, institutionName: s
     Ensure topics are suitable for final-year thesis and have strong local Nigerian relevance.`;
     
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         systemInstruction: PHD_SYSTEM_PROMPT,
@@ -54,7 +54,7 @@ export const generateOutline = async (topic: string) => {
     Ensure at least 5 sub-sections per chapter. For REFERENCES, include sections for Primary Sources and Secondary Sources.`;
     
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-1.5-pro',
       contents: prompt,
       config: {
         systemInstruction: PHD_SYSTEM_PROMPT,
@@ -100,7 +100,7 @@ export const generateChapterContentStream = async (
          Requirement: Include local Nigerian citations and use HTML tags (<h3>, <b>, <p>).`;
 
     const stream = await ai.models.generateContentStream({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-1.5-pro',
       contents: prompt,
       config: { systemInstruction: PHD_SYSTEM_PROMPT }
     });
@@ -140,7 +140,7 @@ export const generateSectionContentStream = async (
          Requirement: Include local Nigerian citations and use HTML tags (<h3>, <b>, <p>).`;
 
     const stream = await ai.models.generateContentStream({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-1.5-pro',
       contents: prompt,
       config: { systemInstruction: PHD_SYSTEM_PROMPT }
     });
@@ -172,7 +172,7 @@ export const elaborateContentStream = async (
     Requirement: Maintain PhD-level tone and use HTML tags (<p>, <b>).`;
 
     const stream = await ai.models.generateContentStream({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-1.5-pro',
       contents: prompt,
       config: { systemInstruction: PHD_SYSTEM_PROMPT }
     });

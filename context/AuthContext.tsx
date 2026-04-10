@@ -1,8 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { UserProfile } from '../types';
 
@@ -20,7 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const profileUnsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    const unsubscribeAuth = auth.onAuthStateChanged(async (firebaseUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       // Clean up previous profile listener if it exists
       if (profileUnsubscribeRef.current) {
         profileUnsubscribeRef.current();
@@ -28,10 +27,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (firebaseUser) {
-        const userRef = db.collection('users').doc(firebaseUser.uid);
+        const userRef = doc(db, 'users', firebaseUser.uid);
         
-        profileUnsubscribeRef.current = userRef.onSnapshot(async (docSnap) => {
-          if (docSnap.exists) {
+        profileUnsubscribeRef.current = onSnapshot(userRef, async (docSnap) => {
+          if (docSnap.exists()) {
             setUser(docSnap.data() as UserProfile);
           } else {
             const newProfile: UserProfile = {
@@ -41,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               isPremium: false,
               credits: 0
             };
-            await userRef.set(newProfile);
+            await setDoc(userRef, newProfile);
             setUser(newProfile);
           }
           setLoading(false);
@@ -65,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await auth.signOut();
+      await signOut(auth);
     } catch (error) {
       console.error("Logout failed:", error);
     }
