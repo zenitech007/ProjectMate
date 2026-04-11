@@ -26,17 +26,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (firebaseUser) {
         const userRef = doc(db, 'users', firebaseUser.uid);
-        
+
         profileUnsubscribeRef.current = onSnapshot(userRef, async (docSnap) => {
           if (docSnap.exists()) {
             setUser(docSnap.data() as UserProfile);
           } else {
+            // Reload the user to pick up any displayName set by updateProfile
+            await firebaseUser.reload();
+            const freshUser = auth.currentUser;
+
             const newProfile: UserProfile = {
               uid: firebaseUser.uid,
               email: firebaseUser.email || '',
-              displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Student',
+              displayName:
+                freshUser?.displayName ||
+                firebaseUser.displayName ||
+                firebaseUser.email?.split('@')[0] ||
+                'Student',
               isPremium: false,
-              credits: 0
+              credits: 0,
             };
             await setDoc(userRef, newProfile);
             setUser(newProfile);
