@@ -40,8 +40,8 @@ service cloud.firestore {
     }
 
     match /topic_history/{historyId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
       // Topic history is usually append-only or managed by the app
       allow update, delete: if false;
     }

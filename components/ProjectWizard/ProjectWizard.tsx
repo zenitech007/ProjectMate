@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  ChevronRight, ChevronLeft, Sparkles, Loader2, BookCheck, 
-  User, IdCard, GraduationCap, ListChecks, 
+import {
+  ChevronRight, ChevronLeft, Sparkles, Loader2, BookCheck,
+  User, IdCard, GraduationCap, ListChecks,
   PenTool, Edit3, RefreshCw, Home, ArrowRight, CheckCircle2
 } from 'lucide-react';
 import { doc, runTransaction, collection, serverTimestamp, increment } from 'firebase/firestore';
@@ -19,12 +19,12 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addTopicHistory } = useFirestore(user.uid);
-  
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
-  
+
   // Step 1 State
   const [customTopic, setCustomTopic] = useState('');
   const [institutionType, setInstitutionType] = useState<InstitutionType | ''>('');
@@ -35,7 +35,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
   const [isManualDepartment, setIsManualDepartment] = useState(false);
 
   // Step 2 State (AI Topics)
-  const [topics, setTopics] = useState<{title: string}[]>([]);
+  const [topics, setTopics] = useState<{ title: string }[]>([]);
   const [selectedTopic, setSelectedTopic] = useState('');
 
   // Step 3 State
@@ -53,7 +53,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
       const h = state.prefilledHistory;
       setFaculty(h.faculty);
       setDepartment(h.department);
-      setTopics(h.topics.map(t => ({ title: t.title }))); 
+      setTopics(h.topics.map(t => ({ title: t.title })));
       if (!Faculty.includes(h.faculty)) setIsManualFaculty(true);
       if (h.faculty && Departments[h.faculty as keyof typeof Departments] && !Departments[h.faculty as keyof typeof Departments].includes(h.department)) setIsManualDepartment(true);
       if (!Departments[h.faculty as keyof typeof Departments]) setIsManualDepartment(true);
@@ -72,11 +72,16 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
   const handleFetchTopics = async () => {
     if (!institutionName.trim() || !faculty.trim() || !department.trim()) return;
     setLoading(true);
-    const result = await generateTopics(institutionType, institutionName, faculty, department);
-    setTopics(result);
-    await addTopicHistory(faculty, department, result.map((t: any) => ({ title: t.title || t, brief: '' })));
-    setLoading(false);
-    setStep(2); // Move to AI Topic list
+    try {
+      const result = await generateTopics(institutionType, institutionName, faculty, department);
+      setTopics(result);
+      await addTopicHistory(faculty, department, result.map((t: any) => ({ title: t.title, brief: '' })));
+      setStep(2);
+    } catch (error: any) {
+      alert(error.message || 'Failed to generate topics. Please try again.');
+    } finally {
+      setLoading(false); // Always resets, even on error
+    }
   };
 
   const handleTopicSelect = async (topicTitle: string) => {
@@ -97,7 +102,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
     setSaving(true);
     try {
       const chapterMap: Record<string, Chapter> = {};
-      
+
       // Strict mapping based on the newly generated outline
       outline.forEach(ch => {
         let status: Chapter['status'] = 'empty';
@@ -135,7 +140,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
           throw new Error("Insufficient credits.");
         }
         const newProjectRef = doc(projectsCollectionRef);
-        transaction.update(userRef, { 
+        transaction.update(userRef, {
           credits: increment(-1),
           lifetime_projects: increment(1)
         });
@@ -165,11 +170,11 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
       ))}
     </div>
   );
-  
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {showPayment && <PaymentModal user={user} onClose={() => setShowPayment(false)} />}
-      
+
       {/* Universal Header */}
       <div className="flex items-center justify-between mb-8">
         {step === 1 ? (
@@ -201,22 +206,22 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
               <h2 className="text-xl font-bold text-slate-800">Option A: I already have a topic</h2>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-               <input
-                 placeholder="Type your exact approved project topic here..."
-                 value={customTopic}
-                 onChange={(e) => setCustomTopic(e.target.value)}
-                 className="grow p-5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium text-slate-800 placeholder:text-slate-400"
-               />
-               <button
-                 onClick={() => handleTopicSelect(customTopic)}
-                 disabled={!customTopic.trim() || loading}
-                 className="bg-green-700 text-white px-8 py-4 sm:py-0 rounded-2xl font-black hover:bg-green-800 disabled:opacity-50 transition-all flex items-center justify-center shrink-0 shadow-lg shadow-green-900/20"
-               >
-                 {loading && selectedTopic === customTopic ? <Loader2 className="animate-spin h-5 w-5 mx-auto" /> : (
-                   <>Use Topic <ArrowRight className="ml-2 h-5 w-5" /></>
-                 )}
-               </button>
-             </div>
+              <input
+                placeholder="Type your exact approved project topic here..."
+                value={customTopic}
+                onChange={(e) => setCustomTopic(e.target.value)}
+                className="grow p-5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium text-slate-800 placeholder:text-slate-400"
+              />
+              <button
+                onClick={() => handleTopicSelect(customTopic)}
+                disabled={!customTopic.trim() || loading}
+                className="bg-green-700 text-white px-8 py-4 sm:py-0 rounded-2xl font-black hover:bg-green-800 disabled:opacity-50 transition-all flex items-center justify-center shrink-0 shadow-lg shadow-green-900/20"
+              >
+                {loading && selectedTopic === customTopic ? <Loader2 className="animate-spin h-5 w-5 mx-auto" /> : (
+                  <>Use Topic <ArrowRight className="ml-2 h-5 w-5" /></>
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-center opacity-50 py-2">
@@ -224,7 +229,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
             <span className="px-4 font-black text-slate-400 uppercase tracking-widest text-xs">OR</span>
             <div className="h-px bg-slate-300 w-1/3"></div>
           </div>
-          
+
           {/* Option B: AI Generation Setup */}
           <div className="bg-white p-8 md:p-10 rounded-4xl shadow-xl shadow-slate-200/50 border border-slate-100">
             <div className="flex items-center mb-6">
@@ -242,7 +247,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
               </div>
               <div>
                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Institution Name</label>
-                <input placeholder="e.g. University of Lagos" value={institutionName} onChange={(e) => setInstitutionName(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium text-slate-700"/>
+                <input placeholder="e.g. University of Lagos" value={institutionName} onChange={(e) => setInstitutionName(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium text-slate-700" />
               </div>
             </div>
 
@@ -253,7 +258,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
                   <button onClick={toggleManualFaculty} className="text-[10px] font-bold text-green-700 hover:text-green-800 flex items-center"><Edit3 className="h-3 w-3 mr-1" />{isManualFaculty ? 'Select from list' : "Can't find your Faculty?"}</button>
                 </div>
                 {isManualFaculty ? (
-                  <input placeholder="Type your Faculty name" value={faculty} onChange={(e) => setFaculty(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none"/>
+                  <input placeholder="Type your Faculty name" value={faculty} onChange={(e) => setFaculty(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none" />
                 ) : (
                   <select value={faculty} onChange={(e) => setFaculty(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none">
                     <option value="">Select Faculty</option>
@@ -270,7 +275,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
                   )}
                 </div>
                 {isManualDepartment || isManualFaculty ? (
-                  <input placeholder="Type your Department name" value={department} onChange={(e) => setDepartment(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none disabled:opacity-50" disabled={!faculty}/>
+                  <input placeholder="Type your Department name" value={department} onChange={(e) => setDepartment(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none disabled:opacity-50" disabled={!faculty} />
                 ) : (
                   <select value={department} onChange={(e) => setDepartment(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none disabled:opacity-50" disabled={!faculty}>
                     <option value="">Select Department</option>
@@ -280,7 +285,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
               </div>
             </div>
 
-            <button 
+            <button
               onClick={handleFetchTopics}
               // STRICT CHECK: Disables button if any value is empty spaces
               disabled={loading || !institutionType || !institutionName.trim() || !faculty.trim() || !department.trim()}
@@ -297,65 +302,65 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
       {step === 2 && (
         <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
           <div className="text-center mb-8">
-             <h1 className="text-4xl font-black text-slate-900 tracking-tight">Select a Topic</h1>
-             <p className="text-slate-500 font-medium mt-2">Here are 5 custom suggestions based on your department.</p>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Select a Topic</h1>
+            <p className="text-slate-500 font-medium mt-2">Here are 5 custom suggestions based on your department.</p>
           </div>
           <div className="grid gap-4">
             <div className="flex justify-end mb-2">
               <button onClick={handleFetchTopics} disabled={loading} className="text-xs font-bold text-slate-500 flex items-center hover:text-slate-800 disabled:opacity-50 bg-white border border-slate-200 px-4 py-2 rounded-full shadow-sm transition-all">
-                {loading && selectedTopic === '' ? <Loader2 className="animate-spin h-3 w-3 mr-2"/> : <RefreshCw className="h-3 w-3 mr-2"/>} Regenerate List
+                {loading && selectedTopic === '' ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <RefreshCw className="h-3 w-3 mr-2" />} Regenerate List
               </button>
             </div>
-            
+
             {topics.map((t, i) => (
-              <button 
+              <button
                 key={i} onClick={() => handleTopicSelect(t.title || (t as any))} disabled={loading}
                 className="bg-white p-6 md:p-8 border-2 border-slate-100 rounded-3xl text-left hover:border-green-600 hover:shadow-xl hover:-translate-y-1 transition-all group disabled:opacity-50 flex items-center justify-between"
               >
                 <h3 className="text-lg font-bold text-slate-800 group-hover:text-green-700 pr-4 leading-tight">{t.title || (t as any)}</h3>
                 {loading && selectedTopic === (t.title || (t as any)) ? (
-                   <Loader2 className="animate-spin h-6 w-6 text-green-700 shrink-0" />
+                  <Loader2 className="animate-spin h-6 w-6 text-green-700 shrink-0" />
                 ) : (
-                   <ChevronRight className="h-6 w-6 text-slate-300 group-hover:text-green-700 transition-colors shrink-0" />
+                  <ChevronRight className="h-6 w-6 text-slate-300 group-hover:text-green-700 transition-colors shrink-0" />
                 )}
               </button>
             ))}
           </div>
         </div>
       )}
-      
+
       {/* STEP 3: Identity Setup */}
       {step === 3 && (
         <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
           <div className="text-center mb-8">
-             <h1 className="text-4xl font-black text-slate-900 tracking-tight">Project Identity</h1>
-             <p className="text-slate-500 font-medium mt-2">Who is authoring this research?</p>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Project Identity</h1>
+            <p className="text-slate-500 font-medium mt-2">Who is authoring this research?</p>
           </div>
-          
+
           <div className="grid gap-6 bg-white p-10 rounded-4xl shadow-xl shadow-slate-200/50 border border-slate-100">
             <div>
               <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Student Full Name</label>
               <div className="relative">
                 <User className="absolute left-4 top-4.5 h-5 w-5 text-slate-400" />
-                <input value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder="e.g. ADEBAYO Samuel Ogun" className="w-full pl-12 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium"/>
+                <input value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder="e.g. ADEBAYO Samuel Ogun" className="w-full pl-12 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium" />
               </div>
             </div>
             <div>
               <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Matric Number</label>
               <div className="relative">
                 <IdCard className="absolute left-4 top-4.5 h-5 w-5 text-slate-400" />
-                <input value={matricNumber} onChange={(e) => setMatricNumber(e.target.value)} placeholder="e.g. ENG/18/0123" className="w-full pl-12 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium"/>
+                <input value={matricNumber} onChange={(e) => setMatricNumber(e.target.value)} placeholder="e.g. ENG/18/0123" className="w-full pl-12 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium" />
               </div>
             </div>
             <div>
               <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Supervisor Name</label>
               <div className="relative">
                 <GraduationCap className="absolute left-4 top-4.5 h-5 w-5 text-slate-400" />
-                <input value={supervisorName} onChange={(e) => setSupervisorName(e.target.value)} placeholder="e.g. Dr. J. O. OKAFOR" className="w-full pl-12 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium"/>
+                <input value={supervisorName} onChange={(e) => setSupervisorName(e.target.value)} placeholder="e.g. Dr. J. O. OKAFOR" className="w-full pl-12 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-green-700 outline-none font-medium" />
               </div>
             </div>
 
-            <button 
+            <button
               onClick={() => setStep(4)}
               // STRICT CHECK: Disables button if fields are just empty spaces
               disabled={!studentName.trim() || !matricNumber.trim() || !supervisorName.trim()}
@@ -366,56 +371,56 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
           </div>
         </div>
       )}
-      
+
       {/* STEP 4: Workflow Selection */}
       {step === 4 && (
         <div className="grow flex flex-col h-full space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
-           <div className="text-center mb-4">
-             <h1 className="text-4xl font-black text-slate-900 tracking-tight">Final Step</h1>
-             <p className="text-slate-500 font-medium mt-2">How would you like the AI to initialize your editor?</p>
+          <div className="text-center mb-4">
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Final Step</h1>
+            <p className="text-slate-500 font-medium mt-2">How would you like the AI to initialize your editor?</p>
           </div>
-          
-          <div className="grid md:grid-cols-2 gap-6 mb-4">
-             <button onClick={() => setGenMode('outline_only')} className={`p-8 rounded-4xl border-2 transition-all flex flex-col items-center justify-center text-center space-y-4 ${genMode === 'outline_only' ? 'border-green-700 bg-green-50 shadow-xl shadow-green-900/10 scale-105' : 'border-slate-100 hover:border-slate-200 bg-white'}`}>
-                <div className={`p-4 rounded-2xl ${genMode === 'outline_only' ? 'bg-green-700 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                   <ListChecks className="h-8 w-8" />
-                </div>
-                <div>
-                   <h3 className="font-black text-slate-900 text-lg">Empty Outline</h3>
-                   <p className="text-xs text-slate-500 mt-2 font-medium leading-relaxed max-w-xs mx-auto">Sets up the exact University structure, leaving all chapters blank for you to write manually.</p>
-                </div>
-             </button>
 
-             <button onClick={() => setGenMode('start_ch1')} className={`p-8 rounded-4xl border-2 transition-all flex flex-col items-center justify-center text-center space-y-4 ${genMode === 'start_ch1' ? 'border-green-700 bg-green-50 shadow-xl shadow-green-900/10 scale-105' : 'border-slate-100 hover:border-slate-200 bg-white'}`}>
-                <div className={`p-4 rounded-2xl ${genMode === 'start_ch1' ? 'bg-green-700 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                   <PenTool className="h-8 w-8" />
-                </div>
-                <div>
-                   <h3 className="font-black text-slate-900 text-lg">Auto-Draft Chapter 1</h3>
-                   <p className="text-xs text-slate-500 mt-2 font-medium leading-relaxed max-w-xs mx-auto">Sets up the structure and generates a comprehensive academic draft for your Introduction.</p>
-                </div>
-             </button>
+          <div className="grid md:grid-cols-2 gap-6 mb-4">
+            <button onClick={() => setGenMode('outline_only')} className={`p-8 rounded-4xl border-2 transition-all flex flex-col items-center justify-center text-center space-y-4 ${genMode === 'outline_only' ? 'border-green-700 bg-green-50 shadow-xl shadow-green-900/10 scale-105' : 'border-slate-100 hover:border-slate-200 bg-white'}`}>
+              <div className={`p-4 rounded-2xl ${genMode === 'outline_only' ? 'bg-green-700 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                <ListChecks className="h-8 w-8" />
+              </div>
+              <div>
+                <h3 className="font-black text-slate-900 text-lg">Empty Outline</h3>
+                <p className="text-xs text-slate-500 mt-2 font-medium leading-relaxed max-w-xs mx-auto">Sets up the exact University structure, leaving all chapters blank for you to write manually.</p>
+              </div>
+            </button>
+
+            <button onClick={() => setGenMode('start_ch1')} className={`p-8 rounded-4xl border-2 transition-all flex flex-col items-center justify-center text-center space-y-4 ${genMode === 'start_ch1' ? 'border-green-700 bg-green-50 shadow-xl shadow-green-900/10 scale-105' : 'border-slate-100 hover:border-slate-200 bg-white'}`}>
+              <div className={`p-4 rounded-2xl ${genMode === 'start_ch1' ? 'bg-green-700 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                <PenTool className="h-8 w-8" />
+              </div>
+              <div>
+                <h3 className="font-black text-slate-900 text-lg">Auto-Draft Chapter 1</h3>
+                <p className="text-xs text-slate-500 mt-2 font-medium leading-relaxed max-w-xs mx-auto">Sets up the structure and generates a comprehensive academic draft for your Introduction.</p>
+              </div>
+            </button>
           </div>
 
           <div className="bg-slate-900 text-white p-8 rounded-4xl shadow-2xl">
-             <div className="flex items-center space-x-3 mb-6">
-                <div className="p-2 bg-white/10 rounded-lg">
-                  <BookCheck className="h-5 w-5 text-green-400" />
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-2 bg-white/10 rounded-lg">
+                <BookCheck className="h-5 w-5 text-green-400" />
+              </div>
+              <h4 className="font-black text-xs text-white uppercase tracking-[0.2em]">Generated Thesis Structure</h4>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4 max-h-48 overflow-y-auto pr-4 custom-scrollbar">
+              {outline.map((ch, i) => (
+                <div key={i} className="flex items-center p-3 bg-white/5 rounded-xl border border-white/10 text-xs font-bold text-slate-300">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-3 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+                  <span className="truncate">{ch.title}</span>
                 </div>
-                <h4 className="font-black text-xs text-white uppercase tracking-[0.2em]">Generated Thesis Structure</h4>
-             </div>
-             <div className="grid sm:grid-cols-2 gap-4 max-h-48 overflow-y-auto pr-4 custom-scrollbar">
-                {outline.map((ch, i) => (
-                   <div key={i} className="flex items-center p-3 bg-white/5 rounded-xl border border-white/10 text-xs font-bold text-slate-300">
-                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-3 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
-                      <span className="truncate">{ch.title}</span>
-                   </div>
-                ))}
-             </div>
+              ))}
+            </div>
           </div>
-          
+
           <div className="mt-8">
-            <button 
+            <button
               onClick={handleFinishWizard}
               disabled={saving}
               className="w-full bg-green-700 text-white py-6 rounded-4xl font-black text-xl hover:bg-green-800 transition-all flex items-center justify-center shadow-2xl shadow-green-900/20 disabled:opacity-70 group"

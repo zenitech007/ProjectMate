@@ -1,7 +1,10 @@
-import { auth } from '../firebase';
+import { auth, app } from '../firebase';
 import { cleanHTML } from "./htmlCleaner";
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 const BASE_URL = import.meta.env.VITE_FIREBASE_STREAM_URL;
+
+const functions = getFunctions(app, 'us-central1');
 
 // Helper to force-refresh and grab the secure token
 const getAuthHeaders = async () => {
@@ -19,18 +22,9 @@ const getAuthHeaders = async () => {
 
 export const generateTopics = async (institutionType: string, institutionName: string, faculty: string, department: string) => {
   try {
-    const headers = await getAuthHeaders();
-    const response = await fetch(`${BASE_URL}/generateTopics`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ data: { institutionType, institutionName, faculty, department } })
-    });
-
-    const json = await response.json();
-    if (json.error) throw new Error(json.error.message);
-
-    // onCall functions return their payload inside a "result" object
-    return (json.result as any[]) || [];
+    const fn = httpsCallable(functions, 'generateTopics');
+    const result = await fn({ institutionType, institutionName, faculty, department });
+    return result.data as { title: string }[];
   } catch (error) {
     console.error("Topic generation failed:", error);
     throw error;
@@ -39,17 +33,9 @@ export const generateTopics = async (institutionType: string, institutionName: s
 
 export const generateOutline = async (topic: string) => {
   try {
-    const headers = await getAuthHeaders();
-    const response = await fetch(`${BASE_URL}/generateOutline`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ data: { topic } })
-    });
-
-    const json = await response.json();
-    if (json.error) throw new Error(json.error.message);
-
-    return (json.result as any[]) || [];
+    const fn = httpsCallable(functions, 'generateOutline');
+    const result = await fn({ topic });
+    return result.data as any[];
   } catch (error) {
     console.error("Outline generation failed:", error);
     throw error;

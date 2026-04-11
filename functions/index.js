@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const { GoogleGenAI } = require("@google/genai");
 const cors = require('cors')({ origin: true });
+const crypto = require('crypto');
 
 admin.initializeApp();
 
@@ -22,7 +23,10 @@ CRITICAL RULES:
 5. CITATION RECENCY: All references, journals, and books used MUST be published within the last 5 years. Do not use outdated sources.
 6. IN-TEXT CITATIONS: You MUST include frequent, accurate in-text citations (e.g., Author, Year) seamlessly woven into the paragraphs to support every academic claim, fact, and theoretical argument.`;
 
-const sanitize = (input) => (typeof input === 'string' ? input.replace(/[^a-zA-Z0-9\s.,-]/g, '').trim() : '');
+const sanitize = (input) =>
+  typeof input === 'string'
+    ? input.replace(/[<>&"'`;{}|\\^~\[\]]/g, '').trim().slice(0, 500)
+    : '';
 
 // 1. Generate Topics
 exports.generateTopics = functions.https.onCall(async (data, context) => {
@@ -33,7 +37,7 @@ exports.generateTopics = functions.https.onCall(async (data, context) => {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash',
       contents: prompt,
       config: { systemInstruction: PHD_SYSTEM_PROMPT, responseMimeType: "application/json" }
     });
@@ -65,7 +69,7 @@ exports.generateOutline = functions.https.onCall(async (data, context) => {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-pro',
+      model: 'gemini-2.5-pro',
       contents: prompt,
       config: { systemInstruction: PHD_SYSTEM_PROMPT, responseMimeType: "application/json" }
     });
@@ -81,6 +85,15 @@ exports.generateChapterStream = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
+    const authHeader = req.headers.authorization || '';
+    const idToken = authHeader.startsWith('Bearer ') ? authHeader.split('Bearer ')[1] : null;
+    if (!idToken) return res.status(401).send('Unauthorized');
+    try {
+      await admin.auth().verifyIdToken(idToken);
+    } catch (e) {
+      return res.status(401).send('Invalid token');
+    }
+
     const { topic, chapterTitle, department } = req.body.data || {};
     const ai = getAi();
 
@@ -91,7 +104,7 @@ exports.generateChapterStream = functions.https.onRequest((req, res) => {
       res.setHeader('Transfer-Encoding', 'chunked');
 
       const stream = await ai.models.generateContentStream({
-        model: 'gemini-1.5-pro',
+        model: 'gemini-2.5-pro',
         contents: prompt,
         config: { systemInstruction: PHD_SYSTEM_PROMPT }
       });
@@ -107,10 +120,46 @@ exports.generateChapterStream = functions.https.onRequest((req, res) => {
   });
 });
 
+// 6. Paystack Webhook
+exports.paystackWebhook = functions.https.onRequest(async (req, res) => {
+  const secret = functions.config().paystack.secret;
+  const hash = crypto
+    .createHmac('sha512', secret)
+    .update(req.rawBody)
+    .digest('hex');
+
+  if (hash !== req.headers['x-paystack-signature']) {
+    return res.status(400).send('Invalid signature');
+  }
+
+  const event = req.body;
+  if (event.event === 'charge.success') {
+    const userId = event.data.metadata?.custom_fields?.find(
+      f => f.variable_name === 'user_id'
+    )?.value;
+
+    if (userId) {
+      await admin.firestore().doc(`users/${userId}`).update({
+        credits: admin.firestore.FieldValue.increment(2) // CREDITS_PER_PURCHASE
+      });
+    }
+  }
+  res.sendStatus(200);
+});
+
 // 4. Generate Single Section
 exports.generateSectionStream = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
+
+    const authHeader = req.headers.authorization || '';
+    const idToken = authHeader.startsWith('Bearer ') ? authHeader.split('Bearer ')[1] : null;
+    if (!idToken) return res.status(401).send('Unauthorized');
+    try {
+      await admin.auth().verifyIdToken(idToken);
+    } catch (e) {
+      return res.status(401).send('Invalid token');
+    }
 
     const { topic, chapterTitle, sectionTitle, department } = req.body.data || {};
     const ai = getAi();
@@ -122,7 +171,7 @@ exports.generateSectionStream = functions.https.onRequest((req, res) => {
       res.setHeader('Transfer-Encoding', 'chunked');
 
       const stream = await ai.models.generateContentStream({
-        model: 'gemini-1.5-pro',
+        model: 'gemini-2.5-pro',
         contents: prompt,
         config: { systemInstruction: PHD_SYSTEM_PROMPT }
       });
@@ -143,6 +192,15 @@ exports.elaborateStream = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
+    const authHeader = req.headers.authorization || '';
+    const idToken = authHeader.startsWith('Bearer ') ? authHeader.split('Bearer ')[1] : null;
+    if (!idToken) return res.status(401).send('Unauthorized');
+    try {
+      await admin.auth().verifyIdToken(idToken);
+    } catch (e) {
+      return res.status(401).send('Invalid token');
+    }
+
     const { topic, currentText } = req.body.data || {};
     const ai = getAi();
 
@@ -153,7 +211,7 @@ exports.elaborateStream = functions.https.onRequest((req, res) => {
       res.setHeader('Transfer-Encoding', 'chunked');
 
       const stream = await ai.models.generateContentStream({
-        model: 'gemini-1.5-pro',
+        model: 'gemini-2.5-pro',
         contents: prompt,
         config: { systemInstruction: PHD_SYSTEM_PROMPT }
       });
