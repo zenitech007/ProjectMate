@@ -216,7 +216,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   };
 
   if (!project) return (
-    <div className="flex items-center justify-center min-h-[500px]">
+    <div className="flex items-center justify-center min-h-125">
       <div className="flex flex-col items-center">
         <Loader2 className="h-10 w-10 text-green-700 animate-spin mb-4" />
         <p className="text-slate-500 font-medium">Loading project workspace...</p>
@@ -245,7 +245,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
           </div>
         </div>
         
-        <div className="p-4 space-y-2 flex-grow overflow-y-auto custom-scrollbar">
+        <div className="p-4 space-y-2 grow overflow-y-auto custom-scrollbar">
           {project.outline.map((chapter) => (
             <div key={chapter.title} className="space-y-1">
               <button
@@ -261,7 +261,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
                 }`}
               >
                 <div className="flex items-center overflow-hidden">
-                  <FileText className={`mr-3 h-4 w-4 flex-shrink-0 ${activeChapter === chapter.title ? 'text-white' : 'text-slate-400 group-hover:text-green-600'}`} />
+                  <FileText className={`mr-3 h-4 w-4 shrink-0 ${activeChapter === chapter.title ? 'text-white' : 'text-slate-400 group-hover:text-green-600'}`} />
                   <span className="font-semibold text-sm truncate">{chapter.title}</span>
                 </div>
                 <div className="flex items-center space-x-1">
@@ -294,7 +294,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
                             generating === section 
                               ? 'bg-green-600 text-white' 
                               : 'bg-white border border-slate-200 text-green-700 opacity-0 group-hover/section:opacity-100 hover:bg-green-50'
-                          } disabled:opacity-50 flex-shrink-0`}
+                          } disabled:opacity-50 shrink-0`}
                         >
                           {generating === section ? (
                             <>
@@ -340,7 +340,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
       <div className="flex-1 flex flex-col min-w-0 bg-white relative">
         <div className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
           <div className="flex items-center space-x-4 flex-1">
-            <h2 className="text-xs font-bold text-slate-900 truncate max-w-[150px] lg:max-w-xs hidden sm:block uppercase tracking-wider">
+            <h2 className="text-xs font-bold text-slate-900 truncate max-w-37.5 lg:max-w-xs hidden sm:block uppercase tracking-wider">
               {project.topic}
             </h2>
             <button 
@@ -432,7 +432,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
                 }}
               >
                 {/* Academic Header - Aligned with Margins */}
-                <div className="text-center pt-16 pb-8 border-b border-dashed border-slate-100 bg-slate-50/20 px-[1in]">
+                <div className="text-center pt-16 pb-8 border-b border-dashed border-slate-100 bg-slate-50/20 px-24">
                   <h1 className="academic-font text-2xl uppercase font-bold tracking-widest leading-normal">{activeChapter}</h1>
                   <p className="academic-font text-sm uppercase tracking-[0.2em] mt-4 text-slate-400 font-bold leading-relaxed">{project.topic}</p>
                 </div>
@@ -443,7 +443,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
                   value={currentContent}
                   onChange={(e) => handleManualEdit(e.target.value)}
                   placeholder={generating ? "AI is generating content for you..." : "Type your research content here..."}
-                  className="w-full px-[1in] py-12 outline-none academic-font text-justify leading-[2.2] text-[12pt] bg-transparent resize-none placeholder:text-slate-300 transition-all border-none focus:ring-0 overflow-hidden"
+                  className="w-full px-24 py-12 outline-none academic-font text-justify leading-[2.2] text-[12pt] bg-transparent resize-none placeholder:text-slate-300 transition-all border-none focus:ring-0 overflow-hidden"
                   spellCheck={false}
                   style={{
                     fontFamily: "'Tinos', 'Times New Roman', serif",
@@ -453,7 +453,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
                 />
                 
                 {/* Page Footer - Aligned with Margins */}
-                <div className="px-[1in] py-12 mt-auto flex justify-between items-center bg-transparent border-t border-slate-50/50">
+                <div className="px-24 py-12 mt-auto flex justify-between items-center bg-transparent border-t border-slate-50/50">
                    <div className="text-[10px] text-slate-300 uppercase font-black tracking-widest">Standard Nigerian University Project Template</div>
                    <div className="flex items-center text-[10px] font-bold text-slate-300 uppercase tracking-widest space-x-3">
                       {saveStatus === 'saved' ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Save className="h-3.5 w-3.5" />}

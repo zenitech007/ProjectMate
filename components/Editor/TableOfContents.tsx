@@ -74,7 +74,7 @@ const SortableSection: React.FC<SortableSectionProps> = ({
         </div>
         <button
           onClick={() => onSelect(chapterTitle)}
-          className="truncate max-w-[140px] hover:text-slate-700 transition-colors text-left"
+          className="truncate max-w-35 hover:text-slate-700 transition-colors text-left"
         >
           {section}
         </button>

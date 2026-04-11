@@ -1,6 +1,6 @@
-
-import React, { useState, useEffect } from 'react';
-import { X, ShieldCheck, Zap, Check, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, ShieldCheck, Zap, Loader2 } from 'lucide-react';
+import { usePaystackPayment } from 'react-paystack';
 import { UserProfile } from '../../types';
 import { PREMIUM_PRICE_NGN, PAYSTACK_PUBLIC_KEY, CREDITS_PER_PURCHASE } from '../../constants';
 
@@ -9,43 +9,62 @@ interface PaymentModalProps {
   onClose: () => void;
 }
 
+interface PaystackResponse {
+  reference: string;
+  status: string;
+  transaction: string;
+  message: string;
+}
+
 const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = "https://js.paystack.co/v1/inline.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  const config = {
+    reference: (new Date()).getTime().toString(),
+    email: user.email,
+    amount: PREMIUM_PRICE_NGN * 100, // Paystack expects amount in kobo
+    publicKey: PAYSTACK_PUBLIC_KEY,
+    currency: 'NGN',
+    metadata: {
+      custom_fields: [
+        {
+          display_name: "User ID",
+          variable_name: "user_id",
+          value: user.uid,
+        }
+      ]
+    }
+  };
+
+  const initializePayment = usePaystackPayment(config);
+
+  const onSuccess = (response: PaystackResponse) => {
+    // Webhook on the backend will handle actual credit allocation
+    alert(`Payment successful! Reference: ${response.reference}. Your credits will update shortly.`);
+    setLoading(false);
+    onClose();
+  };
+
+  const onClosePayment = () => {
+    setLoading(false);
+  };
 
   const handlePay = () => {
     setLoading(true);
-    const handler = (window as any).PaystackPop.setup({
-      key: PAYSTACK_PUBLIC_KEY,
-      email: user.email,
-      amount: PREMIUM_PRICE_NGN * 100,
-      currency: 'NGN',
-      callback: async (response: any) => {
-        // CRIT-2: Client-side credit granting removed.
-        // Credits are now granted via a secure Paystack Webhook (Cloud Function).
-        alert(`Payment successful! Reference: ${response.reference}. Your credits will be updated shortly once the transaction is verified.`);
-        onClose();
-      },
-      onClose: () => {
-        setLoading(false);
-      }
-    });
-    handler.openIframe();
+    initializePayment({ onSuccess, onClose: onClosePayment });
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden relative">
-        <button onClick={onClose} className="absolute top-6 right-6 p-2 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600"><X className="h-5 w-5" /></button>
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+      <div className="bg-white rounded-4xl shadow-2xl max-w-lg w-full overflow-hidden relative">
+        <button
+          onClick={onClose}
+          disabled={loading}
+          className="absolute top-6 right-6 p-2 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 disabled:opacity-50"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
         <div className="p-8 md:p-12">
           <div className="flex flex-col items-center text-center mb-10">
             <div className="bg-yellow-100 p-4 rounded-3xl mb-6">
@@ -65,7 +84,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
             </div>
           </div>
 
-          <button 
+          <button
             onClick={handlePay}
             disabled={loading}
             className="w-full bg-green-700 text-white py-5 rounded-2xl font-bold text-lg hover:bg-green-800 transition-all flex items-center justify-center disabled:opacity-70"

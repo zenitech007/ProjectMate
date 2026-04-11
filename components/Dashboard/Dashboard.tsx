@@ -138,7 +138,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                           </span>
                         </div>
 
-                        <div className="flex-grow mb-6">
+                        <div className="grow mb-6">
                           <h3 className="academic-font text-lg font-bold text-slate-900 leading-tight group-hover:text-green-800 transition-colors line-clamp-2">
                             {p.topic}
                           </h3>
@@ -214,7 +214,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
               {/* Decorative elements */}
               <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-[#facc15]/10 rounded-full blur-[60px] group-hover:bg-[#facc15]/20 transition-all duration-700"></div>
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+              <div className="absolute top-0 left-0 w-full h-full bg-linear-to-br from-white/5 to-transparent pointer-events-none"></div>
             </div>
 
             {/* RESEARCH LOGS (HISTORY) */}
@@ -262,7 +262,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             </div>
 
             {/* QUICK TIP / STATUS */}
-            <div className="bg-[#1a4731] rounded-[2rem] p-6 text-white/90">
+            <div className="bg-[#1a4731] rounded-4xl p-6 text-white/90">
               <div className="flex items-start space-x-4">
                 <SlidersHorizontal className="h-5 w-5 text-green-400 mt-1" />
                 <div>

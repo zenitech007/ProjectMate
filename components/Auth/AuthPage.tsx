@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
-import { 
-  signInWithPopup, 
-  GoogleAuthProvider, 
-  signInWithEmailAndPassword, 
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  updateProfile 
+  updateProfile
 } from 'firebase/auth';
 import { auth } from '../../firebase';
 
@@ -53,7 +53,8 @@ const AuthPage: React.FC = () => {
         }
       }
     } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+      console.error("AUTH ERROR:", err);
+      setError(err.code + " — " + err.message);
     } finally {
       setLoading(false);
     }
@@ -74,14 +75,14 @@ const AuthPage: React.FC = () => {
         )}
 
         <div className="space-y-4 mb-8">
-          <button 
+          <button
             onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center space-x-3 border border-slate-200 py-3 rounded-xl hover:bg-slate-50 transition-colors font-semibold text-slate-700"
           >
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
             <span>Continue with Google</span>
           </button>
-          
+
           <div className="relative">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
             <div className="relative flex justify-center text-sm uppercase"><span className="px-2 bg-white text-slate-400 font-bold">Or</span></div>
@@ -94,8 +95,8 @@ const AuthPage: React.FC = () => {
               <label className="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
               <div className="relative">
                 <User className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
@@ -110,8 +111,8 @@ const AuthPage: React.FC = () => {
             <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-              <input 
-                type="email" 
+              <input
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="student@unilag.edu.ng"
@@ -125,8 +126,8 @@ const AuthPage: React.FC = () => {
             <label className="block text-sm font-bold text-slate-700 mb-2">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-              <input 
-                type="password" 
+              <input
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -136,7 +137,7 @@ const AuthPage: React.FC = () => {
             </div>
           </div>
 
-          <button 
+          <button
             type="submit"
             disabled={loading}
             className="w-full bg-green-700 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-800 transition-all flex items-center justify-center disabled:opacity-70 shadow-lg shadow-green-100"
@@ -149,7 +150,7 @@ const AuthPage: React.FC = () => {
         <div className="mt-8 pt-8 border-t border-slate-100 text-center">
           <p className="text-slate-600">
             {isLogin ? "Don't have an account?" : "Already have an account?"}
-            <button 
+            <button
               onClick={() => setIsLogin(!isLogin)}
               className="ml-2 text-green-700 font-bold hover:underline"
             >

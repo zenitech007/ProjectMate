@@ -62,7 +62,7 @@ const A4Editor = React.forwardRef<ReactQuill, A4EditorProps>(({ value, onChange,
               borderTop: '1px dashed #cbd5e1'
             }}
           >
-            <div className="absolute left-[-60px] top-[-10px] text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded">
+            <div className="absolute -left-15 -top-2.5 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded">
               Page {page + 1}
             </div>
           </div>

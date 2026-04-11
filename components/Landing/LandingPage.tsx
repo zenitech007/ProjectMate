@@ -84,7 +84,7 @@ const LandingPage: React.FC = () => {
                 </div>
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4">ProjectMate Editor</div>
               </div>
-              <div className="flex flex-col md:flex-row h-[400px] md:h-[450px]">
+              <div className="flex flex-col md:flex-row h-100 md:h-112.5">
                 <div className="w-full md:w-1/4 bg-slate-50 border-r border-slate-100 p-4 space-y-3">
                   <div className="text-[9px] font-black text-slate-300 uppercase mb-4 tracking-widest">Chapters</div>
                   <div className="h-9 bg-[#1a4731] rounded-lg w-full flex items-center px-3">
@@ -195,7 +195,7 @@ const LandingPage: React.FC = () => {
           
           <div className="max-w-4xl mx-auto space-y-8 relative">
             {/* Connector line */}
-            <div className="absolute left-10 md:left-1/2 top-10 bottom-10 w-0.5 bg-slate-200 -z-0 hidden md:block"></div>
+            <div className="absolute left-10 md:left-1/2 top-10 bottom-10 w-0.5 bg-slate-200 z-0 hidden md:block"></div>
             
             <StepCard 
               num="01" 
@@ -331,7 +331,7 @@ const FeatureCard = ({ icon, title, desc }: { icon: React.ReactNode, title: stri
 
 const StepCard = ({ num, icon, title, desc }: { num: string, icon: React.ReactNode, title: string, desc: string }) => (
   <div className="flex flex-col md:flex-row items-center gap-8 relative z-10 group">
-    <div className="flex-shrink-0 w-20 h-20 bg-[#1a4731] text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-3 transition-transform">
+    <div className="shrink-0 w-20 h-20 bg-[#1a4731] text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-3 transition-transform">
       {icon}
     </div>
     <div className="bg-white p-8 rounded-2xl shadow-md border border-slate-100 text-left flex-1 hover:shadow-xl transition-shadow">

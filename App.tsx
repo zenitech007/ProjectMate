@@ -8,7 +8,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import ProjectWizard from './components/ProjectWizard/ProjectWizard';
 import ProjectEditor from './components/Editor/ProjectEditor';
 import UpgradePage from './components/Premium/UpgradePage';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
 import ErrorBoundary from './components/Layout/ErrorBoundary';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -37,7 +37,7 @@ const AppContent: React.FC = () => {
     <Router>
       <div className="min-h-screen flex flex-col bg-slate-50">
         <Navbar user={user} onLogout={logout} />
-        <main className="flex-grow">
+        <main className="grow">
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/dashboard" />} />
@@ -54,9 +54,7 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => (
   <ErrorBoundary>
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <AppContent />
   </ErrorBoundary>
 );
 

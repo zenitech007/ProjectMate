@@ -33,7 +33,7 @@ const TopicHistory: React.FC<TopicHistoryProps> = ({ history, onSelect }) => {
               <div className="space-y-1.5">
                 {item.topics.slice(0, 1).map((t, idx) => (
                   <div key={idx} className="flex items-center space-x-2">
-                    <BookOpenText className="h-3 w-3 text-slate-300 flex-shrink-0" />
+                    <BookOpenText className="h-3 w-3 text-slate-300 shrink-0" />
                     <p className="text-xs text-slate-500 font-bold truncate group-hover:text-green-700 transition-colors">{t.title}</p>
                   </div>
                 ))}
