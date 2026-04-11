@@ -1,24 +1,11 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+VITE_FIREBASE_API_KEY="AIzaSyBMmX56dXmj05_jPM2B6OHkek8aW871vU0"
+VITE_FIREBASE_AUTH_DOMAIN="projectmate-485110.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID="projectmate-485110"
+VITE_FIREBASE_STORAGE_BUCKET="projectmate-485110.firebasestorage.app"
+VITE_FIREBASE_MESSAGING_SENDER_ID="369127916461"
+VITE_FIREBASE_APP_ID="1:369127916461:web:00a24815ec4076e2a49724"
+VITE_FIREBASE_MEASUREMENT_ID="G-16XEV03HMB"
+VITE_FIREBASE_STREAM_URL="https://us-central1-projectmate-485110.cloudfunctions.net"
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+VITE_PAYSTACK_PUBLIC_KEY="pk_test_d9f2fb5e03cf737315670e72ba3cff90b19b0fef"
+GEMINI_API_KEY="AIzaSyCv3gyRXdhR6aGTAk8HIBOwD71CI_7sAAA"
