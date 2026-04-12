@@ -19,8 +19,8 @@ CRITICAL RULES:
 2. Context: Prioritize Nigerian scholars and local contexts.
 3. Formatting: Return content as a valid HTML string using ONLY <h3> for headers, <b> for bolding, and <p> for paragraphs.
 4. NO MARKDOWN: Never use # or ** in your output.
-5. CITATION RECENCY: All references, journals, and books used MUST be published within the last 5 years.
-6. IN-TEXT CITATIONS: You MUST include frequent, accurate in-text citations (e.g., Author, Year) woven into paragraphs.`;
+5. CITATION RECENCY: All references, journals, and books used MUST be published within the last 5 years. Do not use outdated sources.
+6. IN-TEXT CITATIONS: You MUST include frequent, accurate in-text citations (e.g., Author, Year) seamlessly woven into the paragraphs to support every academic claim, fact, and theoretical argument.`;
 
 const sanitize = (input) =>
   typeof input === "string"
@@ -29,21 +29,16 @@ const sanitize = (input) =>
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAYSTACK WEBHOOK
-// This is the ONLY place credits are added. The webhook is called by Paystack
-// after a successful payment, verified with HMAC-SHA512 signature.
-//
-// SETUP STEPS:
-//   1. firebase functions:secrets:set PAYSTACK_SECRET_KEY  (your sk_live_... key)
-//   2. firebase deploy --only functions
-//   3. In Paystack Dashboard → Settings → API Keys & Webhooks, add:
-//      https://us-central1-projectmate-485110.cloudfunctions.net/paystackWebhook
+// ₦10,000 = 1 credit (1,000,000 kobo)
+// Register URL in Paystack Dashboard → Settings → Webhooks:
+// https://us-central1-projectmate-485110.cloudfunctions.net/paystackWebhook
 // ─────────────────────────────────────────────────────────────────────────────
 exports.paystackWebhook = onRequest(
   { secrets: ["PAYSTACK_SECRET_KEY"] },
   async (req, res) => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
-    // 1. Verify the request is genuinely from Paystack
+    // Verify signature
     const secret = process.env.PAYSTACK_SECRET_KEY;
     const hash = crypto
       .createHmac("sha512", secret)
@@ -51,57 +46,48 @@ exports.paystackWebhook = onRequest(
       .digest("hex");
 
     if (hash !== req.headers["x-paystack-signature"]) {
-      console.error("paystackWebhook: Invalid signature — possible spoofed request");
+      console.error("paystackWebhook: Invalid signature");
       return res.status(400).send("Invalid signature");
     }
 
     const event = req.body;
-    console.log("paystackWebhook: event received:", event.event);
+    if (event.event !== "charge.success") return res.status(200).send("OK");
 
-    // 2. Only act on successful charges
-    if (event.event !== "charge.success") {
-      return res.status(200).send("OK");
-    }
-
-    const amountPaidKobo = event.data?.amount; // Paystack always sends kobo
+    const amountPaidKobo = event.data?.amount;
     const reference = event.data?.reference;
     const userId = event.data?.metadata?.custom_fields?.find(
       (f) => f.variable_name === "user_id"
     )?.value;
 
     if (!userId) {
-      console.error("paystackWebhook: No user_id in metadata. Reference:", reference);
-      return res.status(200).send("OK"); // Always 200 so Paystack stops retrying
-    }
-
-    // 3. Idempotency — check if this reference was already processed
-    const paymentRef = admin.firestore()
-      .collection(`users/${userId}/paymentHistory`)
-      .doc(reference);
-
-    const existing = await paymentRef.get();
-    if (existing.exists) {
-      console.log("paystackWebhook: Already processed reference:", reference);
+      console.error("paystackWebhook: No user_id in metadata. Ref:", reference);
       return res.status(200).send("OK");
     }
 
-    // 4. Calculate credits: ₦10,000 = 1 credit (1,000,000 kobo)
+    // Idempotency — skip if already processed
+    const paymentRef = admin.firestore()
+      .collection(`users/${userId}/paymentHistory`)
+      .doc(reference);
+    const existing = await paymentRef.get();
+    if (existing.exists) {
+      console.log("paystackWebhook: Already processed:", reference);
+      return res.status(200).send("OK");
+    }
+
+    // ₦10,000 = 1,000,000 kobo = 1 credit
     const KOBO_PER_CREDIT = 1000000;
     const creditsToAdd = Math.floor(amountPaidKobo / KOBO_PER_CREDIT);
 
     if (creditsToAdd < 1) {
-      console.error("paystackWebhook: Amount too small:", amountPaidKobo, "kobo");
+      console.error("paystackWebhook: Amount too small:", amountPaidKobo);
       return res.status(200).send("OK");
     }
 
     try {
       const userRef = admin.firestore().doc(`users/${userId}`);
-
-      // 5. Atomic write: increment credits + record payment history
       await admin.firestore().runTransaction(async (tx) => {
         const userSnap = await tx.get(userRef);
         if (!userSnap.exists) throw new Error(`User not found: ${userId}`);
-
         tx.update(userRef, {
           credits: admin.firestore.FieldValue.increment(creditsToAdd),
         });
@@ -112,13 +98,9 @@ exports.paystackWebhook = onRequest(
           processedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
       });
-
-      console.log(
-        `paystackWebhook: ✅ Added ${creditsToAdd} credit(s) to user ${userId}. Ref: ${reference}`
-      );
+      console.log(`paystackWebhook: ✅ Added ${creditsToAdd} credit(s) to ${userId}. Ref: ${reference}`);
     } catch (err) {
-      console.error("paystackWebhook: Failed to update credits:", err);
-      // Return 200 anyway — Paystack will retry on non-200, causing duplicate credits
+      console.error("paystackWebhook: Transaction failed:", err);
     }
 
     return res.status(200).send("OK");
@@ -158,9 +140,10 @@ exports.generateOutline = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request
   const ai = getAi();
   const prompt = `Create a rigorous University Project Table of Contents for the topic: "${sanitize(topic)}". 
   Use this exact Nigerian University format:
+  - PRELIMINARY PAGES: Cover/Title Page, Certification, Dedication, Acknowledgement, Abstract, Table of Contents, List of Tables/Figures.
   - CHAPTER 1 (INTRODUCTION): Background to the Study, Statement of the Problem, Aim and Objectives, Research Questions, Hypotheses, Scope, Significance, Operational Definition of Terms.
   - CHAPTER 2: Literature Review (Conceptual, Theoretical, and Empirical frameworks).
-  - CHAPTER 3: Research Methodology.(Research Design, Population, Sample Size and Sampling Technique, Instrumentation, Data Collection Procedure, Data Analysis Plan).
+  - CHAPTER 3: Research Methodology.
   - CHAPTER 4: Data Presentation and Analysis.
   - CHAPTER 5: Summary, Conclusion, and Recommendations.
   - REFERENCES
@@ -205,12 +188,7 @@ exports.generateChapterStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req,
 
     const { topic, chapterTitle, department } = req.body.data || {};
     const ai = getAi();
-
-    let extraInstructions = "";
-    if (/chapter\s*1|chapter\s*one/i.test(chapterTitle || "")) {
-      extraInstructions = "\nCRITICAL: You MUST include a formal Academic Cover/Title Page at the very beginning before the chapter content begins.";
-    }
-    const prompt = `Research Topic: "${sanitize(topic)}"\nTarget Chapter: "${sanitize(chapterTitle)}".${extraInstructions}\nTask: Write a comprehensive academic draft (approx 2500 words) for this chapter, tailored to a student in the ${sanitize(department)} department. Use HTML tags (<h3>, <b>, <p>). No markdown.`;
+    const prompt = `Research Topic: "${sanitize(topic)}"\nTarget Chapter: "${sanitize(chapterTitle)}".\nTask: Write a comprehensive academic draft (approx 2500 words) for this chapter, tailored to a student in the ${sanitize(department)} department. Use HTML tags (<h3>, <b>, <p>). No markdown.`;
 
     try {
       res.setHeader("Content-Type", "text/plain");
@@ -239,12 +217,7 @@ exports.generateSectionStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req,
 
     const { topic, chapterTitle, sectionTitle, department } = req.body.data || {};
     const ai = getAi();
-
-    let extraInstructions = "";
-    if (/chapter\s*1|chapter\s*one/i.test(chapterTitle || "") && /background|introduction/i.test(sectionTitle || "")) {
-      extraInstructions = "\nCRITICAL: You MUST include a formal Academic Cover/Title Page at the very beginning before the section content begins.";
-    }
-    const prompt = `Research Topic: "${sanitize(topic)}"\nChapter: "${sanitize(chapterTitle)}"\nSection: "${sanitize(sectionTitle)}".${extraInstructions}\nTask: Write a comprehensive academic draft (approx 800 words) for ONLY this section, tailored to a student in the ${sanitize(department)} department. Use HTML tags (<h3>, <b>, <p>). No markdown.`;
+    const prompt = `Research Topic: "${sanitize(topic)}"\nChapter: "${sanitize(chapterTitle)}"\nSection: "${sanitize(sectionTitle)}".\nTask: Write a comprehensive academic draft (approx 800 words) for ONLY this section, tailored to a student in the ${sanitize(department)} department. Use HTML tags (<h3>, <b>, <p>). No markdown.`;
 
     try {
       res.setHeader("Content-Type", "text/plain");
