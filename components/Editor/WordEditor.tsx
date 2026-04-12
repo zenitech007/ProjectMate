@@ -114,9 +114,9 @@ export default function WordEditor({
     prevValueRef.current = value
     // Preserve cursor position by using insertContent only when streaming
     if (generating) {
-      editor.commands.setContent(value, false)
+      editor.commands.setContent(value, { emitUpdate: false })
     } else {
-      editor.commands.setContent(value, false)
+      editor.commands.setContent(value, { emitUpdate: false })
     }
   }, [value, editor])
 
