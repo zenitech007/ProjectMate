@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { EditorContent, useEditor } from '@tiptap/react'
-import { Extension, Mark, mergeAttributes } from '@tiptap/core'
+import { EditorContent, useEditor, Node, mergeAttributes } from '@tiptap/react'
+import { Extension, Mark } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
@@ -8,359 +8,467 @@ import Link from '@tiptap/extension-link'
 import {
   Bold, Italic, Underline as UIcon,
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  List, ListOrdered, Link as LinkIcon,
-  Undo2, Redo2, FileText, FileDown, Bot
+  List, ListOrdered, Undo2, Redo2,
+  FileText, FileDown, Bot, Loader2, X
 } from 'lucide-react'
 
-const LINE_HEIGHT = 32
-const LINES_PER_PAGE = 29
-const CONTENT_HEIGHT = LINE_HEIGHT * LINES_PER_PAGE // 928
-const A4_WIDTH = 794
-const MARGIN = 96
+// ─── Layout constants (A4 at 96dpi) ────────────────────────────────────────
+const A4_WIDTH = 794           // 210mm
+const MARGIN = 96              // 1 inch
+const LINE_HEIGHT = 32         // double-spaced body line
+const LINES_PER_PAGE = 29      // lines that fit between margins
+const PAGE_CONTENT_H = LINE_HEIGHT * LINES_PER_PAGE  // ~928px
 
-// ✅ Custom extension to allow inline styles (like page breaks)
-const PageBreakStyle = Extension.create({
-  name: 'pageBreakStyle',
-  addGlobalAttributes() {
-    return [
-      {
-        types: ['paragraph', 'heading'],
-        attributes: {
-          style: {
-            default: null,
-            parseHTML: element => element.getAttribute('style'),
-            renderHTML: attributes => {
-              if (!attributes.style) return {}
-              return { style: attributes.style }
-            },
-          },
-        },
-      },
-    ]
+// ─── TipTap PageBreak node ──────────────────────────────────────────────────
+// A real block-level void node that renders as a visible divider in the editor
+// and maps to a <div class="page-break"> that exportService can detect.
+const PageBreak = Node.create({
+  name: 'pageBreak',
+  group: 'block',
+  atom: true,  // not editable internally
+
+  parseHTML() {
+    return [{ tag: 'div[data-page-break]' }]
+  },
+
+  renderHTML() {
+    return ['div', { 'data-page-break': '', class: 'pm-page-break' }]
+  },
+
+  addKeyboardShortcuts() {
+    return {
+      // Ctrl+Enter inserts a page break
+      'Mod-Enter': () => this.editor.commands.insertContent({ type: 'pageBreak' }),
+    }
   },
 })
 
-// ✅ Custom extension for Track Changes
-const TrackChange = Mark.create({
-  name: 'trackChange',
-
-  addAttributes() {
-    return {
-      type: { default: 'insert' },
-    }
-  },
-
-  parseHTML() {
-    return [{ tag: 'span[data-track]' }]
-  },
-
-  renderHTML({ HTMLAttributes }) {
-    const isDelete = HTMLAttributes.type === 'delete'
-    return [
-      'span',
-      mergeAttributes(HTMLAttributes, {
-        'data-track': '',
-        style: `
-          background:${isDelete ? '#f8d7da' : '#d1e7dd'};
-          text-decoration:${isDelete ? 'line-through' : 'none'};
-        `,
-      }),
-      0,
-    ]
+// ─── Allow inline style attribute on paragraph/heading ─────────────────────
+const AllowStyle = Extension.create({
+  name: 'allowStyle',
+  addGlobalAttributes() {
+    return [{
+      types: ['paragraph', 'heading'],
+      attributes: {
+        style: {
+          default: null,
+          parseHTML: el => el.getAttribute('style'),
+          renderHTML: attrs => attrs.style ? { style: attrs.style } : {},
+        },
+      },
+    }]
   },
 })
 
 interface Props {
   value: string
   onChange: (val: string) => void
+  generating?: boolean
+  saveStatus?: 'saved' | 'saving' | 'unsaved'
+  activeChapter?: string
   onExportDocx?: () => void
   onExportPdf?: () => void
   onOpenCopilot?: () => void
+  onCancelGeneration?: () => void
 }
 
 export default function WordEditor({
   value,
   onChange,
+  generating = false,
+  saveStatus = 'saved',
+  activeChapter,
   onExportDocx,
   onExportPdf,
-  onOpenCopilot
+  onOpenCopilot,
+  onCancelGeneration,
 }: Props) {
 
   const [visiblePages, setVisiblePages] = useState(1)
-  const [trackMode, setTrackMode] = useState(false)
-  const editorRef = useRef<HTMLDivElement>(null)
+  const editorWrapRef = useRef<HTMLDivElement>(null)
+  const prevValueRef = useRef<string>('')
 
-  // ✅ TipTap Editor
   const editor = useEditor({
     extensions: [
       StarterKit,
-      PageBreakStyle,
-      TrackChange,
+      PageBreak,
+      AllowStyle,
       Underline,
-      Link,
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
+      Link.configure({ openOnClick: false }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
     ],
     content: value,
+    editable: !generating,
     onUpdate({ editor }) {
-      let html = editor.getHTML()
-
-      // ✅ FIX: Remove duplicate "Topic"
-      html = html.replace(/(Topic:.*?)(\1)/gi, '$1')
-
-      if (trackMode) {
-        editor.commands.setMark('trackChange', { type: 'insert' })
-      }
-
+      const html = editor.getHTML()
+      prevValueRef.current = html
       onChange(html)
     },
   })
 
-  // ✅ Pagination engine (REAL)
+  // Sync external value changes (AI streaming) into the editor
   useEffect(() => {
-    if (!editorRef.current) return
+    if (!editor || !value) return
+    // Only update if value actually changed (avoids cursor jumps on user edits)
+    if (value === prevValueRef.current) return
+    prevValueRef.current = value
+    // Preserve cursor position by using insertContent only when streaming
+    if (generating) {
+      editor.commands.setContent(value, false)
+    } else {
+      editor.commands.setContent(value, false)
+    }
+  }, [value, editor])
 
+  // Update editable state when generating changes
+  useEffect(() => {
+    if (!editor) return
+    editor.setEditable(!generating)
+  }, [generating, editor])
+
+  // Pagination: measure content height and grow page count
+  useEffect(() => {
+    if (!editorWrapRef.current) return
     const observer = new ResizeObserver(() => {
-      // scrollHeight includes the top and bottom padding (MARGIN * 2)
-      const actualContentHeight = editorRef.current!.scrollHeight - (MARGIN * 2)
-
-      const requiredPages = Math.max(1, Math.ceil(actualContentHeight / CONTENT_HEIGHT))
-
-      // ONLY increase pages when needed (progressive reveal)
-      setVisiblePages((prev) => {
-        if (requiredPages > prev) return requiredPages
-        return prev
-      })
+      const contentH = editorWrapRef.current!.scrollHeight - MARGIN * 2
+      const needed = Math.max(1, Math.ceil(contentH / PAGE_CONTENT_H))
+      setVisiblePages(p => Math.max(p, needed))
     })
-
-    observer.observe(editorRef.current)
-
+    observer.observe(editorWrapRef.current)
     return () => observer.disconnect()
   }, [])
 
   if (!editor) return null
 
+  const totalDocHeight = MARGIN * 2 + visiblePages * PAGE_CONTENT_H
+
   return (
-    <div className="h-full flex flex-col bg-[#e8e8e8]">
+    <div className="h-full flex flex-col bg-[#e8e8e8] select-none">
 
-      {/* ================= TOOLBAR ================= */}
-      <div className="bg-white border-b px-4 py-2 flex items-center gap-2 sticky top-0 z-50 flex-wrap">
+      {/* ══════════════════ TOOLBAR ══════════════════ */}
+      <div className="bg-white border-b border-slate-200 px-4 py-2 flex items-center gap-1 sticky top-0 z-50 shadow-sm flex-wrap">
 
-        {/* Undo/Redo */}
-        <button onClick={() => editor.chain().focus().undo().run()}>
+        {/* Undo / Redo */}
+        <TBtn onClick={() => editor.chain().focus().undo().run()} title="Undo (Ctrl+Z)">
           <Undo2 className="w-4 h-4" />
-        </button>
-        <button onClick={() => editor.chain().focus().redo().run()}>
+        </TBtn>
+        <TBtn onClick={() => editor.chain().focus().redo().run()} title="Redo (Ctrl+Y)">
           <Redo2 className="w-4 h-4" />
-        </button>
+        </TBtn>
 
-        {/* Font + Style */}
-        <div className="flex items-center gap-2 border-l pl-2">
-          <select className="h-8 px-2 border rounded">
-            <option>Times New Roman</option>
-          </select>
+        <Sep />
 
-          <select
-            className="h-8 px-2 border rounded"
-            onChange={(e) => {
-              const val = e.target.value
-              if (val === 'h1') editor.chain().focus().toggleHeading({ level: 1 }).run()
-              else if (val === 'h2') editor.chain().focus().toggleHeading({ level: 2 }).run()
-              else editor.chain().focus().setParagraph().run()
-            }}
-          >
-            <option value="p">Normal</option>
-            <option value="h1">Heading 1</option>
-            <option value="h2">Heading 2</option>
-          </select>
-        </div>
-
-        {/* Formatting */}
-        <button onClick={() => editor.chain().focus().toggleBold().run()}>
-          <Bold className="w-4 h-4" />
-        </button>
-
-        <button onClick={() => editor.chain().focus().toggleItalic().run()}>
-          <Italic className="w-4 h-4" />
-        </button>
-
-        <button onClick={() => editor.chain().focus().toggleUnderline().run()}>
-          <UIcon className="w-4 h-4" />
-        </button>
-
-        <button
-          onClick={() => {
-            setTrackMode(!trackMode)
-            if (!trackMode) editor.chain().focus().setMark('trackChange', { type: 'insert' }).run()
-            else editor.chain().focus().unsetMark('trackChange').run()
+        {/* Style selector */}
+        <select
+          className="h-8 px-2 border border-slate-200 rounded text-xs text-slate-600 bg-white cursor-pointer"
+          value={
+            editor.isActive('heading', { level: 1 }) ? 'h1' :
+            editor.isActive('heading', { level: 2 }) ? 'h2' :
+            editor.isActive('heading', { level: 3 }) ? 'h3' : 'p'
+          }
+          onChange={e => {
+            const v = e.target.value
+            if (v === 'h1') editor.chain().focus().setHeading({ level: 1 }).run()
+            else if (v === 'h2') editor.chain().focus().setHeading({ level: 2 }).run()
+            else if (v === 'h3') editor.chain().focus().setHeading({ level: 3 }).run()
+            else editor.chain().focus().setParagraph().run()
           }}
-          className={`px-2 py-1 rounded text-xs font-bold transition-colors ${trackMode ? 'bg-green-100 text-green-700' : 'text-slate-600 hover:bg-slate-100'}`}
         >
-          Track
-        </button>
+          <option value="p">Normal</option>
+          <option value="h1">Chapter Title</option>
+          <option value="h2">Section</option>
+          <option value="h3">Sub-section</option>
+        </select>
+
+        <Sep />
+
+        {/* B / I / U */}
+        <TBtn
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          active={editor.isActive('bold')}
+          title="Bold (Ctrl+B)"
+        ><Bold className="w-4 h-4" /></TBtn>
+        <TBtn
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          active={editor.isActive('italic')}
+          title="Italic (Ctrl+I)"
+        ><Italic className="w-4 h-4" /></TBtn>
+        <TBtn
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          active={editor.isActive('underline')}
+          title="Underline (Ctrl+U)"
+        ><UIcon className="w-4 h-4" /></TBtn>
+
+        <Sep />
 
         {/* Alignment */}
-        <button onClick={() => editor.chain().focus().setTextAlign('left').run()}>
+        <TBtn onClick={() => editor.chain().focus().setTextAlign('left').run()} title="Align left">
           <AlignLeft className="w-4 h-4" />
-        </button>
-        <button onClick={() => editor.chain().focus().setTextAlign('center').run()}>
+        </TBtn>
+        <TBtn onClick={() => editor.chain().focus().setTextAlign('center').run()} title="Center">
           <AlignCenter className="w-4 h-4" />
-        </button>
-        <button onClick={() => editor.chain().focus().setTextAlign('right').run()}>
+        </TBtn>
+        <TBtn onClick={() => editor.chain().focus().setTextAlign('right').run()} title="Align right">
           <AlignRight className="w-4 h-4" />
-        </button>
-        <button onClick={() => editor.chain().focus().setTextAlign('justify').run()}>
+        </TBtn>
+        <TBtn onClick={() => editor.chain().focus().setTextAlign('justify').run()} title="Justify">
           <AlignJustify className="w-4 h-4" />
-        </button>
+        </TBtn>
+
+        <Sep />
 
         {/* Lists */}
-        <button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+        <TBtn onClick={() => editor.chain().focus().toggleOrderedList().run()} title="Numbered list">
           <ListOrdered className="w-4 h-4" />
-        </button>
-
-        <button onClick={() => editor.chain().focus().toggleBulletList().run()}>
+        </TBtn>
+        <TBtn onClick={() => editor.chain().focus().toggleBulletList().run()} title="Bullet list">
           <List className="w-4 h-4" />
+        </TBtn>
+
+        <Sep />
+
+        {/* Page break button */}
+        <button
+          onClick={() => editor.chain().focus().insertContent({ type: 'pageBreak' }).run()}
+          title="Insert page break (Ctrl+Enter)"
+          className="px-2 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500 border border-slate-200 rounded hover:bg-slate-100 transition-colors"
+        >
+          ⏎ Page Break
         </button>
 
-        {/* Link */}
-        <button onClick={() => {
-          const url = prompt('Enter URL')
-          if (url) editor.chain().focus().setLink({ href: url }).run()
-        }}>
-          <LinkIcon className="w-4 h-4" />
-        </button>
-
+        {/* Spacer */}
         <div className="flex-1" />
 
-        {/* ✅ Modern Export Buttons */}
-        <div className="flex gap-2">
-          {onExportDocx && (
-            <button
-              onClick={onExportDocx}
-              className="flex items-center gap-2 px-3 py-1.5 bg-white border rounded-xl shadow hover:shadow-md"
-            >
-              <FileText className="w-4 h-4 text-blue-600" />
-              Word
-            </button>
-          )}
+        {/* Save status */}
+        <span className={`text-[10px] font-bold uppercase tracking-widest mr-3 ${
+          saveStatus === 'saved' ? 'text-green-600' :
+          saveStatus === 'saving' ? 'text-slate-400' : 'text-amber-500'
+        }`}>
+          {saveStatus === 'saved' ? '✓ Saved' : saveStatus === 'saving' ? '…' : '● Unsaved'}
+        </span>
 
-          {onExportPdf && (
+        {/* AI Copilot */}
+        {onOpenCopilot && (
+          <TBtn onClick={onOpenCopilot} title="AI Draft">
+            <Bot className="w-4 h-4 text-[#1a4731]" />
+          </TBtn>
+        )}
+
+        <Sep />
+
+        {/* Export */}
+        {onExportDocx && (
+          <button
+            onClick={onExportDocx}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-[11px] font-black hover:bg-blue-100 transition-colors"
+          >
+            <FileText className="w-3.5 h-3.5" /> Word
+          </button>
+        )}
+        {onExportPdf && (
+          <button
+            onClick={onExportPdf}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-600 rounded-lg text-[11px] font-black hover:bg-red-100 transition-colors"
+          >
+            <FileDown className="w-3.5 h-3.5" /> PDF
+          </button>
+        )}
+      </div>
+
+      {/* ══════════════════ GENERATING BAR ══════════════════ */}
+      {generating && (
+        <div className="bg-[#1a4731] px-5 py-2.5 flex items-center justify-between z-40 shrink-0">
+          <div className="flex items-center gap-3">
+            <Loader2 className="h-4 w-4 animate-spin text-green-300" />
+            <span className="text-[11px] font-black uppercase tracking-widest text-green-200">
+              AI is writing…
+            </span>
+          </div>
+          {onCancelGeneration && (
             <button
-              onClick={onExportPdf}
-              className="flex items-center gap-2 px-3 py-1.5 bg-white border rounded-xl shadow hover:shadow-md"
+              onClick={onCancelGeneration}
+              className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white px-3 py-1 rounded-lg transition-all border border-red-500/30"
             >
-              <FileDown className="w-4 h-4 text-red-500" />
-              PDF
+              <X className="h-3 w-3" /> Cancel
             </button>
           )}
         </div>
-      </div>
+      )}
 
-      {/* ================= DOCUMENT ================= */}
-      <div className="flex-1 overflow-y-auto py-10">
+      {/* ══════════════════ A4 DOCUMENT ══════════════════ */}
+      <div className="flex-1 overflow-y-auto py-8 px-4">
 
-        <div 
-          className="relative mx-auto bg-white shadow-2xl transition-all duration-300"
-          style={{ 
-            width: A4_WIDTH, 
-            minHeight: (MARGIN * 2) + (visiblePages * CONTENT_HEIGHT) 
-          }}
+        {/* Chapter label */}
+        {activeChapter && (
+          <p className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4 select-none">
+            {activeChapter}
+          </p>
+        )}
+
+        {/* The A4 paper */}
+        <div
+          className="relative mx-auto bg-white shadow-[0_4px_40px_rgba(0,0,0,0.15)] select-text"
+          style={{ width: A4_WIDTH, minHeight: totalDocHeight }}
         >
-
-          {/* Page Break Lines */}
-          {Array.from({ length: Math.max(0, visiblePages - 1) }).map((_, i) => {
-            const breakPosition = MARGIN + ((i + 1) * CONTENT_HEIGHT)
+          {/* Visual page break lines */}
+          {Array.from({ length: visiblePages - 1 }).map((_, i) => {
+            const top = MARGIN + (i + 1) * PAGE_CONTENT_H
             return (
               <div
                 key={i}
-                className="absolute left-0 right-0 border-b border-dashed border-slate-300 pointer-events-none flex items-center"
-                style={{ top: breakPosition }}
+                className="absolute left-0 right-0 pointer-events-none z-20 flex items-center"
+                style={{ top }}
               >
-                <span className="absolute right-10 text-[10px] text-slate-400 font-bold uppercase tracking-widest bg-white px-2 translate-y-[-50%]">
-                  Page Break
+                <div className="w-full border-t-2 border-dashed border-blue-300" />
+                <span className="absolute right-3 -translate-y-1/2 text-[9px] font-black uppercase tracking-widest text-blue-400 bg-white px-2 py-0.5 rounded">
+                  Page {i + 2}
                 </span>
               </div>
             )
           })}
 
-          {/* Editor Layer */}
+          {/* Editor content */}
           <div
-            ref={editorRef}
-            className="relative z-10"
+            ref={editorWrapRef}
             style={{
               paddingTop: MARGIN,
               paddingBottom: MARGIN,
               paddingLeft: MARGIN,
               paddingRight: MARGIN,
-              minHeight: (MARGIN * 2) + (visiblePages * CONTENT_HEIGHT),
+              minHeight: totalDocHeight,
             }}
           >
             <EditorContent editor={editor} />
           </div>
         </div>
+
+        <div className="h-16" />
       </div>
 
-      {/* ================= FLOATING AI BUTTON ================= */}
-      {onOpenCopilot && (
-        <button
-          onClick={onOpenCopilot}
-          className="fixed bottom-6 right-6 bg-[#1a4731] text-white p-4 rounded-full shadow-xl hover:bg-green-800"
-        >
-          <Bot className="w-5 h-5" />
-        </button>
-      )}
-
-      {/* ================= STYLES ================= */}
+      {/* ══════════════════ PROSEMIRROR STYLES ══════════════════ */}
       <style>{`
         .ProseMirror {
           outline: none;
-          max-width: 602px;
-          margin: 0 auto;
-          font-family: "Times New Roman";
+          font-family: "Times New Roman", Times, serif;
           font-size: 16px;
-          line-height: 32px;
+          line-height: ${LINE_HEIGHT}px;
+          color: #111;
+          min-height: ${PAGE_CONTENT_H}px;
         }
 
+        /* Body paragraphs */
         .ProseMirror p {
+          font-family: "Times New Roman", Times, serif;
+          font-size: 16px;
+          line-height: ${LINE_HEIGHT}px;
           text-align: justify;
           text-indent: 0.5in;
-          margin: 0;
-          min-height: 32px;
+          margin: 0 0 0 0;
+          min-height: ${LINE_HEIGHT}px;
         }
 
-        .ProseMirror h1, .ProseMirror h2, .ProseMirror h3 {
+        /* Chapter title (h1) */
+        .ProseMirror h1 {
+          font-family: "Times New Roman", Times, serif;
+          font-size: 18px;
+          font-weight: bold;
           text-align: center;
           text-transform: uppercase;
-          margin: 32px 0;
-          line-height: 32px;
-          padding: 0;
-        }
-
-        .ProseMirror ul, .ProseMirror ol {
-          margin: 0;
-          padding: 0 0 0 0.5in;
-        }
-
-        .ProseMirror li {
-          margin: 0;
-          line-height: 32px;
-          min-height: 32px;
-        }
-
-        .ProseMirror p[style*="page-break-before"] {
           text-indent: 0;
-          text-align: center;
-          position: relative;
+          margin: ${LINE_HEIGHT}px 0;
+          line-height: ${LINE_HEIGHT}px;
         }
-        .ProseMirror p[style*="page-break-before"]::before {
-          content: "---------------------- Page Break (Export) ----------------------";
-          color: #94a3b8;
-          font-family: monospace;
-          font-size: 12px;
+
+        /* Section heading (h2) */
+        .ProseMirror h2 {
+          font-family: "Times New Roman", Times, serif;
+          font-size: 16px;
+          font-weight: bold;
+          text-align: left;
+          text-transform: uppercase;
+          text-indent: 0;
+          margin: ${LINE_HEIGHT / 2}px 0 0;
+          line-height: ${LINE_HEIGHT}px;
+        }
+
+        /* Sub-section (h3) */
+        .ProseMirror h3 {
+          font-family: "Times New Roman", Times, serif;
+          font-size: 16px;
+          font-weight: bold;
+          text-align: left;
+          text-indent: 0;
+          margin: ${LINE_HEIGHT / 2}px 0 0;
+          line-height: ${LINE_HEIGHT}px;
+        }
+
+        /* Lists */
+        .ProseMirror ul, .ProseMirror ol {
+          padding-left: 0.5in;
+          margin: 0;
+        }
+        .ProseMirror li {
+          line-height: ${LINE_HEIGHT}px;
+          min-height: ${LINE_HEIGHT}px;
+        }
+        .ProseMirror li p {
+          text-indent: 0;
+          margin: 0;
+        }
+
+        /* Page break node */
+        .ProseMirror div.pm-page-break {
+          display: block;
+          width: 100%;
+          height: ${LINE_HEIGHT}px;
+          position: relative;
+          cursor: default;
+          user-select: none;
           pointer-events: none;
+        }
+        .ProseMirror div.pm-page-break::after {
+          content: "— Page Break —";
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          font-family: monospace;
+          font-size: 11px;
+          color: #94a3b8;
+          white-space: nowrap;
+          pointer-events: none;
+        }
+
+        /* Placeholder */
+        .ProseMirror p.is-editor-empty:first-child::before {
+          content: attr(data-placeholder);
+          float: left;
+          color: #adb5bd;
+          pointer-events: none;
+          height: 0;
+          font-style: italic;
         }
       `}</style>
     </div>
   )
 }
+
+// ── Tiny reusable toolbar button ─────────────────────────────────────────────
+const TBtn: React.FC<{
+  onClick: () => void
+  active?: boolean
+  title?: string
+  children: React.ReactNode
+}> = ({ onClick, active, title, children }) => (
+  <button
+    onClick={onClick}
+    title={title}
+    className={`p-1.5 rounded transition-colors ${
+      active ? 'bg-green-100 text-green-700' : 'text-slate-600 hover:bg-slate-100'
+    }`}
+  >
+    {children}
+  </button>
+)
+
+const Sep = () => <div className="w-px h-5 bg-slate-200 mx-1 shrink-0" />

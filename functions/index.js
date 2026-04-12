@@ -12,15 +12,22 @@ const getAi = () => {
   return new GoogleGenAI({ apiKey });
 };
 
+// ── System prompt ─────────────────────────────────────────────────────────────
+// NOTE: We use <p> and <b> only — NO heading tags.
+// The chapter title (h1) and section headings (h2) are injected by the frontend
+// to prevent duplication. The AI must only produce body paragraphs.
 const PHD_SYSTEM_PROMPT = `You are a strict Academic Thesis Advisor specializing in the Nigerian Educational System.
 Your writing style is formal, sophisticated, and highly analytical.
-CRITICAL RULES:
-1. Reference Standard: APA 7th Edition.
-2. Context: Prioritize Nigerian scholars and local contexts.
-3. Formatting: Return content as a valid HTML string using ONLY <h3> for headers, <b> for bolding, and <p> for paragraphs.
-4. NO MARKDOWN: Never use # or ** in your output.
-5. CITATION RECENCY: All references, journals, and books used MUST be published within the last 5 years. Do not use outdated sources.
-6. IN-TEXT CITATIONS: You MUST include frequent, accurate in-text citations (e.g., Author, Year) seamlessly woven into the paragraphs to support every academic claim, fact, and theoretical argument.`;
+ABSOLUTE RULES — violating any rule makes the output unusable:
+1. APA 7th Edition referencing standard.
+2. Prioritize Nigerian scholars, journals, and local contexts.
+3. HTML ONLY: Return ONLY valid HTML using <b> for bold and <p> for paragraphs. Nothing else.
+4. NO HEADINGS: Never output <h1>, <h2>, <h3>, or any heading tags. The heading is added separately by the system.
+5. NO MARKDOWN: Never use #, ##, **, *, or backticks.
+6. NO TABLE OF CONTENTS: Never generate a table of contents, chapter list, or document outline.
+7. NO CHAPTER TITLES: Never repeat the chapter name or section name at the start of your output. Begin directly with the body text.
+8. CITATIONS: Include frequent APA in-text citations (Author, Year) in every paragraph.
+9. RECENCY: All cited works must be published within the last 5 years.`;
 
 const sanitize = (input) =>
   typeof input === "string"
@@ -38,7 +45,6 @@ exports.paystackWebhook = onRequest(
   async (req, res) => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
-    // Verify signature
     const secret = process.env.PAYSTACK_SECRET_KEY;
     const hash = crypto
       .createHmac("sha512", secret)
@@ -64,7 +70,6 @@ exports.paystackWebhook = onRequest(
       return res.status(200).send("OK");
     }
 
-    // Idempotency — skip if already processed
     const paymentRef = admin.firestore()
       .collection(`users/${userId}/paymentHistory`)
       .doc(reference);
@@ -74,7 +79,6 @@ exports.paystackWebhook = onRequest(
       return res.status(200).send("OK");
     }
 
-    // ₦10,000 = 1,000,000 kobo = 1 credit
     const KOBO_PER_CREDIT = 1000000;
     const creditsToAdd = Math.floor(amountPaidKobo / KOBO_PER_CREDIT);
 
@@ -88,9 +92,7 @@ exports.paystackWebhook = onRequest(
       await admin.firestore().runTransaction(async (tx) => {
         const userSnap = await tx.get(userRef);
         if (!userSnap.exists) throw new Error(`User not found: ${userId}`);
-        tx.update(userRef, {
-          credits: admin.firestore.FieldValue.increment(creditsToAdd),
-        });
+        tx.update(userRef, { credits: admin.firestore.FieldValue.increment(creditsToAdd) });
         tx.set(paymentRef, {
           reference,
           amountKobo: amountPaidKobo,
@@ -115,7 +117,7 @@ exports.generateTopics = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request)
 
   const { institutionName, faculty, department } = request.data;
   const ai = getAi();
-  const prompt = `Generate 5 high-level research project topics for a student at ${sanitize(institutionName)}, Faculty of ${sanitize(faculty)}, Department of ${sanitize(department)}. Return ONLY a JSON array of objects with a "title" string property.`;
+  const prompt = `Generate 5 high-level research project topics for a student at ${sanitize(institutionName)}, Faculty of ${sanitize(faculty)}, Department of ${sanitize(department)}. Return ONLY a JSON array of objects with a "title" string property. No other text.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -138,17 +140,16 @@ exports.generateOutline = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request
 
   const { topic } = request.data;
   const ai = getAi();
-  const prompt = `Create a rigorous University Project Table of Contents for the topic: "${sanitize(topic)}". 
-  Use this exact Nigerian University format:
-  - PRELIMINARY PAGES: Cover/Title Page, Certification, Dedication, Acknowledgement, Abstract, Table of Contents, List of Tables/Figures.
-  - CHAPTER 1 (INTRODUCTION): Background to the Study, Statement of the Problem, Aim and Objectives, Research Questions, Hypotheses, Scope, Significance, Operational Definition of Terms.
-  - CHAPTER 2: Literature Review (Conceptual, Theoretical, and Empirical frameworks).
-  - CHAPTER 3: Research Methodology.
-  - CHAPTER 4: Data Presentation and Analysis.
-  - CHAPTER 5: Summary, Conclusion, and Recommendations.
-  - REFERENCES
-  - APPENDICES
-  Return a JSON array of objects. Each object must have "title" (string) and "sections" (array of strings).`;
+  const prompt = `Create a Nigerian University Project Table of Contents for: "${sanitize(topic)}".
+  Use EXACTLY this structure — no extra items:
+  - CHAPTER 1: INTRODUCTION — sections: Background to the Study, Statement of the Problem, Aim and Objectives, Research Questions, Research Hypotheses, Scope of the Study, Significance of the Study, Operational Definition of Terms
+  - CHAPTER 2: LITERATURE REVIEW — sections: Conceptual Framework, Theoretical Framework, Empirical Review, Gap in Literature
+  - CHAPTER 3: RESEARCH METHODOLOGY — sections: Research Design, Population of Study, Sample and Sampling Technique, Instrument for Data Collection, Validity and Reliability, Method of Data Analysis
+  - CHAPTER 4: DATA PRESENTATION AND ANALYSIS — sections: Data Presentation, Data Analysis, Discussion of Findings
+  - CHAPTER 5: SUMMARY, CONCLUSION AND RECOMMENDATIONS — sections: Summary, Conclusion, Recommendations, Limitations of the Study, Suggestions for Further Research
+  - REFERENCES — sections: []
+  - APPENDICES — sections: []
+  Return ONLY a JSON array. Each object: "title" (string) and "sections" (array of strings). No extra commentary.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -164,7 +165,7 @@ exports.generateOutline = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helper: verify Bearer token for onRequest functions
+// Helper: verify Bearer token
 // ─────────────────────────────────────────────────────────────────────────────
 const verifyToken = async (req, res) => {
   const authHeader = req.headers.authorization || "";
@@ -180,6 +181,8 @@ const verifyToken = async (req, res) => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. Generate Full Chapter Stream
+// KEY FIX: Prompt explicitly forbids TOC, chapter title repetition, and headings.
+// The frontend adds the chapter title as <h1> — AI must start with body text only.
 // ─────────────────────────────────────────────────────────────────────────────
 exports.generateChapterStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) => {
   cors(req, res, async () => {
@@ -188,7 +191,23 @@ exports.generateChapterStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req,
 
     const { topic, chapterTitle, department } = req.body.data || {};
     const ai = getAi();
-    const prompt = `Research Topic: "${sanitize(topic)}"\nTarget Chapter: "${sanitize(chapterTitle)}".\nTask: Write a comprehensive academic draft (approx 2500 words) for this chapter, tailored to a student in the ${sanitize(department)} department. Use HTML tags (<h3>, <b>, <p>). No markdown.`;
+
+    // The chapter title is shown in the UI — do not repeat it.
+    // Do not generate a table of contents or introduction to the document.
+    // Start immediately with the first body paragraph of this chapter's content.
+    const prompt = `Research Topic: "${sanitize(topic)}"
+Chapter to write: "${sanitize(chapterTitle)}"
+Student department: ${sanitize(department)}
+
+TASK: Write approximately 2500 words of academic body text for this chapter.
+
+STRICT OUTPUT RULES:
+- Start your output IMMEDIATELY with the first <p> tag. No title, no heading, no preamble.
+- Use ONLY <p> and <b> tags. No h1/h2/h3 tags whatsoever.
+- Do NOT write a table of contents, document outline, or chapter list.
+- Do NOT repeat the chapter name at the top.
+- Write continuous academic prose with APA 7th in-text citations in every paragraph.
+- Do NOT use markdown.`;
 
     try {
       res.setHeader("Content-Type", "text/plain");
@@ -209,6 +228,7 @@ exports.generateChapterStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req,
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 4. Generate Single Section Stream
+// KEY FIX: Prompt forbids repeating the section title — frontend adds it as <h2>.
 // ─────────────────────────────────────────────────────────────────────────────
 exports.generateSectionStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) => {
   cors(req, res, async () => {
@@ -217,7 +237,22 @@ exports.generateSectionStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req,
 
     const { topic, chapterTitle, sectionTitle, department } = req.body.data || {};
     const ai = getAi();
-    const prompt = `Research Topic: "${sanitize(topic)}"\nChapter: "${sanitize(chapterTitle)}"\nSection: "${sanitize(sectionTitle)}".\nTask: Write a comprehensive academic draft (approx 800 words) for ONLY this section, tailored to a student in the ${sanitize(department)} department. Use HTML tags (<h3>, <b>, <p>). No markdown.`;
+
+    // The section heading is shown in the UI — do not repeat it.
+    // Start immediately with the body text of this section.
+    const prompt = `Research Topic: "${sanitize(topic)}"
+Chapter: "${sanitize(chapterTitle)}"
+Section to write: "${sanitize(sectionTitle)}"
+Student department: ${sanitize(department)}
+
+TASK: Write approximately 600-800 words of academic body text for this section ONLY.
+
+STRICT OUTPUT RULES:
+- Start your output IMMEDIATELY with the first <p> tag. No heading, no title, no preamble.
+- Use ONLY <p> and <b> tags. No h1/h2/h3 tags whatsoever.
+- Do NOT repeat the section name or chapter name at the top.
+- Write continuous academic prose with APA 7th in-text citations.
+- Do NOT use markdown.`;
 
     try {
       res.setHeader("Content-Type", "text/plain");
@@ -246,7 +281,16 @@ exports.elaborateStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) 
 
     const { topic, currentText } = req.body.data || {};
     const ai = getAi();
-    const prompt = `Research Topic: "${sanitize(topic)}"\nExisting text:\n"${sanitize(currentText)}"\nTask: Elaborate on this text — expand academic arguments, add theoretical depth, deepen explanations. Maintain APA 7th tone. Use HTML tags (<b>, <p>). No markdown.`;
+    const prompt = `Research Topic: "${sanitize(topic)}"
+Existing text: "${sanitize(currentText)}"
+
+TASK: Elaborate on this text — expand arguments, add depth, strengthen citations.
+
+STRICT OUTPUT RULES:
+- Use ONLY <p> and <b> tags. No headings.
+- Do NOT repeat the existing text — only write the elaboration/extension.
+- Maintain APA 7th tone and in-text citations.
+- No markdown.`;
 
     try {
       res.setHeader("Content-Type", "text/plain");
