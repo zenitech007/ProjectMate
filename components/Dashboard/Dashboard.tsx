@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Plus, 
@@ -16,7 +16,8 @@ import {
   ArrowUpRight,
   Search,
   SlidersHorizontal,
-  Bookmark
+  Bookmark,
+  X
 } from 'lucide-react';
 import { UserProfile, TopicHistoryItem } from '../../types';
 import { useFirestore } from '../../hooks/useFirestore';
@@ -29,6 +30,7 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const navigate = useNavigate();
   const { projects, topicHistory, loading, deleteProject } = useFirestore(user.uid);
+  const [showFullHistory, setShowFullHistory] = useState(false);
 
   const handleHistorySelect = (item: TopicHistoryItem) => {
     navigate('/wizard', { state: { prefilledHistory: item } });
@@ -241,7 +243,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                   <div className="absolute left-4 top-2 bottom-2 w-px bg-slate-100"></div>
                   
                   <div className="space-y-4 relative">
-                    {topicHistory.map((item, idx) => (
+                    {topicHistory.slice(0, 5).map((item, idx) => (
                       <div 
                         key={item.id} 
                         onClick={() => handleHistorySelect(item)}
@@ -257,6 +259,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                       </div>
                     ))}
                   </div>
+                  {topicHistory.length > 5 && (
+                    <button 
+                      onClick={() => setShowFullHistory(true)}
+                      className="w-full mt-6 py-3.5 bg-slate-50 hover:bg-green-50 text-slate-500 hover:text-green-700 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center group border border-transparent hover:border-green-100"
+                    >
+                      View Complete Logs ({topicHistory.length}) <ChevronRight className="h-3 w-3 ml-1.5 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -277,6 +287,63 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
           </aside>
         </div>
       </main>
+
+      {/* FULL RESEARCH LOGS MODAL */}
+      {showFullHistory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div 
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
+            onClick={() => setShowFullHistory(false)}
+          ></div>
+          <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl relative z-10 max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 sm:p-8 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+              <div className="flex items-center space-x-3">
+                <div className="p-2.5 bg-green-50 rounded-xl">
+                  <History className="h-5 w-5 text-green-700" />
+                </div>
+                <h2 className="text-xl font-black text-slate-900 tracking-tight">Complete Research Logs</h2>
+              </div>
+              <button 
+                onClick={() => setShowFullHistory(false)} 
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar">
+              <div className="space-y-4">
+                {topicHistory.map((item) => (
+                  <div 
+                    key={item.id}
+                    onClick={() => {
+                      setShowFullHistory(false);
+                      handleHistorySelect(item);
+                    }}
+                    className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 rounded-2xl border border-slate-100 hover:border-green-200 hover:shadow-md hover:bg-green-50/30 transition-all cursor-pointer"
+                  >
+                    <div className="flex-1 min-w-0 mb-3 sm:mb-0 pr-4">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-[10px] font-black text-green-700 uppercase tracking-widest bg-green-100/50 px-2.5 py-1 rounded-full">
+                          {item.department}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                          {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      </div>
+                      <p className="text-sm font-bold text-slate-700 group-hover:text-green-800 transition-colors line-clamp-2">
+                        {item.topics[0]?.title || 'Research Session'}
+                      </p>
+                    </div>
+                    <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm border border-slate-100 group-hover:border-green-200 group-hover:bg-green-600 group-hover:text-white text-slate-400 transition-all shrink-0">
+                      <ArrowUpRight className="h-4 w-4" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

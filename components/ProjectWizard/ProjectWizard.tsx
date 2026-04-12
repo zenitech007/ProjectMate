@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronRight, ChevronLeft, Sparkles, Loader2, BookCheck,
@@ -23,6 +23,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const isGeneratingRef = useRef(false);
 
   // Step 1 State
   const [customTopic, setCustomTopic] = useState('');
@@ -68,7 +69,8 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
   };
 
   const handleFetchTopics = async () => {
-    if (!institutionName.trim() || !faculty.trim() || !department.trim()) return;
+    if (!institutionName.trim() || !faculty.trim() || !department.trim() || isGeneratingRef.current) return;
+    isGeneratingRef.current = true;
     setLoading(true);
     try {
       const result = await generateTopics(institutionType, institutionName, faculty, department);
@@ -79,24 +81,29 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
       alert(error.message || 'Failed to generate topics. Please try again.');
     } finally {
       setLoading(false);
+      isGeneratingRef.current = false;
     }
   };
 
   const handleTopicSelect = async (topicTitle: string) => {
-    if (!topicTitle.trim()) return;
+    if (!topicTitle.trim() || isGeneratingRef.current) return; // ← hard block re-entry
+    isGeneratingRef.current = true;
     setSelectedTopic(topicTitle);
     setLoading(true);
-    const result = await generateOutline(topicTitle);
-    
-    // Filter out preliminary pages right at generation
-    const filteredOutline = result.filter(ch => 
-      !ch.title.toUpperCase().includes('PRELIMINARY PAGES') &&
-      !ch.title.toUpperCase().includes('FRONT MATTER')
-    );
-    
-    setOutline(filteredOutline);
-    setLoading(false);
-    setStep(3); 
+    try {
+      const result = await generateOutline(topicTitle);
+      const filteredOutline = result.filter(ch =>
+        !ch.title.toUpperCase().includes('PRELIMINARY PAGES') &&
+        !ch.title.toUpperCase().includes('FRONT MATTER')
+      );
+      setOutline(filteredOutline);
+      setStep(3);
+    } catch (error: any) {
+      alert(error.message || 'Failed to generate outline. Please try again.');
+    } finally {
+      setLoading(false);
+      isGeneratingRef.current = false; // ← release lock
+    }
   };
 
   const handleFinishWizard = async () => {

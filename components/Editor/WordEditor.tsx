@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { EditorContent, useEditor, Node, mergeAttributes } from '@tiptap/react'
+import { EditorContent, useEditor, Node, mergeAttributes, ReactNodeViewRenderer, NodeViewWrapper } from '@tiptap/react'
 import { Extension, Mark } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -16,12 +16,63 @@ import {
 const A4_WIDTH = 794           // 210mm
 const MARGIN = 96              // 1 inch
 const LINE_HEIGHT = 32         // double-spaced body line
-const LINES_PER_PAGE = 29      // lines that fit between margins
-const PAGE_CONTENT_H = LINE_HEIGHT * LINES_PER_PAGE  // ~928px
+const A4_HEIGHT = 1123         // 297mm at 96dpi
+const PAGE_GAP = 48            // visual gap between pages
+const A4_CYCLE = A4_HEIGHT + PAGE_GAP
 
 // ─── TipTap PageBreak node ──────────────────────────────────────────────────
-// A real block-level void node that renders as a visible divider in the editor
-// and maps to a <div class="page-break"> that exportService can detect.
+const PageBreakView = (props: any) => {
+  const [height, setHeight] = useState(PAGE_GAP)
+  const nodeRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = nodeRef.current
+    if (!el) return
+
+    const update = () => {
+      const editorEl = el.closest('.ProseMirror')
+      if (!editorEl) return
+      
+      const editorRect = editorEl.getBoundingClientRect()
+      const elRect = el.getBoundingClientRect()
+      
+      const offsetTop = elRect.top - editorRect.top
+      
+      let remainder = A4_CYCLE - (offsetTop % A4_CYCLE)
+      if (remainder < PAGE_GAP) {
+        remainder += A4_CYCLE
+      }
+      
+      setHeight(prev => Math.abs(prev - remainder) > 1 ? remainder : prev)
+    }
+
+    update()
+    
+    const editorEl = el.closest('.ProseMirror')
+    let observer: ResizeObserver | null = null
+    if (editorEl) {
+      observer = new ResizeObserver(update)
+      observer.observe(editorEl)
+      observer.observe(el)
+    }
+    
+    const interval = setInterval(update, 500)
+    return () => {
+      clearInterval(interval)
+      if (observer) observer.disconnect()
+    }
+  }, [])
+
+  return (
+    <NodeViewWrapper>
+      <div ref={nodeRef} className="pm-page-break-container" style={{ height: `${height}px` }}>
+        <div style={{ height: `${height - PAGE_GAP}px` }} />
+        <div className="pm-page-break-gap"><span>PAGE BREAK</span></div>
+      </div>
+    </NodeViewWrapper>
+  )
+}
+
 const PageBreak = Node.create({
   name: 'pageBreak',
   group: 'block',
@@ -41,6 +92,10 @@ const PageBreak = Node.create({
       'Mod-Enter': () => this.editor.commands.insertContent({ type: 'pageBreak' }),
     }
   },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(PageBreakView)
+  }
 })
 
 // ─── Allow inline style attribute on paragraph/heading ─────────────────────
@@ -66,8 +121,8 @@ interface Props {
   generating?: boolean
   saveStatus?: 'saved' | 'saving' | 'unsaved'
   activeChapter?: string
-  onExportDocx?: () => void
-  onExportPdf?: () => void
+  onExportDocx?: (currentHtml: string) => void
+  onExportPdf?: (currentHtml: string) => void
   onOpenCopilot?: () => void
   onCancelGeneration?: () => void
 }
@@ -100,6 +155,13 @@ export default function WordEditor({
     content: value,
     editable: !generating,
     onUpdate({ editor }) {
+      const MAX_PAGE_HEIGHT = A4_HEIGHT - MARGIN * 2
+      const MAX_TOTAL_HEIGHT = visiblePages * MAX_PAGE_HEIGHT
+
+      if (editorWrapRef.current && editorWrapRef.current.scrollHeight > MAX_TOTAL_HEIGHT) {
+        editor.chain().focus().insertContent({ type: 'pageBreak' }).run()
+      }
+
       const html = editor.getHTML()
       prevValueRef.current = html
       onChange(html)
@@ -130,8 +192,8 @@ export default function WordEditor({
   useEffect(() => {
     if (!editorWrapRef.current) return
     const observer = new ResizeObserver(() => {
-      const contentH = editorWrapRef.current!.scrollHeight - MARGIN * 2
-      const needed = Math.max(1, Math.ceil(contentH / PAGE_CONTENT_H))
+      const contentH = editorWrapRef.current!.scrollHeight
+      const needed = Math.max(1, Math.ceil(contentH / A4_CYCLE))
       setVisiblePages(p => Math.max(p, needed))
     })
     observer.observe(editorWrapRef.current)
@@ -140,7 +202,18 @@ export default function WordEditor({
 
   if (!editor) return null
 
-  const totalDocHeight = MARGIN * 2 + visiblePages * PAGE_CONTENT_H
+  const totalDocHeight = visiblePages * A4_CYCLE
+
+  function getVisibleHTML() {
+    const container = editorWrapRef.current
+    if (!container) return ''
+
+    const pages = Array.from(container.children)
+
+    return pages.map((page: any) => {
+      return page.innerHTML
+    }).join('')
+  }
 
   return (
     <div className="h-full flex flex-col bg-[#e8e8e8] select-none">
@@ -259,7 +332,7 @@ export default function WordEditor({
         {/* Export */}
         {onExportDocx && (
           <button
-            onClick={onExportDocx}
+            onClick={() => onExportDocx(getVisibleHTML())}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-[11px] font-black hover:bg-blue-100 transition-colors"
           >
             <FileText className="w-3.5 h-3.5" /> Word
@@ -267,7 +340,7 @@ export default function WordEditor({
         )}
         {onExportPdf && (
           <button
-            onClick={onExportPdf}
+            onClick={() => onExportPdf(getVisibleHTML())}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-600 rounded-lg text-[11px] font-black hover:bg-red-100 transition-colors"
           >
             <FileDown className="w-3.5 h-3.5" /> PDF
@@ -307,38 +380,47 @@ export default function WordEditor({
 
         {/* The A4 paper */}
         <div
-          className="relative mx-auto bg-white shadow-[0_4px_40px_rgba(0,0,0,0.15)] select-text"
-          style={{ width: A4_WIDTH, minHeight: totalDocHeight }}
+          className="relative mx-auto shadow-[0_4px_40px_rgba(0,0,0,0.15)] select-text"
+          style={{ width: A4_WIDTH, minHeight: totalDocHeight, backgroundColor: 'transparent' }}
         >
-          {/* Visual page break lines */}
-          {Array.from({ length: visiblePages - 1 }).map((_, i) => {
-            const top = MARGIN + (i + 1) * PAGE_CONTENT_H
-            return (
-              <div
-                key={i}
-                className="absolute left-0 right-0 pointer-events-none z-20 flex items-center"
-                style={{ top }}
-              >
-                <div className="w-full border-t-2 border-dashed border-blue-300" />
-                <span className="absolute right-3 -translate-y-1/2 text-[9px] font-black uppercase tracking-widest text-blue-400 bg-white px-2 py-0.5 rounded">
-                  Page {i + 2}
-                </span>
-              </div>
-            )
-          })}
+          {/* Background continuous pages layer */}
+          <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden rounded">
+            {Array.from({ length: visiblePages }).map((_, i) => (
+              <React.Fragment key={i}>
+                <div 
+                  className="absolute left-0 right-0 bg-white" 
+                  style={{ top: i * A4_CYCLE, height: A4_HEIGHT }} 
+                />
+                <div 
+                  className="absolute left-0 right-0 bg-[#e8e8e8] border-t border-b border-[#c0c0c0] shadow-[inset_0_4px_8px_rgba(0,0,0,0.06),inset_0_-4px_8px_rgba(0,0,0,0.06)]"
+                  style={{ top: i * A4_CYCLE + A4_HEIGHT, height: PAGE_GAP }}
+                />
+              </React.Fragment>
+            ))}
+          </div>
 
           {/* Editor content */}
           <div
             ref={editorWrapRef}
-            style={{
-              paddingTop: MARGIN,
-              paddingBottom: MARGIN,
-              paddingLeft: MARGIN,
-              paddingRight: MARGIN,
-              minHeight: totalDocHeight,
-            }}
+            className="relative z-10"
+            style={{ minHeight: totalDocHeight }}
           >
-            <EditorContent editor={editor} />
+            {Array.from({ length: visiblePages }).map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  position: 'absolute',
+                  top: i * A4_CYCLE,
+                  left: 0,
+                  right: 0,
+                  height: A4_HEIGHT,
+                  overflow: 'hidden',   // 🔥 THIS IS THE KEY
+                  padding: MARGIN,
+                }}
+              >
+                {i === 0 && <EditorContent editor={editor} />}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -353,7 +435,7 @@ export default function WordEditor({
           font-size: 16px;
           line-height: ${LINE_HEIGHT}px;
           color: #111;
-          min-height: ${PAGE_CONTENT_H}px;
+          min-height: ${A4_HEIGHT - MARGIN * 2}px;
         }
 
         /* Body paragraphs */
@@ -416,27 +498,41 @@ export default function WordEditor({
           margin: 0;
         }
 
-        /* Page break node */
-        .ProseMirror div.pm-page-break {
+        .pm-page-break {
+          page-break-after: always;
+        }
+
+        /* Page break node dynamically aligned to A4 boundary */
+        .pm-page-break-container {
           display: block;
-          width: 100%;
-          height: ${LINE_HEIGHT}px;
           position: relative;
-          cursor: default;
           user-select: none;
           pointer-events: none;
+          break-after: page;
         }
-        .ProseMirror div.pm-page-break::after {
-          content: "— Page Break —";
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          font-family: monospace;
-          font-size: 11px;
-          color: #94a3b8;
-          white-space: nowrap;
-          pointer-events: none;
+        .pm-page-break-gap {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: calc(100% + ${MARGIN * 2}px);
+          margin-left: -${MARGIN}px;
+          height: ${PAGE_GAP}px;
+          background: #e8e8e8;
+          box-shadow: inset 0 4px 8px rgba(0,0,0,0.06), inset 0 -4px 8px rgba(0,0,0,0.06);
+          border-top: 1px solid #c0c0c0;
+          border-bottom: 1px solid #c0c0c0;
+        }
+        .pm-page-break-gap span {
+          font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #b0b8c8;
+          background: #e8e8e8;
+          padding: 4px 16px;
+          border-radius: 20px;
+          border: 1px solid #d0d8e8;
         }
 
         /* Placeholder */
@@ -447,6 +543,16 @@ export default function WordEditor({
           pointer-events: none;
           height: 0;
           font-style: italic;
+        }
+
+        @media print {
+          .pm-page-break-container {
+            page-break-after: always;
+          }
+
+          .ProseMirror {
+            width: 794px;
+          }
         }
       `}</style>
     </div>

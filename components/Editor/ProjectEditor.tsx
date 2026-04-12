@@ -81,11 +81,10 @@ const SortableSection: React.FC<{
       </span>
       <button
         onClick={() => onSelect(chapterTitle)}
-        className={`flex-1 text-left text-[10px] truncate transition-colors leading-relaxed ${
-          activeChapter === chapterTitle
+        className={`flex-1 text-left text-[10px] truncate transition-colors leading-relaxed ${activeChapter === chapterTitle
             ? 'text-green-700 font-bold'
             : 'text-slate-400 hover:text-slate-700 font-medium'
-        }`}
+          }`}
       >
         {section}
       </button>
@@ -122,7 +121,15 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   const [toast, setToast] = useState<string | null>(null);
 
   const isCancelled = useRef(false);
+  const generationLockRef = useRef(false);
   const autosaveTimer = useRef<number | null>(null);
+  const lastGeneratedHtml = useRef<string | null>(null);
+  const lastExportContext = useRef<{
+    type: 'chapter' | 'section';
+    chapter: string;
+    section?: string;
+    html: string;
+  } | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -152,19 +159,20 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         const cleanProject = { ...proj, outline: cleanOutline };
         setProject(cleanProject);
 
-        // Find any chapter the wizard flagged as 'pending' (auto-draft)
+        // Always just set the active chapter — never auto-generate. User must explicitly trigger.
+        const firstChapter = cleanOutline[0]?.title || '';
+        // If a chapter was pending, still select it but do NOT auto-generate
         const pending = Object.values(cleanProject.chapters || {}).find(c => c.status === 'pending');
-        if (pending) {
-          setActiveChapter(pending.title);
-          // Start generation after React has painted the editor
-          setTimeout(() => autoGenerateChapter(cleanProject, pending.title), 600);
-        } else {
-          // Default to the first chapter
-          setActiveChapter(cleanOutline[0]?.title || '');
-        }
+        setActiveChapter(pending ? pending.title : firstChapter);
       })
       .catch(() => setError("Failed to load project. Please try again."));
   }, [projectId]);
+
+  // Clear lastGeneratedHtml when switching chapters to prevent stale exports
+  useEffect(() => {
+    lastGeneratedHtml.current = null;
+    lastExportContext.current = null;
+  }, [activeChapter]);
 
   // ── Autosave ────────────────────────────────────────────────────────────────
   const triggerAutosave = useCallback((updated: Project) => {
@@ -191,23 +199,82 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     return true;
   };
 
-  // ── Auto-generate entire chapter (called once on mount for 'pending') ───────
-  const autoGenerateChapter = async (proj: Project, chapterTitle: string) => {
+  // ADD this helper — generates a chapter by title without relying on activeChapter state timing:
+  const handleGenerateChapterForChapter = async (chapterTitle: string) => {
+    if (!project || generationLockRef.current) return;
+    const t = chapterTitle.toUpperCase();
+    const isFreeChapter = t.includes('CHAPTER 1') || t.includes('CHAPTER ONE');
+    if (!isFreeChapter && user.credits < 1 && !user.isPremium) { setShowPayment(true); return; }
+
+    generationLockRef.current = true;
     setGenerating(true);
     setGeneratingSection(chapterTitle);
     isCancelled.current = false;
 
     try {
       let streamedBody = '';
-      await generateChapterContentStream(
-        proj.topic,
+      await generateChapterContentStream(project.topic, chapterTitle, project.department, chunk => {
+        if (isCancelled.current) throw new Error('CANCELLED');
+        streamedBody = chunk;
+        const html = wrapChapterContent(chapterTitle, streamedBody);
+        lastGeneratedHtml.current = html; // ← store only the new chapter HTML
+        lastExportContext.current = {
+          type: 'chapter',
+          chapter: chapterTitle,
+          html
+        };
+        setProject(prev => {
+          if (!prev) return prev;
+          const chapters = { ...prev.chapters };
+          chapters[chapterTitle] = { title: chapterTitle, content: html, status: 'completed' };
+          return { ...prev, chapters };
+        });
+      });
+      setProject(current => { if (current) triggerAutosave(current); return current; });
+      showToast('Chapter generated');
+    } catch (e: any) {
+      if (e.message !== 'CANCELLED') showToast('Generation interrupted');
+    } finally {
+      setGenerating(false);
+      setGeneratingSection(null);
+      generationLockRef.current = false;
+    }
+  };
+
+  // ── Generate a specific section without relying on activeChapter state ──────
+  const handleGenerateSectionForChapter = async (chapterTitle: string, sectionTitle: string) => {
+    if (!project || generationLockRef.current) return;
+    const t = chapterTitle.toUpperCase();
+    const isFreeChapter = t.includes('CHAPTER 1') || t.includes('CHAPTER ONE');
+    if (!isFreeChapter && user.credits < 1 && !user.isPremium) { setShowPayment(true); return; }
+
+    generationLockRef.current = true;
+    setGenerating(true);
+    setGeneratingSection(sectionTitle);
+    isCancelled.current = false;
+
+    const existing = project.chapters[chapterTitle]?.content || '';
+
+    try {
+      let streamedBody = '';
+      await generateSectionContentStream(
+        project.topic,
         chapterTitle,
-        proj.department,
+        sectionTitle,
+        project.department,
         chunk => {
           if (isCancelled.current) throw new Error('CANCELLED');
           streamedBody = chunk;
-          // Write title + body into WordEditor live
-          const html = wrapChapterContent(chapterTitle, streamedBody);
+          const sectionHtml = `<h2>${sectionTitle}</h2>${cleanHTML(streamedBody)}`;
+          lastGeneratedHtml.current = sectionHtml; // ← store only new section HTML
+          lastExportContext.current = {
+            type: 'section',
+            chapter: chapterTitle,
+            section: sectionTitle,
+            html: sectionHtml
+          };
+          // appendSection adds the heading once — AI must NOT repeat it
+          const html = appendSection(existing, sectionTitle, streamedBody);
           setProject(prev => {
             if (!prev) return prev;
             const chapters = { ...prev.chapters };
@@ -217,18 +284,20 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         }
       );
       setProject(current => { if (current) triggerAutosave(current); return current; });
-      showToast('Chapter generated and saved');
+      showToast(`"${sectionTitle}" generated`);
     } catch (e: any) {
-      if (e.message !== 'CANCELLED') showToast('Generation failed — please try again');
+      if (e.message !== 'CANCELLED') showToast('Generation interrupted');
     } finally {
       setGenerating(false);
       setGeneratingSection(null);
+      generationLockRef.current = false;
     }
   };
 
   // ── Manually generate entire active chapter ─────────────────────────────────
   const handleGenerateChapter = async () => {
-    if (!project || !checkAccess()) return;
+    if (!project || !checkAccess() || generationLockRef.current) return;
+    generationLockRef.current = true;
     setGenerating(true);
     setGeneratingSection(activeChapter);
     isCancelled.current = false;
@@ -243,6 +312,12 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
           if (isCancelled.current) throw new Error('CANCELLED');
           streamedBody = chunk;
           const html = wrapChapterContent(activeChapter, streamedBody);
+          lastGeneratedHtml.current = html; // ← update lastGeneratedHtml
+          lastExportContext.current = {
+            type: 'chapter',
+            chapter: activeChapter,
+            html
+          };
           setProject(prev => {
             if (!prev) return prev;
             const chapters = { ...prev.chapters };
@@ -258,6 +333,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     } finally {
       setGenerating(false);
       setGeneratingSection(null);
+      generationLockRef.current = false;
     }
   };
 
@@ -280,6 +356,14 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         chunk => {
           if (isCancelled.current) throw new Error('CANCELLED');
           streamedBody = chunk;
+          const sectionHtml = `<h2>${sectionTitle}</h2>${cleanHTML(streamedBody)}`;
+          lastGeneratedHtml.current = sectionHtml; // ← store only new section HTML
+          lastExportContext.current = {
+            type: 'section',
+            chapter: activeChapter,
+            section: sectionTitle,
+            html: sectionHtml
+          };
           // appendSection adds the heading once — AI must NOT repeat it
           const html = appendSection(existing, sectionTitle, streamedBody);
           setProject(prev => {
@@ -305,6 +389,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     if (!copilotQuery.trim() || !project) return;
     setGenerating(true);
     setIsCopilotOpen(false);
+    lastGeneratedHtml.current = null;
+    lastExportContext.current = null;
     const existing = project.chapters[activeChapter]?.content || '';
 
     try {
@@ -341,6 +427,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   // ── Manual edit ─────────────────────────────────────────────────────────────
   const handleEdit = (val: string) => {
     if (!project) return;
+    lastGeneratedHtml.current = null; // Clear so exports fall back to full edited content
+    lastExportContext.current = null;
     setSaveStatus('unsaved');
     const chapters = { ...project.chapters };
     chapters[activeChapter] = {
@@ -436,9 +524,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
                   <div className="flex items-center gap-1 group/ch mb-1">
                     <button
                       onClick={() => setActiveChapter(chapter.title)}
-                      className={`flex-1 text-left text-[11px] font-black uppercase tracking-wide truncate transition-all leading-snug ${
-                        activeChapter === chapter.title ? 'text-green-700' : 'text-slate-600 hover:text-slate-900'
-                      }`}
+                      className={`flex-1 text-left text-[11px] font-black uppercase tracking-wide truncate transition-all leading-snug ${activeChapter === chapter.title ? 'text-green-700' : 'text-slate-600 hover:text-slate-900'
+                        }`}
                     >
                       <span className="flex items-center gap-1.5">
                         {chapterDone(chapter.title) && (
@@ -455,7 +542,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
                       <button
                         onClick={() => {
                           setActiveChapter(chapter.title);
-                          setTimeout(handleGenerateChapter, 80);
+                          handleGenerateChapterForChapter(chapter.title);
                         }}
                         title={`Auto-draft ${chapter.title}`}
                         className="shrink-0 p-1 text-slate-200 hover:text-green-600 hover:bg-green-50 rounded opacity-0 group-hover/ch:opacity-100 transition-all"
@@ -487,7 +574,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
                             onSelect={t => setActiveChapter(t)}
                             onGenerate={sec => {
                               setActiveChapter(chapter.title);
-                              setTimeout(() => handleGenerateSection(sec), 80);
+                              handleGenerateSectionForChapter(chapter.title, sec);
                             }}
                           />
                         ))}
@@ -525,8 +612,74 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
           generating={generating}
           saveStatus={saveStatus}
           activeChapter={activeChapter}
-          onExportDocx={() => exportToDocx(project)}
-          onExportPdf={() => exportToPdf(project)}
+          onExportDocx={() => {
+            let exportHtml = '';
+            let exportOutline: ProjectOutline[] = [];
+
+            if (lastExportContext.current) {
+              const ctx = lastExportContext.current;
+
+              exportHtml = ctx.html;
+
+              exportOutline = [{
+                title: ctx.type === 'chapter'
+                  ? ctx.chapter
+                  : ctx.section || ctx.chapter,
+                sections: []
+              }];
+            } else {
+              // fallback = full chapter (manual edits)
+              exportHtml = project.chapters?.[activeChapter]?.content || '';
+
+              exportOutline = project.outline.filter(ch => ch.title === activeChapter);
+            }
+
+            const exportProject = {
+              ...project,
+              outline: exportOutline,
+              chapters: {
+                [activeChapter]: {
+                  title: activeChapter,
+                  content: exportHtml,
+                  status: 'completed' as const,
+                }
+              }
+            };
+
+            exportToDocx(exportProject);
+          }}
+          onExportPdf={() => {
+            let exportHtml = '';
+            let exportOutline: ProjectOutline[] = [];
+
+            if (lastExportContext.current) {
+              const ctx = lastExportContext.current;
+              exportHtml = ctx.html;
+              exportOutline = [{
+                title: ctx.type === 'chapter'
+                  ? ctx.chapter
+                  : ctx.section || ctx.chapter,
+                sections: []
+              }];
+            } else {
+              exportHtml = project.chapters?.[activeChapter]?.content || '';
+              exportOutline = project.outline.filter(ch => ch.title === activeChapter);
+            }
+
+            const exportProject = {
+              ...project,
+              outline: exportOutline,
+              chapters: {
+                [activeChapter]: {
+                  title: activeChapter,
+                  content: exportHtml,
+                  status: 'completed' as const,
+                }
+              }
+            };
+
+            exportToPdf(exportProject);
+          }}
           onOpenCopilot={() => setIsCopilotOpen(true)}
           onCancelGeneration={() => { isCancelled.current = true; }}
         />
