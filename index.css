@@ -12,6 +12,10 @@
   }
   
   .toc-leader {
-    @apply flex-grow border-b border-dotted border-slate-200 mx-2 mb-1;
+    @apply grow border-b border-dotted border-slate-200 mx-2 mb-1;
   }
+}
+
+.ql-container {
+  overflow: visible !important;
 }

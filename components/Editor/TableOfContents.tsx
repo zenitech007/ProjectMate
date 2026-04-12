@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Wand2, Loader2, BookOpen, ChevronRight, GripVertical } from 'lucide-react';
+import { Wand2, Loader2, ChevronRight, GripVertical } from 'lucide-react';
 import { ProjectOutline } from '../../types';
 import {
   DndContext,
@@ -137,38 +137,8 @@ const TableOfContents: React.FC<TOCProps> = ({
     }
   };
 
-  const preliminaryPages = [
-    { title: 'Title Page', page: 'i' },
-    { title: 'Certification', page: 'ii' },
-    { title: 'Dedication', page: 'iii' },
-    { title: 'Acknowledgement', page: 'iv' },
-    { title: 'Abstract', page: 'v' },
-  ];
-
   return (
     <div className="p-6 space-y-10 overflow-y-auto h-full bg-white custom-scrollbar">
-      <div>
-        <h3 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.25em] mb-6 flex items-center">
-          <BookOpen className="h-3 w-3 mr-2" />
-          Front Matter
-        </h3>
-        <div className="space-y-4">
-          {preliminaryPages.map((page) => (
-            <button
-              key={page.title}
-              onClick={() => onSelect(page.title)}
-              className={`w-full text-left group transition-all ${activeChapter === page.title ? 'text-green-700 font-bold translate-x-1' : 'text-slate-500 hover:text-slate-900'}`}
-            >
-              <div className="toc-row text-[11px] uppercase tracking-wider">
-                <span className="truncate">{page.title}</span>
-                <span className="toc-leader"></span>
-                <span className="tabular-nums opacity-50">{page.page}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div>
         <h3 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.25em] mb-6 flex items-center">
           <ChevronRight className="h-3 w-3 mr-1" />

@@ -1,48 +1,52 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper functions
+
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
     match /users/{userId} {
       allow read: if isOwner(userId);
-      
-      // Only allow creation with 0 credits and no premium
-      allow create: if isOwner(userId) 
+
+      // New accounts start with 0 credits and no premium
+      allow create: if isOwner(userId)
                     && request.resource.data.credits == 0
                     && request.resource.data.isPremium == false;
-      
-      // Prevent users from updating their own credits or isPremium status
-      // These should only be updated by a Cloud Function/Admin
+
+      // Users can update their own profile with these rules:
+      // 1. isPremium can never be changed by the client (only admin SDK)
+      // 2. credits can only DECREASE (deduction when launching a project)
+      //    Credits can never INCREASE from the client — only the webhook does that
       allow update: if isOwner(userId)
-                    && request.resource.data.credits == resource.data.credits
-                    && request.resource.data.isPremium == resource.data.isPremium;
-      
+                    && request.resource.data.isPremium == resource.data.isPremium
+                    && request.resource.data.credits <= resource.data.credits;
+
+      // Payment history written by Cloud Function admin SDK only
       match /paymentHistory/{paymentId} {
         allow read: if isOwner(userId);
-        // Payment history should ideally be created by a Cloud Function after webhook verification
-        allow create: if false; 
+        allow write: if false;
       }
     }
 
     match /projects/{projectId} {
-      allow read, delete: if isAuthenticated() && request.auth.uid == resource.data.userId;
-      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
-      allow update: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow read, delete: if isAuthenticated()
+                          && request.auth.uid == resource.data.userId;
+      allow create: if isAuthenticated()
+                    && request.auth.uid == request.resource.data.userId;
+      allow update: if isAuthenticated()
+                    && request.auth.uid == resource.data.userId;
     }
 
     match /topic_history/{historyId} {
-      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
-      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
-      // Topic history is usually append-only or managed by the app
+      allow read: if isAuthenticated()
+                  && request.auth.uid == resource.data.userId;
+      allow create: if isAuthenticated()
+                    && request.auth.uid == request.resource.data.userId;
       allow update, delete: if false;
     }
   }

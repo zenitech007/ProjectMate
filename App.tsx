@@ -15,10 +15,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { user, loading } = useAuth();
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen bg-green-50">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-700"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-700" />
     </div>
   );
-  if (!user) return <Navigate to="/auth" />;
+  if (!user) return <Navigate to="/auth" replace />;
   return <>{children}</>;
 };
 
@@ -28,7 +28,7 @@ const AppContent: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-green-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-700"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-700" />
       </div>
     );
   }
@@ -39,12 +39,30 @@ const AppContent: React.FC = () => {
         <Navbar user={user} onLogout={logout} />
         <main className="grow">
           <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/dashboard" />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard user={user!} /></ProtectedRoute>} />
-            <Route path="/wizard" element={<ProtectedRoute><ProjectWizard user={user!} /></ProtectedRoute>} />
-            <Route path="/editor/:projectId" element={<ProtectedRoute><ProjectEditor user={user!} /></ProtectedRoute>} />
-            <Route path="/upgrade" element={<ProtectedRoute><UpgradePage user={user!} /></ProtectedRoute>} />
+            {/* Logged-in users go straight to dashboard; guests see landing page */}
+            <Route
+              path="/"
+              element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />}
+            />
+            {/* Auth page redirects to dashboard if already logged in */}
+            <Route
+              path="/auth"
+              element={!user ? <AuthPage /> : <Navigate to="/dashboard" replace />}
+            />
+            <Route path="/dashboard" element={
+              <ProtectedRoute><Dashboard user={user!} /></ProtectedRoute>
+            } />
+            <Route path="/wizard" element={
+              <ProtectedRoute><ProjectWizard user={user!} /></ProtectedRoute>
+            } />
+            <Route path="/editor/:projectId" element={
+              <ProtectedRoute><ProjectEditor user={user!} /></ProtectedRoute>
+            } />
+            <Route path="/upgrade" element={
+              <ProtectedRoute><UpgradePage user={user!} /></ProtectedRoute>
+            } />
+            {/* Catch-all */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>
