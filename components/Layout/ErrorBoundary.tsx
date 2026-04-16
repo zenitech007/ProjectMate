@@ -16,12 +16,32 @@ class ErrorBoundary extends Component<Props, State> {
     error: null
   };
 
+  private unhandledRejectionHandler: ((event: PromiseRejectionEvent) => void) | null = null;
+
   constructor(props: Props) {
     super(props);
   }
 
   public static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
+  }
+
+  public componentDidMount() {
+    // Log unhandled promise rejections without replacing the entire UI.
+    // Transient failures (API calls, network errors) should not crash the app.
+    // Only synchronous render errors trigger the error boundary fallback UI.
+    this.unhandledRejectionHandler = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      // Prevent the default browser handling (console error is already logged)
+      event.preventDefault();
+    };
+    window.addEventListener('unhandledrejection', this.unhandledRejectionHandler);
+  }
+
+  public componentWillUnmount() {
+    if (this.unhandledRejectionHandler) {
+      window.removeEventListener('unhandledrejection', this.unhandledRejectionHandler);
+    }
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {

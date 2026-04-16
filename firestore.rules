@@ -24,7 +24,8 @@ service cloud.firestore {
       //    Credits can never INCREASE from the client — only the webhook does that
       allow update: if isOwner(userId)
                     && request.resource.data.isPremium == resource.data.isPremium
-                    && request.resource.data.credits <= resource.data.credits;
+                    && request.resource.data.credits <= resource.data.credits
+                    && request.resource.data.credits >= 0;
 
       // Payment history written by Cloud Function admin SDK only
       match /paymentHistory/{paymentId} {
@@ -39,7 +40,8 @@ service cloud.firestore {
       allow create: if isAuthenticated()
                     && request.auth.uid == request.resource.data.userId;
       allow update: if isAuthenticated()
-                    && request.auth.uid == resource.data.userId;
+                    && request.auth.uid == resource.data.userId
+                    && request.resource.data.userId == resource.data.userId;
     }
 
     match /topic_history/{historyId} {

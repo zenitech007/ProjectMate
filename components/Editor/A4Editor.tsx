@@ -41,10 +41,10 @@ const A4Editor = React.forwardRef<ReactQuill, A4EditorProps>(({ value, onChange,
   return (
     <div className="min-h-screen bg-slate-100 py-12 flex justify-center overflow-y-auto custom-scrollbar">
       {/* The A4 Sheet Container */}
-      <div 
-        className="bg-white shadow-2xl relative" 
-        style={{ 
-          width: '210mm', 
+      <div
+        className="bg-white shadow-2xl relative"
+        style={{
+          width: '210mm',
           minHeight: '297mm',
           padding: '2.54cm', // 1-inch margins
           fontFamily: '"Tinos", "Times New Roman", Times, serif',
@@ -54,18 +54,14 @@ const A4Editor = React.forwardRef<ReactQuill, A4EditorProps>(({ value, onChange,
       >
         {/* Visual Pagination Indicators */}
         {pageMarkers.map((page) => (
-          <div 
+          <div
             key={page}
-            className="absolute left-0 right-0 pointer-events-none z-10" 
-            style={{ 
+            className="absolute left-0 right-0 pointer-events-none z-10"
+            style={{
               top: `${page * 1123}px`,
               borderTop: '1px dashed #cbd5e1'
             }}
-          >
-            <div className="absolute -left-15 -top-2.5 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded">
-              Page {page + 1}
-            </div>
-          </div>
+          />
         ))}
 
         {QuillComponent && (
@@ -81,7 +77,7 @@ const A4Editor = React.forwardRef<ReactQuill, A4EditorProps>(({ value, onChange,
             placeholder="Select a section from the sidebar and use the magic wand to draft content..."
           />
         )}
-        
+
         <style>{`
           .academic-editor .ql-container.ql-snow {
             border: none !important;

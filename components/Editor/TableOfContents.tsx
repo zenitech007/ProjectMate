@@ -125,6 +125,7 @@ const TableOfContents: React.FC<TOCProps> = ({
       const chapterTitle = outline[chapterIdx].title;
       const oldIndex = outline[chapterIdx].sections.indexOf((active.id as string).replace(`${chapterTitle}-`, ''));
       const newIndex = outline[chapterIdx].sections.indexOf((over.id as string).replace(`${chapterTitle}-`, ''));
+      if (oldIndex === -1 || newIndex === -1) return;
 
       const newSections = arrayMove(outline[chapterIdx].sections, oldIndex, newIndex);
       const newOutline = [...outline];

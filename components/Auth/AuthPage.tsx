@@ -25,7 +25,15 @@ const AuthPage: React.FC = () => {
     try {
       await signInWithPopup(auth, provider);
     } catch (err: any) {
-      setError(err.message || 'Google Sign-In failed');
+      const code = err.code || '';
+      if (code === 'auth/popup-closed-by-user') {
+        // User closed the popup — not an error
+        setError('');
+      } else if (code === 'auth/network-request-failed') {
+        setError('Network error. Please check your connection.');
+      } else {
+        setError('Google Sign-In failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -36,11 +44,28 @@ const AuthPage: React.FC = () => {
     setLoading(true);
     setError('');
 
-    // BUG-5: Weak password validation
-    if (!isLogin && password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      setLoading(false);
-      return;
+    // Strong password validation
+    if (!isLogin) {
+      if (password.length < 8) {
+        setError("Password must be at least 8 characters long.");
+        setLoading(false);
+        return;
+      }
+      if (!/[A-Z]/.test(password)) {
+        setError("Password must contain at least one uppercase letter.");
+        setLoading(false);
+        return;
+      }
+      if (!/[0-9]/.test(password)) {
+        setError("Password must contain at least one number.");
+        setLoading(false);
+        return;
+      }
+      if (!/[^A-Za-z0-9]/.test(password)) {
+        setError("Password must contain at least one special character.");
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -54,7 +79,18 @@ const AuthPage: React.FC = () => {
       }
     } catch (err: any) {
       console.error("AUTH ERROR:", err);
-      setError(err.code + " — " + err.message);
+      // Map Firebase error codes to safe, user-friendly messages (prevents XSS)
+      const errorMap: Record<string, string> = {
+        'auth/user-not-found': 'No account found with this email address.',
+        'auth/wrong-password': 'Incorrect password. Please try again.',
+        'auth/invalid-credential': 'Invalid email or password. Please try again.',
+        'auth/email-already-in-use': 'An account with this email already exists.',
+        'auth/weak-password': 'Password is too weak. Use at least 8 characters with uppercase, number, and symbol.',
+        'auth/invalid-email': 'Please enter a valid email address.',
+        'auth/too-many-requests': 'Too many attempts. Please try again later.',
+        'auth/network-request-failed': 'Network error. Please check your connection.',
+      };
+      setError(errorMap[err.code] || 'Authentication failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -151,7 +187,7 @@ const AuthPage: React.FC = () => {
           <p className="text-slate-600">
             {isLogin ? "Don't have an account?" : "Already have an account?"}
             <button
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => { setIsLogin(!isLogin); setError(''); }}
               className="ml-2 text-green-700 font-bold hover:underline"
             >
               {isLogin ? 'Sign Up' : 'Login'}

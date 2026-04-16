@@ -164,10 +164,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                       </div>
                     </Link>
                     
-                    <button 
+                    <button
                       onClick={(e) => handleDelete(e, p.id, p.topic)}
                       className="absolute top-6 right-6 p-2 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 z-20"
-                      title="Archive Project"
+                      title="Delete Project"
+                      aria-label={`Delete project: ${p.topic}`}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

@@ -50,16 +50,16 @@ const AppContent: React.FC = () => {
               element={!user ? <AuthPage /> : <Navigate to="/dashboard" replace />}
             />
             <Route path="/dashboard" element={
-              <ProtectedRoute><Dashboard user={user!} /></ProtectedRoute>
+              <ProtectedRoute>{user && <Dashboard user={user} />}</ProtectedRoute>
             } />
             <Route path="/wizard" element={
-              <ProtectedRoute><ProjectWizard user={user!} /></ProtectedRoute>
+              <ProtectedRoute>{user && <ProjectWizard user={user} />}</ProtectedRoute>
             } />
             <Route path="/editor/:projectId" element={
-              <ProtectedRoute><ProjectEditor user={user!} /></ProtectedRoute>
+              <ProtectedRoute>{user && <ProjectEditor user={user} />}</ProtectedRoute>
             } />
             <Route path="/upgrade" element={
-              <ProtectedRoute><UpgradePage user={user!} /></ProtectedRoute>
+              <ProtectedRoute>{user && <UpgradePage user={user} />}</ProtectedRoute>
             } />
             {/* Catch-all */}
             <Route path="*" element={<Navigate to="/" replace />} />

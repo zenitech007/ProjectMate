@@ -16,11 +16,15 @@ interface PaystackResponse {
   message: string;
 }
 
+const generateRef = (uid: string) =>
+  `${Date.now()}_${Math.random().toString(36).slice(2, 9)}_${uid}`;
+
 const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
   const [loading, setLoading] = useState(false);
+  const [payRef, setPayRef] = useState(() => generateRef(user.uid));
 
   const config = {
-    reference: (new Date()).getTime().toString(),
+    reference: payRef,
     email: user.email,
     amount: PREMIUM_PRICE_NGN * 100, // Paystack expects amount in kobo
     publicKey: PAYSTACK_PUBLIC_KEY,
@@ -50,6 +54,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
   };
 
   const handlePay = () => {
+    setPayRef(generateRef(user.uid)); // Fresh reference per attempt
     setLoading(true);
     initializePayment({ onSuccess, onClose: onClosePayment });
   };

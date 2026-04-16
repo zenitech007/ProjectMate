@@ -44,8 +44,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
                   )}
                   <span className="text-sm font-semibold text-slate-700">{user.email.split('@')[0]}</span>
                 </div>
-                <button 
+                <button
                   onClick={onLogout}
+                  aria-label="Log out"
                   className="p-2 text-slate-400 hover:text-red-500 transition-colors"
                 >
                   <LogOut className="h-5 w-5" />

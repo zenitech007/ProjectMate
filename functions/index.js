@@ -1,7 +1,23 @@
 const { onCall, onRequest, HttpsError } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const { GoogleGenAI } = require("@google/genai");
-const cors = require("cors")({ origin: true });
+// Restrict CORS to your domains — add your production domain here
+const allowedOrigins = [
+  "https://projectmate-485110.web.app",
+  "https://projectmate-485110.firebaseapp.com",
+  "http://localhost:3000",
+  "http://localhost:5173",
+];
+const cors = require("cors")({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+});
 const crypto = require("crypto");
 
 admin.initializeApp();
@@ -11,6 +27,41 @@ const getAi = () => {
   if (!apiKey) throw new Error("Gemini API key not configured on server.");
   return new GoogleGenAI({ apiKey });
 };
+
+// ── Simple in-memory rate limiter ──────────────────────────────────────────
+// Limits each user to a fixed number of requests per time window.
+// For production at scale, replace with Firebase Extensions or Redis.
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 10;  // max 10 requests per minute per user
+
+const checkRateLimit = (userId) => {
+  const now = Date.now();
+  const key = userId;
+  const entry = rateLimitMap.get(key);
+
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitMap.set(key, { windowStart: now, count: 1 });
+    return true;
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return false;
+  }
+
+  entry.count++;
+  return true;
+};
+
+// Periodically clean stale entries (every 5 minutes)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of rateLimitMap) {
+    if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS * 2) {
+      rateLimitMap.delete(key);
+    }
+  }
+}, 300_000);
 
 // ── System prompt ─────────────────────────────────────────────────────────────
 // NOTE: We use <p> and <b> only — NO heading tags.
@@ -71,30 +122,52 @@ STRUCTURE RULES — match the reference writing style exactly:
 
 CHAPTER 1 — INTRODUCTION:
 - Open each section with 1–2 direct context sentences, then expand with explanation paragraphs.
-- Specific Objectives: write each objective as its own <p> — one objective per paragraph, no bullet symbols.
-- Hypotheses: format as <p><b>H₀₁:</b> There is no statistically significant association between … </p> — one per <p>.
-- Scope / Definitions: use <p><b>Term:</b> Definition text.</p> pattern — one item per <p>.
+- Section 1.3 OBJECTIVES: Write EXACTLY 1 general objective as a single <p> sentence. Then write a brief intro sentence, followed by EXACTLY 5 specific objectives — each as its own <p>, with numbers.
+- Section 1.4 RESEARCH QUESTIONS: Write EXACTLY 6 research questions — one per <p>.
+- Section 1.5 RESEARCH HYPOTHESES: Write EXACTLY 4 null hypotheses formatted as <p><b>H₀₁:</b> There is no statistically significant association between … and … </p> — one per <p>.
+- Section 1.6 SCOPE: use <p><b>Variables:</b> …</p> <p><b>Location:</b> …</p> <p><b>Population:</b> …</p> — one item per <p>.
+- Operational Definitions: use <p><b>Term:</b> Definition text.</p> pattern — exactly 5 defined terms, one per <p>.
 
 CHAPTER 2 — LITERATURE REVIEW:
-- Sub-sections (2.1.1, 2.1.2, etc.) under Conceptual Review: begin with one sharp topic sentence that defines the concept, then one substantive paragraph unpacking it and linking it to the study.
-- Theoretical Review (2.2): first paragraph explains the theory fully; second paragraph maps each layer of the theory to the study's exact variables.
-- Empirical Review (2.3): cite recent Nigerian studies in flowing prose; group thematically — prevalence findings first, then determinants, then feeding/morbidity evidence.
+- 2.1 Conceptual Review must contain sub-sections covering every key concept variable in the study. Each sub-section: one sharp topic sentence that defines the concept, then ONE substantive paragraph unpacking it and linking it to the study.
+- 2.2 Theoretical Review: exactly two paragraphs — first paragraph explains the chosen theory fully; second paragraph maps each causal layer of the theory to the study's exact variables.
+- 2.3 Empirical Review: exactly three flowing prose paragraphs citing recent Nigerian studies, grouped thematically — prevalence findings first paragraph, socioeconomic/maternal determinants second paragraph, feeding practices/morbidity third paragraph.
 
 CHAPTER 3 — METHODOLOGY:
 - Every section must explain both WHAT was done AND WHY it was chosen (e.g., "This design was chosen because…").
 - Questionnaire sections, inclusion/exclusion criteria, formula variables: write as individual <p> blocks with a <b>label:</b> lead — never use bullet symbols or unicode characters.
-- Formulas: describe the formula in words, then explain each variable in its own <p> with a <b>symbol:</b> lead.
+- Sample size section must include the Taro Yamane formula described in words, show the full mathematical working step-by-step each in its own <p>, then add 10% attrition to the final sample size.
+- Formula variables: one <p><b>symbol:</b> meaning</p> per variable.
+- Data analysis section must mention SPSS, descriptive statistics (frequencies, percentages, mean, standard deviation), Chi-square test of independence, and p-value threshold of less than 0.05.
 
 UNIVERSAL:
 - Use lists (individual <p> blocks) ONLY when content is genuinely enumerable.
-- Otherwise write in continuous, well-developed prose paragraphs.
+- Otherwise write in continuous, well-developed prose paragraphs (5–8 sentences each).
 - Explain context and rationale WHEN NEEDED — do not pad, but never skip the "why".
-- NEVER use bullet characters (•, –, -, ✓) or any unicode list markers anywhere.`;
+- NEVER use bullet characters (•, –, -, ✓) or any unicode list markers anywhere.
+- Background sections must flow: Global context → African/Continental context → Nigerian national context → Local study site context.`;
 
+/** Sanitize short user input (topics, titles, department names) — max 500 chars */
 const sanitize = (input) =>
   typeof input === "string"
     ? input.replace(/[<>&"`;{}|\\^~\[\]]/g, "").trim().slice(0, 500)
     : "";
+
+/** Sanitize longer content (existing chapter text for elaboration) — max 15000 chars */
+const sanitizeLong = (input) =>
+  typeof input === "string"
+    ? input.replace(/[`;{}|\\^~]/g, "").trim().slice(0, 15000)
+    : "";
+
+/** Extract JSON from AI response that may be wrapped in markdown code fences */
+const extractJSON = (text) => {
+  if (!text) return "[]";
+  let cleaned = text.trim();
+  // Strip markdown code fences: ```json ... ``` or ``` ... ```
+  const fenceMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fenceMatch) cleaned = fenceMatch[1].trim();
+  return cleaned || "[]";
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAYSTACK WEBHOOK
@@ -126,6 +199,11 @@ exports.paystackWebhook = onRequest(
     const userId = event.data?.metadata?.custom_fields?.find(
       (f) => f.variable_name === "user_id"
     )?.value;
+
+    if (!reference || !amountPaidKobo) {
+      console.error("paystackWebhook: Missing reference or amount");
+      return res.status(200).send("OK");
+    }
 
     if (!userId) {
       console.error("paystackWebhook: No user_id in metadata. Ref:", reference);
@@ -162,9 +240,10 @@ exports.paystackWebhook = onRequest(
           processedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
       });
-      console.log(`paystackWebhook: ✅ Added ${creditsToAdd} credit(s) to ${userId}. Ref: ${reference}`);
+      console.log(`paystackWebhook: Added ${creditsToAdd} credit(s) to ${userId}. Ref: ${reference}`);
     } catch (err) {
       console.error("paystackWebhook: Transaction failed:", err);
+      return res.status(500).send("Transaction failed");
     }
 
     return res.status(200).send("OK");
@@ -176,6 +255,7 @@ exports.paystackWebhook = onRequest(
 // ─────────────────────────────────────────────────────────────────────────────
 exports.generateTopics = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request) => {
   if (!request.auth) throw new HttpsError("unauthenticated", "Login required.");
+  if (!checkRateLimit(request.auth.uid)) throw new HttpsError("resource-exhausted", "Too many requests. Please wait a moment.");
 
   const { institutionName, faculty, department } = request.data;
   const ai = getAi();
@@ -187,7 +267,7 @@ exports.generateTopics = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request)
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       config: { systemInstruction: PHD_SYSTEM_PROMPT, responseMimeType: "application/json" },
     });
-    return JSON.parse(response.text || "[]");
+    return JSON.parse(extractJSON(response.text));
   } catch (error) {
     console.error("generateTopics error:", error);
     throw new HttpsError("internal", "AI generation failed");
@@ -199,16 +279,17 @@ exports.generateTopics = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request)
 // ─────────────────────────────────────────────────────────────────────────────
 exports.generateOutline = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request) => {
   if (!request.auth) throw new HttpsError("unauthenticated", "Login required.");
+  if (!checkRateLimit(request.auth.uid)) throw new HttpsError("resource-exhausted", "Too many requests. Please wait a moment.");
 
   const { topic } = request.data;
   const ai = getAi();
   const prompt = `Create a Nigerian University Project Table of Contents for: "${sanitize(topic)}".
-  Use EXACTLY this structure — no extra items:
-  - CHAPTER 1: INTRODUCTION — sections: Background to the Study, Statement of the Problem, Aim and Objectives, Research Questions, Research Hypotheses, Scope of the Study, Significance of the Study, Operational Definition of Terms
-  - CHAPTER 2: LITERATURE REVIEW — sections: Conceptual Framework, Theoretical Framework, Empirical Review, Gap in Literature
-  - CHAPTER 3: RESEARCH METHODOLOGY — sections: Research Design, Population of Study, Sample and Sampling Technique, Instrument for Data Collection, Validity and Reliability, Method of Data Analysis
-  - CHAPTER 4: DATA PRESENTATION AND ANALYSIS — sections: Data Presentation, Data Analysis, Discussion of Findings
-  - CHAPTER 5: SUMMARY, CONCLUSION AND RECOMMENDATIONS — sections: Summary, Conclusion, Recommendations, Limitations of the Study, Suggestions for Further Research
+  Use EXACTLY this structure — no extra items, no renamed sections:
+  - CHAPTER 1: INTRODUCTION — sections: ["Background of the Study", "Statement of the Problem", "Objectives of the Study", "Research Questions", "Research Hypotheses", "Significance of the Study", "Scope of Study", "Operational Definition of Terms"]
+  - CHAPTER 2: LITERATURE REVIEW — sections: ["Conceptual Review", "Theoretical Review", "Empirical Review"]
+  - CHAPTER 3: METHODOLOGY — sections: ["Research Design", "Research Setting", "Target Population", "Sample Size and Formula", "Sampling Technique", "Instrument for Data Collection", "Validity of Instrument", "Reliability of Instrument", "Method of Data Collection", "Method of Data Analysis", "Ethical Consideration"]
+  - CHAPTER 4: DATA PRESENTATION AND ANALYSIS — sections: ["Data Presentation", "Data Analysis", "Discussion of Findings"]
+  - CHAPTER 5: SUMMARY, CONCLUSION AND RECOMMENDATIONS — sections: ["Summary", "Conclusion", "Recommendations", "Limitations of the Study", "Suggestions for Further Research"]
   - REFERENCES — sections: []
   - APPENDICES — sections: []
   Return ONLY a JSON array. Each object: "title" (string) and "sections" (array of strings). No extra commentary.`;
@@ -219,7 +300,7 @@ exports.generateOutline = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       config: { systemInstruction: PHD_SYSTEM_PROMPT, responseMimeType: "application/json" },
     });
-    return JSON.parse(response.text || "[]");
+    return JSON.parse(extractJSON(response.text));
   } catch (error) {
     console.error("generateOutline error:", error);
     throw new HttpsError("internal", "AI Outline generation failed");
@@ -234,7 +315,13 @@ const verifyToken = async (req, res) => {
   const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
   if (!idToken) { res.status(401).send("Unauthorized"); return null; }
   try {
-    return await admin.auth().verifyIdToken(idToken);
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    // Rate limit check for streaming endpoints
+    if (!checkRateLimit(decoded.uid)) {
+      res.status(429).send("Too many requests. Please wait a moment.");
+      return null;
+    }
+    return decoded;
   } catch {
     res.status(401).send("Invalid token");
     return null;
@@ -243,38 +330,16 @@ const verifyToken = async (req, res) => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. Generate Full Chapter Stream
-// KEY FIX: Prompt explicitly forbids TOC, chapter title repetition, and headings.
-// The frontend adds the chapter title as <h1> — AI must start with body text only.
 // ─────────────────────────────────────────────────────────────────────────────
 exports.generateChapterStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
     if (!await verifyToken(req, res)) return;
 
-    const { topic, chapterTitle, department } = req.body.data || {};
+    const { topic, chapterTitle, department } = (req.body && req.body.data) || {};
+    if (!topic || !chapterTitle) return res.status(400).send("Missing required fields: topic, chapterTitle");
     const ai = getAi();
 
-    // The chapter title is shown in the UI — do not repeat it.
-    // Do not generate a table of contents or introduction to the document.
-    // Start immediately with the first body paragraph of this chapter's content.
-    //
-    // Chapter-specific structure guide (mirrors the reference document):
-    //   Chapter 1 — INTRODUCTION:
-    //     Write all standard sections (1.1 Background → 1.6 Scope) in sequence.
-    //     Each section: open with direct context, then expand.
-    //     Objectives → one <p> per objective. Hypotheses → <p><b>H₀₁:</b> …</p>.
-    //     Definitions/Scope items → <p><b>Term:</b> …</p>.
-    //
-    //   Chapter 2 — LITERATURE REVIEW:
-    //     2.1 Conceptual Review must contain sub-sections (2.1.1 … 2.1.7 or more).
-    //     Each sub-section: one defining topic sentence + one deep explanatory paragraph.
-    //     2.2 Theoretical Review: two paragraphs — theory description, then variable mapping.
-    //     2.3 Empirical Review: flowing prose grouped by theme (prevalence → determinants → feeding/morbidity).
-    //
-    //   Chapter 3 — METHODOLOGY:
-    //     Every section explains WHAT was done AND WHY.
-    //     Formula variables → one <p><b>symbol:</b> meaning</p> per variable.
-    //     Questionnaire sections / criteria → one <p><b>Section X / Label:</b> …</p> per item.
     const prompt = `Research Topic: "${sanitize(topic)}"
 Chapter to write: "${sanitize(chapterTitle)}"
 Student department: ${sanitize(department)}
@@ -288,27 +353,32 @@ STRICT OUTPUT RULES:
 - Do NOT repeat the chapter name at the top.
 - Write continuous academic prose with APA 7th in-text citations in every paragraph.
 - Do NOT use markdown.
-- Do NOT use bullet characters (•, –, -, ✓) anywhere.
+- Do NOT use bullet characters anywhere.
 
 STRUCTURE — apply based on which chapter you are writing:
 
 If writing CHAPTER 1 (INTRODUCTION):
-  - Cover all standard sections in sequence (Background, Statement of Problem, Objectives, Research Questions, Hypotheses, Scope, Significance, Definitions).
-  - Each section: 1–2 direct opening sentences, then full explanation paragraphs.
-  - List each specific objective as its own <p> — no bullets.
-  - Each hypothesis: <p><b>H₀₁:</b> There is no statistically significant association between … and … </p>
-  - Scope/Definitions: <p><b>Term:</b> definition.</p> — one item per <p>.
+  - Cover ALL sections in this exact order: Background of the Study, Statement of the Problem, Objectives of the Study, Research Questions, Research Hypotheses, Significance of the Study, Scope of Study, Operational Definition of Terms.
+  - Background: flow from Global to African/Continental to Nigerian national to Local study site context.
+  - Objectives: EXACTLY 1 general objective as a single <p>. Then a brief intro sentence, followed by EXACTLY 5 specific objectives — each as its own <p>, with numbers.
+  - Research Questions: EXACTLY 6 questions — one per <p>. 
+  - Research Hypotheses: EXACTLY 4 null hypotheses: <p><b>H01:</b> There is no statistically significant association between ... and ... </p>.
+  - Significance of the Study: EXACTLY 5 paragraphs — one per stakeholder group
+  - Scope: <p><b>Variables:</b> ...</p> <p><b>Location:</b> ...</p> <p><b>Population:</b> ...</p>
+  - Definitions: EXACTLY 5 terms — <p><b>Term:</b> definition.</p> — one per <p>.
 
 If writing CHAPTER 2 (LITERATURE REVIEW):
-  - Under Conceptual Review, write sub-sections covering every key concept in the study.
-  - Each sub-section: one sharp defining sentence + one deep paragraph linking the concept to the study.
-  - Theoretical Review: paragraph 1 explains the theory fully; paragraph 2 maps each layer to the study's variables.
-  - Empirical Review: flowing prose, cite recent Nigerian studies, grouped thematically.
+  - 2.1 Conceptual Review must contain sub-sections covering EVERY key concept variable in the study. Each sub-section: one sharp defining sentence + one deep paragraph linking the concept to the study.
+  - 2.2 Theoretical Review: EXACTLY 2 paragraphs — paragraph 1 explains the chosen theory fully; paragraph 2 maps each layer of the theory to the study's exact variables.
+  - 2.3 Empirical Review: EXACTLY 3 flowing prose paragraphs — prevalence findings first, socioeconomic/maternal determinants second, feeding practices/morbidity third. Cite named Nigerian authors with years.
 
 If writing CHAPTER 3 (METHODOLOGY):
-  - Every section must state WHAT was done AND WHY it was chosen.
-  - Formula variables: <p><b>symbol</b> represents …</p> — one per <p>.
-  - Questionnaire sections and criteria: <p><b>Section A / Inclusion / Exclusion:</b> explanation.</p> — one per <p>.`;
+  - Write all 11 sections in order: Research Design, Research Setting, Target Population, Sample Size and Formula, Sampling Technique, Instrument for Data Collection, Validity of Instrument, Reliability of Instrument, Method of Data Collection, Method of Data Analysis, Ethical Consideration.
+  - Every section explains both WHAT was done AND WHY it was chosen.
+  - Sample Size: describe Taro Yamane formula in words, show full step-by-step mathematical working each step in its own <p>, then add 10% attrition to get the final sample.
+  - Formula variables: <p><b>symbol:</b> meaning</p> — one per variable.
+  - Questionnaire sections / criteria: <p><b>Section A / Inclusion / Exclusion:</b> explanation.</p> — one per item.
+  - Data Analysis section: must mention SPSS, descriptive statistics (frequencies, percentages, mean, standard deviation), Chi-square test of independence, and p-value threshold of less than 0.05.`;
 
     try {
       res.setHeader("Content-Type", "text/plain");
@@ -329,40 +399,16 @@ If writing CHAPTER 3 (METHODOLOGY):
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 4. Generate Single Section Stream
-// KEY FIX: Prompt forbids repeating the section title — frontend adds it as <h2>.
 // ─────────────────────────────────────────────────────────────────────────────
 exports.generateSectionStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
     if (!await verifyToken(req, res)) return;
 
-    const { topic, chapterTitle, sectionTitle, department } = req.body.data || {};
+    const { topic, chapterTitle, sectionTitle, department } = (req.body && req.body.data) || {};
+    if (!topic || !chapterTitle || !sectionTitle) return res.status(400).send("Missing required fields: topic, chapterTitle, sectionTitle");
     const ai = getAi();
 
-    // The section heading is shown in the UI — do not repeat it.
-    // Start immediately with the body text of this section.
-    //
-    // Section-specific structure (mirrors the reference document exactly):
-    //
-    //  Chapter 1 sections:
-    //    Background / Statement of Problem / Significance → prose paragraphs, explain and justify.
-    //    Specific Objectives → one <p> per objective, no bullet symbols.
-    //    Research Questions → one <p> per question, no bullet symbols.
-    //    Hypotheses → <p><b>H₀₁:</b> statement.</p> one per <p>.
-    //    Scope → variables, location, population each as <p><b>Label:</b> text.</p>
-    //    Definitions → <p><b>Term:</b> definition.</p>
-    //
-    //  Chapter 2 sections:
-    //    Conceptual Review (2.1) — AI should write sub-sections for every key concept:
-    //      opening topic sentence + one deep explanatory paragraph each.
-    //    Theoretical Review (2.2) — describe theory fully, then map to study variables.
-    //    Empirical Review (2.3) — thematic prose: prevalence findings, then determinants,
-    //      then feeding/morbidity evidence.
-    //
-    //  Chapter 3 sections:
-    //    Always explain WHAT and WHY.
-    //    Formula variables → <p><b>symbol</b> represents …</p> one per variable.
-    //    Questionnaire sections / criteria → <p><b>Label:</b> explanation.</p> one per item.
     const prompt = `Research Topic: "${sanitize(topic)}"
 Chapter: "${sanitize(chapterTitle)}"
 Section to write: "${sanitize(sectionTitle)}"
@@ -376,28 +422,32 @@ STRICT OUTPUT RULES:
 - Do NOT repeat the section name or chapter name at the top.
 - Write continuous academic prose with APA 7th in-text citations.
 - Do NOT use markdown.
-- Do NOT use bullet characters (•, –, -, ✓) anywhere.
+- Do NOT use bullet characters anywhere.
 
 STRUCTURE — apply based on which section you are writing:
 
 CHAPTER 1 sections:
-  - Background / Statement of Problem / Significance: open with 1–2 direct context sentences, then develop in full explanation paragraphs.
-  - Specific Objectives: write a brief intro sentence, then each objective as its own <p> — no bullet symbols.
-  - Research Questions: one <p> per question.
-  - Hypotheses: <p><b>H₀₁:</b> There is no statistically significant association between … </p> — one per <p>.
-  - Scope of Study: <p><b>Variables:</b> …</p> <p><b>Location:</b> …</p> <p><b>Population:</b> …</p>
-  - Operational Definitions: <p><b>Term:</b> definition.</p> — one term per <p>.
+  - Background of the Study: flow from Global to African/Continental to Nigerian national to Local study site. 5-6 full prose paragraphs.
+  - Statement of the Problem: 4 paragraphs using problem-funnel style (national evidence to local gap to why investigation is needed).
+  - Objectives of the Study: EXACTLY 1 general objective as a single <p>. Then a brief intro sentence, then EXACTLY 5 specific objectives — each as its own <p>, with numbers.
+  - Research Questions: EXACTLY 6 research questions — one per <p>.
+  - Research Hypotheses: EXACTLY 4 null hypotheses: <p><b>H01:</b> There is no statistically significant association between ... and ... </p>.
+  - Significance of the Study: 5 paragraphs — one per stakeholder group (nursing profession, health care providers, PHC system, policy makers, society/caregivers).
+  - Scope of Study: <p><b>Variables:</b> ...</p> <p><b>Location:</b> ...</p> <p><b>Population:</b> ...</p> — one item per <p>.
+  - Operational Definition of Terms: EXACTLY 5 terms — <p><b>Term:</b> definition.</p> — one per <p>.
 
 CHAPTER 2 sections:
-  - Conceptual Review: for EVERY key concept in the topic, write a sub-section — one sharp defining sentence followed by one deep explanatory paragraph that connects the concept to this study.
-  - Theoretical Review: paragraph 1 describes the theory in full; paragraph 2 maps each causal layer of the theory to the study's specific variables.
-  - Empirical Review: flowing prose citing recent Nigerian studies, organized thematically (prevalence first, then socioeconomic/maternal determinants, then feeding practices/morbidity).
+  - Conceptual Review: for EVERY key concept variable in the topic, write a sub-section — one sharp defining sentence followed by one deep explanatory paragraph that connects the concept to this study. Cover all major variable categories (the condition being studied, each associated factor category).
+  - Theoretical Review: EXACTLY 2 paragraphs — paragraph 1 describes the chosen theoretical framework in full; paragraph 2 maps each causal layer of the framework to the study's specific variables.
+  - Empirical Review: EXACTLY 3 flowing prose paragraphs citing named Nigerian authors with years — prevalence studies first paragraph, socioeconomic/maternal determinants second paragraph, feeding practices/morbidity third paragraph.
 
 CHAPTER 3 sections:
-  - Each section: explain WHAT was done, then WHY that choice was made.
-  - Sample size formula: describe the formula, then one <p><b>symbol</b> represents meaning</p> per variable.
-  - Questionnaire sections: <p><b>Section A:</b> covers … because …</p> — one per section.
-  - Inclusion/Exclusion criteria: <p><b>Inclusion:</b> …</p> and <p><b>Exclusion:</b> …</p> blocks.`;
+  - Every section: explain WHAT was done, then WHY that choice was made.
+  - Sample Size and Formula: describe Taro Yamane formula in words, then show full step-by-step mathematical working each step in its own <p>, then add 10% attrition to final sample.
+  - Formula variables: <p><b>symbol:</b> meaning</p> — one per variable.
+  - Instrument for Data Collection: describe questionnaire sections as <p><b>Section A:</b> covers ... because ...</p> — one per section.
+  - Sampling Technique: include <p><b>Inclusion criteria:</b> ...</p> and <p><b>Exclusion criteria:</b> ...</p> blocks embedded in the section prose.
+  - Method of Data Analysis: must mention SPSS, descriptive statistics (frequencies, percentages, mean, standard deviation), Chi-square test of independence, and p-value threshold of less than 0.05.`;
 
     try {
       res.setHeader("Content-Type", "text/plain");
@@ -424,10 +474,11 @@ exports.elaborateStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) 
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
     if (!await verifyToken(req, res)) return;
 
-    const { topic, currentText } = req.body.data || {};
+    const { topic, currentText } = (req.body && req.body.data) || {};
+    if (!topic) return res.status(400).send("Missing required field: topic");
     const ai = getAi();
     const prompt = `Research Topic: "${sanitize(topic)}"
-Existing text: "${sanitize(currentText)}"
+Existing text: "${sanitizeLong(currentText)}"
 
 TASK: Elaborate on this text — expand arguments, add depth, strengthen citations.
 

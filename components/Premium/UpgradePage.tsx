@@ -150,12 +150,14 @@ const UpgradePage: React.FC<UpgradePageProps> = ({ user }) => {
       </div>
 
       {showPayment && (
-        <PaymentModal 
-          user={user} 
+        <PaymentModal
+          user={user}
           onClose={() => {
             setShowPayment(false);
-            if (user.isPremium) navigate('/dashboard');
-          }} 
+            // Navigate to dashboard after payment — the dashboard shows
+            // correct state via real-time Firestore listener
+            navigate('/dashboard');
+          }}
         />
       )}
     </div>
