@@ -122,6 +122,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   const [generatingSection, setGeneratingSection] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
   const [showPayment, setShowPayment] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [copilotQuery, setCopilotQuery] = useState('');
   const [toast, setToast] = useState<string | null>(null);
@@ -194,12 +195,8 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
 
   // ── Access gate ─────────────────────────────────────────────────────────────
   const checkAccess = (): boolean => {
-    const t = activeChapter.toUpperCase();
-    const isFreeChapter = t.includes('CHAPTER 1') || t.includes('CHAPTER ONE');
-    if (!isFreeChapter && user.credits < 1 && !user.isPremium) {
-      setShowPayment(true);
-      return false;
-    }
+    // The user already used a credit to unlock this project topic.
+    // Therefore, they have full access to generate all chapters, sections, and appendices.
     return true;
   };
 
@@ -367,11 +364,9 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   // ── Inline suggestion fetcher (ghost text) ─────────────────────────────────
   const handleFetchSuggestion = useCallback(async (context: string): Promise<string | null> => {
     if (!project || generating) return null;
-    // Only offer suggestions to premium users or users with credits
-    if (!user.isPremium && user.credits < 1) return null;
     const { fetchSuggestion } = await import('../../services/geminiService');
     return fetchSuggestion(project.topic, context);
-  }, [project, generating, user.isPremium, user.credits]);
+  }, [project, generating]);
 
   // ── Reorder outline sections ─────────────────────────────────────────────────
   const handleDragEnd = (chapterIdx: number, event: DragEndEvent) => {
@@ -426,7 +421,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
       )}
 
       {/* ── LEFT SIDEBAR ───────────────────────────────────────────────── */}
-      <aside className="w-68 bg-white border-r border-slate-100 flex flex-col shadow-lg z-40 shrink-0">
+      <aside className={`absolute md:relative z-50 h-full w-68 bg-white border-r border-slate-100 flex flex-col shadow-2xl md:shadow-lg shrink-0 transition-transform duration-300 ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
 
         {/* Header */}
         <div className="h-14 px-5 flex items-center justify-between border-b border-slate-100 shrink-0">
@@ -538,6 +533,20 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         )}
       </aside>
 
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden" 
+          onClick={() => setIsMobileSidebarOpen(false)} 
+        />
+      )}
+
+      <button
+        onClick={() => setIsMobileSidebarOpen(true)}
+        className="md:hidden absolute bottom-6 left-6 z-30 bg-[#1a4731] text-white p-3.5 rounded-full shadow-xl hover:bg-green-800 transition-all"
+      >
+        <BookOpen className="h-6 w-6" />
+      </button>
+
       {/* ── MAIN EDITOR ────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col overflow-hidden relative">
         <WordEditor
@@ -556,7 +565,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
 
         {/* ── AI Copilot panel (Enhanced) ────────────────────────────────── */}
         {isCopilotOpen && (
-          <div className="absolute bottom-24 right-6 w-96 bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.2)] border border-slate-100 z-50 animate-in zoom-in-95 slide-in-from-bottom-4 duration-200 max-h-[70vh] flex flex-col">
+          <div className="absolute bottom-20 md:bottom-24 left-4 right-4 md:left-auto md:right-6 md:w-96 bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.2)] border border-slate-100 z-50 animate-in zoom-in-95 slide-in-from-bottom-4 duration-200 max-h-[70vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-5 pb-3 shrink-0">
               <div className="flex items-center gap-2">

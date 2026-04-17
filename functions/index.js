@@ -331,7 +331,11 @@ const verifyToken = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. Generate Full Chapter Stream
 // ─────────────────────────────────────────────────────────────────────────────
-exports.generateChapterStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) => {
+exports.generateChapterStream = onRequest({ 
+  secrets: ["GEMINI_API_KEY"],
+  timeoutSeconds: 300, // Keep the 5-minute timeout
+  memory: "1GiB"       // Increased memory to handle large outputs safely
+}, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
     if (!await verifyToken(req, res)) return;
@@ -344,14 +348,14 @@ exports.generateChapterStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req,
 Chapter to write: "${sanitize(chapterTitle)}"
 Student department: ${sanitize(department)}
 
-TASK: Write approximately 2500 words of academic body text for this chapter.
+TASK: Write comprehensive academic body text for this chapter. (For Chapters 1-5, write approx 2500 words. For References/Appendices, ignore word count and follow the specific rules below).
 
 STRICT OUTPUT RULES:
 - Start your output IMMEDIATELY with the first <p> tag. No title, no heading, no preamble.
 - Use ONLY <p> and <b> tags. No h1/h2/h3 tags whatsoever.
 - Do NOT write a table of contents, document outline, or chapter list.
 - Do NOT repeat the chapter name at the top.
-- Write continuous academic prose with APA 7th in-text citations in every paragraph.
+- Write continuous academic prose with APA 7th in-text citations in every paragraph (except for References/Appendices).
 - Do NOT use markdown.
 - Do NOT use bullet characters anywhere.
 
@@ -378,7 +382,20 @@ If writing CHAPTER 3 (METHODOLOGY):
   - Sample Size: describe Taro Yamane formula in words, show full step-by-step mathematical working each step in its own <p>, then add 10% attrition to get the final sample.
   - Formula variables: <p><b>symbol:</b> meaning</p> — one per variable.
   - Questionnaire sections / criteria: <p><b>Section A / Inclusion / Exclusion:</b> explanation.</p> — one per item.
-  - Data Analysis section: must mention SPSS, descriptive statistics (frequencies, percentages, mean, standard deviation), Chi-square test of independence, and p-value threshold of less than 0.05.`;
+  - Data Analysis section: must mention SPSS, descriptive statistics (frequencies, percentages, mean, standard deviation), Chi-square test of independence, and p-value threshold of less than 0.05.
+
+If writing REFERENCES:
+  - IGNORE the 2500-word count rule.
+  - Generate exactly 10 highly relevant, realistic academic references published within the last 5 years in APA 7th Edition format.
+  - Format each reference strictly inside its own <p> tag. 
+  - Never use bullet points, numbers, or unicode characters.
+
+If writing APPENDICES:
+  - IGNORE the 2500-word count rule.
+  - Generate a complete, realistic Research Questionnaire based on the topic.
+  - First <p> should be a brief consent message to the respondent.
+  - Create <p><b>Section A: Socio-Demographic Data</b></p> followed by 5 questions (each in its own <p> tag).
+  - Create <p><b>Section B: Core Research Questions</b></p> followed by 10 specific Likert-scale questions related to the variables (each in its own <p> tag).`;
 
     try {
       res.setHeader("Content-Type", "text/plain");
@@ -392,7 +409,13 @@ If writing CHAPTER 3 (METHODOLOGY):
       res.end();
     } catch (error) {
       console.error("generateChapterStream error:", error);
-      if (!res.headersSent) res.status(500).send("Stream failed");
+      if (!res.headersSent) {
+        res.status(500).send("Stream failed");
+      } else {
+        // CRUCIAL FIX: Close the connection if the stream crashes halfway
+        // so the Firebase container doesn't get permanently deadlocked.
+        res.end(); 
+      }
     }
   });
 });

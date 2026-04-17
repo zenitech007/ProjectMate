@@ -131,13 +131,14 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
         matricNumber: matricNumber.trim(),
         supervisorName: supervisorName.trim(),
         institutionType: institutionType as InstitutionType,
-        institutionName: institutionName.trim() || 'N/A', 
+        institutionName: institutionName.trim() || 'N/A',
         faculty: faculty.trim() || 'N/A',
         department: department.trim() || 'N/A',
         chapters: chapterMap,
         outline,
         settings: { showPageNumbers: true, showHeader: true, academicFormat: 'standard' },
         status: 'draft',
+        isUnlocked: true,
         createdAt: Date.now(),
         updatedAt: serverTimestamp()
       };
@@ -151,7 +152,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
           if (!user.isPremium) throw new Error("Insufficient credits.");
         }
         const newProjectRef = doc(projectsCollectionRef);
-        
+
         if (!user.isPremium) {
           transaction.update(userRef, {
             credits: increment(-1),
@@ -160,7 +161,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
         } else {
           transaction.update(userRef, { lifetime_projects: increment(1) });
         }
-        
+
         transaction.set(newProjectRef, newProjectData);
         return newProjectRef.id;
       });
@@ -181,19 +182,17 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
         {[1, 2, 3, 4].map((num) => (
           <React.Fragment key={num}>
             <div className="relative flex flex-col items-center group">
-              <div className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-black transition-all duration-300 ${
-                step >= num 
-                  ? 'bg-[#1a4731] text-white shadow-[0_0_20px_rgba(26,71,49,0.3)] ring-4 ring-[#1a4731]/10' 
-                  : 'bg-white border-2 border-slate-200 text-slate-400'
-              }`}>
+              <div className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-black transition-all duration-300 ${step >= num
+                ? 'bg-[#1a4731] text-white shadow-[0_0_20px_rgba(26,71,49,0.3)] ring-4 ring-[#1a4731]/10'
+                : 'bg-white border-2 border-slate-200 text-slate-400'
+                }`}>
                 {step > num ? <CheckCircle2 className="h-5 w-5" /> : num}
               </div>
             </div>
             {num !== 4 && (
               <div className="flex-1 px-2">
-                <div className={`h-1 rounded-full transition-all duration-500 ${
-                  step > num ? 'bg-[#1a4731]' : 'bg-slate-200'
-                }`} />
+                <div className={`h-1 rounded-full transition-all duration-500 ${step > num ? 'bg-[#1a4731]' : 'bg-slate-200'
+                  }`} />
               </div>
             )}
           </React.Fragment>
@@ -232,7 +231,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
               </div>
 
               {/* Option A: Custom Topic */}
-              <div className="bg-white p-8 rounded-4xladow-xl shadow-slate-200/40 border border-slate-100 relative overflow-hidden group hover:border-[#1a4731]/30 transition-colors">
+              <div className="bg-white p-6 sm:p-8 rounded-3xl sm:rounded-[2.5rem] shadow-xl shadow-slate-200/40 border border-slate-100 relative overflow-hidden group hover:border-[#1a4731]/30 transition-colors">
                 <div className="absolute top-0 left-0 w-2 h-full bg-[#1a4731] opacity-80 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex items-center mb-6 pl-2">
                   <div className="bg-green-50 p-2.5 rounded-xl mr-4"><BookCheck className="h-6 w-6 text-[#1a4731]" /></div>
@@ -376,7 +375,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
                 <p className="text-slate-500 font-medium mt-3 text-lg">Let's set up the cover page details.</p>
               </div>
 
-              <div className="max-w-2xl mx-auto bg-white p-10 sm:p-12 rounded-[2.5rem] shadow-xl shadow-slate-200/40 border border-slate-100">
+              <div className="max-w-2xl mx-auto bg-white p-6 sm:p-12 rounded-3xl sm:rounded-[2.5rem] shadow-xl shadow-slate-200/40 border border-slate-100">
                 <div className="space-y-8">
                   <div className="space-y-2">
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Student Full Name</label>
@@ -434,7 +433,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
                 {/* Decorative gradients */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#1a4731] rounded-full mix-blend-multiply filter blur-[80px] opacity-60"></div>
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-900 rounded-full mix-blend-multiply filter blur-[80px] opacity-40"></div>
-                
+
                 <div className="relative z-10">
                   <div className="flex items-center space-x-3 mb-8 border-b border-white/10 pb-6">
                     <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-sm">
@@ -445,7 +444,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
                       <p className="text-emerald-400 text-sm font-medium mt-1 truncate max-w-sm sm:max-w-md">{selectedTopic}</p>
                     </div>
                   </div>
-                  
+
                   <div className="grid sm:grid-cols-2 gap-4 max-h-70 overflow-y-auto pr-2 custom-scrollbar">
                     {outline.map((ch, i) => (
                       <div key={i} className="flex items-start p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 hover:bg-white/10 transition-colors">
@@ -469,14 +468,14 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
                     </span>
                   ) : (
                     <>
-                      {(user.credits < 1 && !user.isPremium) ? 'Top Up Credits to Continue' : 'Get Started'}
+                      {user.credits < 1 ? 'Top Up Credits to Continue' : 'Unlock & Get Started'}
                       <ArrowRight className="ml-3 h-7 w-7 group-hover:translate-x-1.5 transition-transform" />
                     </>
                   )}
                 </button>
-                {user.credits >= 1 && !user.isPremium && (
+                {user.credits >= 1 && (
                   <p className="text-center text-xs font-bold text-slate-400 mt-4 uppercase tracking-widest">
-                    This will use 1 project credit
+                    This will use 1 credit · project unlocked forever
                   </p>
                 )}
               </div>

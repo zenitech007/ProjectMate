@@ -1,18 +1,18 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Plus, 
-  FileText, 
-  Clock, 
-  ChevronRight, 
-  BookOpen, 
-  Zap, 
-  Loader2, 
-  Trash2, 
-  LayoutDashboard, 
-  History, 
-  GraduationCap, 
+import {
+  Plus,
+  FileText,
+  Clock,
+  ChevronRight,
+  BookOpen,
+  Zap,
+  Loader2,
+  Trash2,
+  LayoutDashboard,
+  History,
+  GraduationCap,
   ArrowUpRight,
   Search,
   SlidersHorizontal,
@@ -39,7 +39,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const handleDelete = async (e: React.MouseEvent, projectId: string, topic: string) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (window.confirm(`Are you sure you want to delete the project: "${topic}"? This action cannot be undone.`)) {
       try {
         await deleteProject(projectId);
@@ -53,7 +53,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     <div className="min-h-screen bg-[#f8fafc]">
       {/* 1. PROFESSIONAL HEADER */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-0 md:h-24 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center space-x-2 text-green-700">
               <LayoutDashboard className="h-5 w-5" />
@@ -63,7 +63,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               Welcome, {user.displayName?.split(' ')[0] || 'Researcher'}
             </h1>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-3"></div>
@@ -71,8 +71,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                 {projects.length} Active Manuscripts
               </span>
             </div>
-            <Link 
-              to="/wizard" 
+            <Link
+              to="/wizard"
               className="inline-flex items-center bg-[#1a4731] text-white px-6 py-3.5 rounded-2xl font-bold hover:bg-[#153a28] transition-all shadow-xl shadow-green-900/20 group"
             >
               <Plus className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
@@ -84,17 +84,17 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* 2. PRIMARY RESEARCH LIST (8 Columns) */}
           <section className="lg:col-span-8 space-y-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
               <div className="flex items-center space-x-3">
                 <div className="p-2.5 bg-green-50 rounded-xl">
                   <BookOpen className="h-5 w-5 text-green-700" />
                 </div>
                 <h2 className="text-xl font-black text-slate-900 tracking-tight">In-Progress Manuscripts</h2>
               </div>
-              
+
               <div className="flex items-center bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-slate-400">
                 <Search className="h-4 w-4 mr-2" />
                 <span className="text-xs font-bold uppercase tracking-widest">Search Library</span>
@@ -121,21 +121,20 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               <div className="grid sm:grid-cols-2 gap-6">
                 {projects.map((p) => (
                   <div key={p.id} className="relative group h-full">
-                    <Link 
+                    <Link
                       to={`/editor/${p.id}`}
                       className="flex flex-col h-full bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:border-green-100 transition-all duration-500 overflow-hidden"
                     >
                       {/* Folder Header Decoration */}
                       <div className={`h-2 w-full ${p.status === 'completed' ? 'bg-green-600' : 'bg-amber-400'}`}></div>
-                      
+
                       <div className="p-8 flex flex-col h-full">
                         <div className="flex justify-between items-start mb-6">
                           <div className="p-3 bg-slate-50 rounded-2xl text-slate-400 group-hover:bg-[#1a4731] group-hover:text-white transition-all duration-300">
                             <FileText className="h-6 w-6" />
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] shadow-sm ${
-                            p.status === 'completed' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
-                          }`}>
+                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] shadow-sm ${p.status === 'completed' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
+                            }`}>
                             {p.status}
                           </span>
                         </div>
@@ -163,7 +162,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                         </div>
                       </div>
                     </Link>
-                    
+
                     <button
                       onClick={(e) => handleDelete(e, p.id, p.topic)}
                       className="absolute top-6 right-6 p-2 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 z-20"
@@ -180,7 +179,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
           {/* 3. INTELLIGENCE & STATS SIDEBAR (4 Columns) */}
           <aside className="lg:col-span-4 space-y-8">
-            
+
             {/* PREMIUN / CREDITS MODULE */}
             <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group">
               <div className="relative z-10">
@@ -207,7 +206,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                   </div>
                 </div>
 
-                <Link 
+                <Link
                   to="/upgrade"
                   className="w-full py-4 bg-[#facc15] text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center hover:bg-white transition-all shadow-xl shadow-[#facc15]/10"
                 >
@@ -242,17 +241,17 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                 <div className="space-y-0 relative">
                   {/* Vertical timeline line */}
                   <div className="absolute left-4 top-2 bottom-2 w-px bg-slate-100"></div>
-                  
+
                   <div className="space-y-4 relative">
                     {topicHistory.slice(0, 5).map((item, idx) => (
-                      <div 
-                        key={item.id} 
+                      <div
+                        key={item.id}
                         onClick={() => handleHistorySelect(item)}
                         className="pl-10 relative group cursor-pointer"
                       >
                         {/* Dot */}
                         <div className="absolute left-3 top-2 w-2 h-2 rounded-full bg-slate-200 border-2 border-white ring-4 ring-transparent group-hover:ring-green-50 group-hover:bg-green-600 transition-all"></div>
-                        
+
                         <div className="bg-slate-50/50 p-4 rounded-2xl border border-transparent group-hover:border-green-100 group-hover:bg-white transition-all">
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.department}</p>
                           <p className="text-xs font-bold text-slate-600 group-hover:text-green-700 transition-colors line-clamp-1">{item.topics[0]?.title || 'Research Session'}</p>
@@ -261,7 +260,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                     ))}
                   </div>
                   {topicHistory.length > 5 && (
-                    <button 
+                    <button
                       onClick={() => setShowFullHistory(true)}
                       className="w-full mt-6 py-3.5 bg-slate-50 hover:bg-green-50 text-slate-500 hover:text-green-700 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center group border border-transparent hover:border-green-100"
                     >
@@ -292,8 +291,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
       {/* FULL RESEARCH LOGS MODAL */}
       {showFullHistory && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          <div 
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             onClick={() => setShowFullHistory(false)}
           ></div>
           <div className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl relative z-10 max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -304,8 +303,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                 </div>
                 <h2 className="text-xl font-black text-slate-900 tracking-tight">Complete Research Logs</h2>
               </div>
-              <button 
-                onClick={() => setShowFullHistory(false)} 
+              <button
+                onClick={() => setShowFullHistory(false)}
                 className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 <X className="h-5 w-5" />
@@ -314,7 +313,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar">
               <div className="space-y-4">
                 {topicHistory.map((item) => (
-                  <div 
+                  <div
                     key={item.id}
                     onClick={() => {
                       setShowFullHistory(false);

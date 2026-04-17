@@ -27,22 +27,13 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
             {user ? (
               <>
                 <Link to="/dashboard" className="text-slate-600 hover:text-green-700 font-medium">Dashboard</Link>
-                {!user.isPremium && (
-                  <Link 
-                    to="/upgrade" 
-                    className="hidden md:flex items-center space-x-1 bg-yellow-400 text-[#1a4731] px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-yellow-500 transition-all shadow-sm"
-                  >
-                    <Zap className="h-3.5 w-3.5 fill-current" />
-                    <span>Go Premium</span>
-                  </Link>
-                )}
                 <div className="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full">
                   {user.isPremium ? (
                     <ShieldCheck className="h-4 w-4 text-green-600" />
                   ) : (
                     <User className="h-4 w-4 text-slate-500" />
                   )}
-                  <span className="text-sm font-semibold text-slate-700">{user.email.split('@')[0]}</span>
+                  <span className="hidden sm:block text-sm font-semibold text-slate-700">{user.email.split('@')[0]}</span>
                 </div>
                 <button
                   onClick={onLogout}
@@ -55,8 +46,8 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
             ) : (
               <>
                 <Link to="/auth" className="text-slate-600 hover:text-green-700 font-medium">Login</Link>
-                <Link 
-                  to="/auth" 
+                <Link
+                  to="/auth"
                   className="bg-green-700 text-white px-5 py-2 rounded-lg font-semibold hover:bg-green-800 transition-all shadow-md shadow-green-200"
                 >
                   Get Started

@@ -39,14 +39,15 @@ const A4Editor = React.forwardRef<ReactQuill, A4EditorProps>(({ value, onChange,
   const QuillComponent = ReactQuill as any;
 
   return (
-    <div className="min-h-screen bg-slate-100 py-12 flex justify-center overflow-y-auto custom-scrollbar">
+    <div className="min-h-screen bg-slate-100 py-4 md:py-12 px-2 md:px-0 flex justify-center overflow-auto custom-scrollbar w-full">
       {/* The A4 Sheet Container */}
       <div
-        className="bg-white shadow-2xl relative"
+        className="bg-white shadow-2xl relative shrink-0"
         style={{
-          width: '210mm',
+          width: '100%',
+          maxWidth: '210mm',
           minHeight: '297mm',
-          padding: '2.54cm', // 1-inch margins
+          padding: 'clamp(1rem, 5vw, 2.54cm)', // Shrinks padding on small screens
           fontFamily: '"Tinos", "Times New Roman", Times, serif',
           transition: 'all 0.3s ease'
         }}

@@ -1,22 +1,22 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Check, 
-  CheckCircle2, 
-  GraduationCap, 
-  FileText, 
-  Zap, 
-  ShieldCheck, 
-  Globe, 
-  Download, 
-  Clock, 
-  Sparkles, 
-  BookOpen, 
-  Layout, 
-  PenTool, 
-  Twitter, 
-  Instagram, 
+import {
+  Check,
+  CheckCircle2,
+  GraduationCap,
+  FileText,
+  Zap,
+  ShieldCheck,
+  Globe,
+  Download,
+  Clock,
+  Sparkles,
+  BookOpen,
+  Layout,
+  PenTool,
+  Twitter,
+  Instagram,
   Mail,
   ArrowRight
 } from 'lucide-react';
@@ -36,17 +36,17 @@ const LandingPage: React.FC = () => {
             <Sparkles className="h-4 w-4 text-green-600" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em]">AI-Powered Academic Writing</span>
           </div>
-          
-          <h1 className="text-5xl md:text-7xl font-bold text-[#1a4731] mb-8 leading-[1.1] font-['Playfair_Display'] max-w-4xl mx-auto">
+
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-[#1a4731] mb-8 leading-[1.1] font-['Playfair_Display'] max-w-4xl mx-auto">
             Finish Your Final Year Project in <span className="text-[#2d6a4f] italic underline decoration-[#facc15]/30 underline-offset-8">Hours</span>, Not Months
           </h1>
-          
+
           <p className="text-lg text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
             ProjectMate generates professional, publication-ready research projects that strictly follow the <strong>Nigerian University Format</strong>. APA 7th Edition, double spacing, and all formatting handled automatically.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <button 
+            <button
               onClick={handleStart}
               className="w-full sm:w-auto bg-[#1a4731] text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-[#153a28] transition-all flex items-center justify-center group shadow-xl shadow-green-900/10"
             >
@@ -138,44 +138,44 @@ const LandingPage: React.FC = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-['Playfair_Display']">Everything You Need to Complete Your Project</h2>
             <p className="text-slate-500 max-w-2xl mx-auto">Built specifically for Nigerian universities. Every feature designed to meet academic standards.</p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <FeatureCard 
+            <FeatureCard
               icon={<Sparkles className="h-6 w-6 text-green-700" />}
               title="AI-Powered Generation"
               desc="Advanced AI trained on Nigerian academic standards generates publication-ready content chapter by chapter."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<FileText className="h-6 w-6 text-blue-700" />}
               title="Nigerian Format Compliant"
               desc="Times New Roman, 12pt, double spacing, 1-inch margins. All formatting rules applied automatically."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<Layout className="h-6 w-6 text-purple-700" />}
               title="Complete Structure"
               desc="From Title Page to References. All 5 chapters with proper sections, subsections, and APA 7th citations."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<Download className="h-6 w-6 text-red-700" />}
               title="Export to Word & PDF"
               desc="Download your project in Microsoft Word format (.docx) or PDF, ready for submission."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<Clock className="h-6 w-6 text-orange-700" />}
               title="Save Weeks of Work"
               desc="What normally takes weeks or months can be completed in hours with intelligent AI assistance."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<GraduationCap className="h-6 w-6 text-emerald-700" />}
               title="Department Specific"
               desc="Topics and content tailored to your specific faculty and department requirements."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<ShieldCheck className="h-6 w-6 text-indigo-700" />}
               title="Original Content"
               desc="Each project is uniquely generated. No plagiarism concerns with original, researched content."
             />
-            <FeatureCard 
+            <FeatureCard
               icon={<Zap className="h-6 w-6 text-yellow-600" />}
               title="Instant Topic Ideas"
               desc="Get 5 trending, relevant research topics for your department with one click."
@@ -192,31 +192,31 @@ const LandingPage: React.FC = () => {
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-['Playfair_Display']">From Zero to Submission in 4 Simple Steps</h2>
           <p className="text-slate-500 max-w-2xl mx-auto mb-20">No more sleepless nights. No more writer's block. Just follow these steps.</p>
-          
+
           <div className="max-w-4xl mx-auto space-y-8 relative">
             {/* Connector line */}
             <div className="absolute left-10 md:left-1/2 top-10 bottom-10 w-0.5 bg-slate-200 z-0 hidden md:block"></div>
-            
-            <StepCard 
-              num="01" 
+
+            <StepCard
+              num="01"
               icon={<PenTool className="h-6 w-6" />}
               title="Choose Your Topic"
               desc="Select your faculty and department. Our AI generates 5 trending research topics tailored to Nigerian context. Pick one or enter your own."
             />
-            <StepCard 
-              num="02" 
+            <StepCard
+              num="02"
               icon={<BookOpen className="h-6 w-6" />}
               title="Review the Outline"
               desc="See your project structure with all chapters and sections. The Table of Contents follows the standard Nigerian university format."
             />
-            <StepCard 
-              num="03" 
+            <StepCard
+              num="03"
               icon={<Sparkles className="h-6 w-6" />}
               title="Generate Chapters"
               desc="Watch as AI writes each chapter with proper academic language, local context (Nigerian names, cities, Naira), and APA citations."
             />
-            <StepCard 
-              num="04" 
+            <StepCard
+              num="04"
               icon={<Download className="h-6 w-6" />}
               title="Download & Submit"
               desc="Export your complete project as a properly formatted Word document or PDF. Ready for submission to your supervisor."
@@ -224,7 +224,7 @@ const LandingPage: React.FC = () => {
           </div>
 
           <div className="mt-16">
-            <button 
+            <button
               onClick={handleStart}
               className="bg-[#1a4731] text-white px-10 py-4 rounded-lg font-bold text-lg hover:bg-[#153a28] transition-all shadow-xl shadow-green-900/10 inline-flex items-center"
             >
@@ -248,14 +248,14 @@ const LandingPage: React.FC = () => {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Card */}
-            <div className="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center hover:shadow-md transition-shadow">
+            <div className="bg-white p-6 sm:p-10 rounded-3xl sm:rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col items-center hover:shadow-md transition-shadow">
               <div className="bg-slate-50 p-4 rounded-full mb-6">
                 <Sparkles className="h-8 w-8 text-slate-400" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-2">Free</h3>
               <div className="text-4xl font-black text-slate-900 mb-2">₦0</div>
               <p className="text-slate-400 text-sm mb-8">Perfect for getting started</p>
-              
+
               <ul className="w-full space-y-4 mb-10">
                 <PricingItem text="5 AI-generated topic suggestions" />
                 <PricingItem text="Complete project outline" />
@@ -265,8 +265,8 @@ const LandingPage: React.FC = () => {
                 <PricingItem text="Cannot export full project" disabled />
                 <PricingItem text="No Word/PDF download" disabled />
               </ul>
-              
-              <button 
+
+              <button
                 onClick={handleStart}
                 className="w-full py-4 border-2 border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-all"
               >
@@ -275,7 +275,7 @@ const LandingPage: React.FC = () => {
             </div>
 
             {/* Premium Card */}
-            <div className="bg-[#1a4731] p-10 rounded-[2.5rem] shadow-2xl flex flex-col items-center relative overflow-hidden group">
+            <div className="bg-[#1a4731] p-6 sm:p-10 rounded-3xl sm:rounded-[2.5rem] shadow-2xl flex flex-col items-center relative overflow-hidden group">
               <div className="absolute top-0 right-0 bg-[#facc15] text-[#1a4731] px-6 py-1.5 rounded-bl-2xl font-black text-[10px] uppercase tracking-widest shadow-lg">
                 👑 Most Popular
               </div>
@@ -285,7 +285,7 @@ const LandingPage: React.FC = () => {
               <h3 className="text-2xl font-bold text-white mb-2">Premium</h3>
               <div className="text-4xl font-black text-white mb-2">₦{PREMIUM_PRICE_NGN.toLocaleString()} <span className="text-sm font-normal text-green-200">per project</span></div>
               <p className="text-green-200 text-sm mb-8">Everything you need to graduate</p>
-              
+
               <ul className="w-full space-y-4 mb-10">
                 <PricingItem text="Everything in Free, plus:" premium />
                 <PricingItem text="All 5 chapters generated" premium />
@@ -297,8 +297,8 @@ const LandingPage: React.FC = () => {
                 <PricingItem text="Double spacing & proper fonts" premium />
                 <PricingItem text="Priority support" premium />
               </ul>
-              
-              <button 
+
+              <button
                 onClick={handleStart}
                 className="w-full py-4 bg-[#facc15] text-[#1a4731] rounded-xl font-black text-lg hover:bg-[#eab308] transition-all shadow-xl shadow-yellow-900/20"
               >
@@ -306,7 +306,7 @@ const LandingPage: React.FC = () => {
               </button>
             </div>
           </div>
-          
+
           <p className="text-center text-[11px] text-slate-400 mt-12 max-w-md mx-auto leading-relaxed">
             Secure payment powered by Paystack. Your project is saved automatically. Pay only when you're ready to export.
           </p>
@@ -330,11 +330,11 @@ const FeatureCard = ({ icon, title, desc }: { icon: React.ReactNode, title: stri
 );
 
 const StepCard = ({ num, icon, title, desc }: { num: string, icon: React.ReactNode, title: string, desc: string }) => (
-  <div className="flex flex-col md:flex-row items-center gap-8 relative z-10 group">
-    <div className="shrink-0 w-20 h-20 bg-[#1a4731] text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-3 transition-transform">
+  <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 relative z-10 group">
+    <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 bg-[#1a4731] text-white rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-3 transition-transform">
       {icon}
     </div>
-    <div className="bg-white p-8 rounded-2xl shadow-md border border-slate-100 text-left flex-1 hover:shadow-xl transition-shadow">
+    <div className="bg-white p-6 md:p-8 rounded-2xl shadow-md border border-slate-100 text-left flex-1 hover:shadow-xl transition-shadow w-full">
       <div className="flex items-center space-x-3 mb-2">
         <span className="text-xs font-black text-green-700 uppercase tracking-widest">{num}</span>
         <h3 className="text-xl font-bold text-slate-900 font-serif">{title}</h3>
@@ -379,7 +379,7 @@ const Footer = () => (
             </button>
           </div>
         </div>
-        
+
         <div className="md:pl-12">
           <h4 className="font-bold text-sm uppercase tracking-widest text-green-500 mb-6">Quick Links</h4>
           <ul className="space-y-4 text-sm text-green-100/60">
@@ -389,7 +389,7 @@ const Footer = () => (
             <li><button className="hover:text-white transition-colors">Sign In</button></li>
           </ul>
         </div>
-        
+
         <div>
           <h4 className="font-bold text-sm uppercase tracking-widest text-green-500 mb-6">Legal</h4>
           <ul className="space-y-4 text-sm text-green-100/60">
@@ -398,7 +398,7 @@ const Footer = () => (
             <li><button className="hover:text-white transition-colors">Refund Policy</button></li>
           </ul>
         </div>
-        
+
         <div>
           <h4 className="font-bold text-sm uppercase tracking-widest text-green-500 mb-6">Support</h4>
           <p className="text-green-100/60 text-xs mb-6 leading-relaxed">Have questions or need help? Contact our academic support team.</p>
@@ -408,7 +408,7 @@ const Footer = () => (
           </button>
         </div>
       </div>
-      
+
       <div className="pt-10 border-t border-green-900/50 flex flex-col md:flex-row items-center justify-between text-[11px] text-green-100/40">
         <p>© {new Date().getFullYear()} ProjectMate. All rights reserved.</p>
         <p className="mt-4 md:mt-0 flex items-center">

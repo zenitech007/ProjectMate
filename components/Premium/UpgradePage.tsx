@@ -104,8 +104,8 @@ const UpgradePage: React.FC<UpgradePageProps> = ({ user }) => {
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-10">
                   <div>
-                    <h3 className="text-2xl font-bold mb-2">Premium Plan</h3>
-                    <p className="text-green-200/60 text-sm">One-time payment. Lifetime access.</p>
+                    <h3 className="text-2xl font-bold mb-2">Project Credit</h3>
+                    <p className="text-green-200/60 text-sm">One Payment. Full Access To Project.</p>
                   </div>
                   <div className="bg-[#ffffff10] p-4 rounded-2xl group-hover:scale-110 transition-transform duration-500">
                     <Zap className="h-8 w-8 text-yellow-400 fill-yellow-400" />
@@ -133,7 +133,7 @@ const UpgradePage: React.FC<UpgradePageProps> = ({ user }) => {
                   className="w-full bg-[#facc15] text-[#1a4731] py-5 rounded-2xl font-black text-xl hover:bg-[#eab308] transition-all shadow-xl shadow-yellow-900/20 flex items-center justify-center group/btn"
                 >
                   <CreditCard className="mr-3 h-6 w-6 group-btn-hover:translate-x-1 transition-transform" />
-                  Unlock Premium Now
+                  Get Credit Now
                 </button>
                 
                 <p className="text-center text-[10px] text-green-200/30 mt-6 uppercase tracking-widest font-bold">
