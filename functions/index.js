@@ -329,47 +329,16 @@ const verifyToken = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helper: consume credit transaction
-// ─────────────────────────────────────────────────────────────────────────────
-const consumeCredit = async (uid, res) => {
-  const userRef = admin.firestore().collection("users").doc(uid);
-  try {
-    return await admin.firestore().runTransaction(async (tx) => {
-      const userSnap = await tx.get(userRef);
-      if (!userSnap.exists) throw new Error("USER_NOT_FOUND");
-
-      const userData = userSnap.data();
-      if (userData.isPremium) return true;
-
-      if ((userData.credits || 0) < 1) {
-        throw new Error("INSUFFICIENT_CREDITS");
-      }
-
-      tx.update(userRef, { credits: admin.firestore.FieldValue.increment(-1) });
-      return true;
-    });
-  } catch (error) {
-    if (error.message === "USER_NOT_FOUND") res.status(403).send("User not found");
-    else if (error.message === "INSUFFICIENT_CREDITS") res.status(402).send("Insufficient credits");
-    else { console.error("Credit transaction failed:", error); res.status(500).send("Credit verification failed"); }
-    return false;
-  }
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
 // 3. Generate Full Chapter Stream
 // ─────────────────────────────────────────────────────────────────────────────
 exports.generateChapterStream = onRequest({
   secrets: ["GEMINI_API_KEY"],
-  timeoutSeconds: 540, // 9-minute timeout — References/Appendices need more time
+  timeoutSeconds: 300, // Keep the 5-minute timeout
   memory: "1GiB"       // Increased memory to handle large outputs safely
 }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-    const decoded = await verifyToken(req, res);
-    if (!decoded) return;
-
-    if (!(await consumeCredit(decoded.uid, res))) return;
+    if (!await verifyToken(req, res)) return;
 
     const { topic, chapterTitle, department } = (req.body && req.body.data) || {};
     if (!topic || !chapterTitle) return res.status(400).send("Missing required fields: topic, chapterTitle");
@@ -434,23 +403,17 @@ If writing APPENDICES:
       const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        config: {
-          systemInstruction: PHD_SYSTEM_PROMPT,
-          // Disable thinking to prevent timeout on long outputs (References/Appendices)
-          thinkingConfig: { thinkingBudget: 0 },
-        },
+        config: { systemInstruction: PHD_SYSTEM_PROMPT },
       });
       for await (const chunk of stream) { if (chunk.text) res.write(chunk.text); }
-      // Send a sentinel so the frontend knows the stream completed successfully
-      res.write("\n__STREAM_COMPLETE__");
       res.end();
     } catch (error) {
       console.error("generateChapterStream error:", error);
       if (!res.headersSent) {
         res.status(500).send("Stream failed");
       } else {
-        // Signal to the frontend that the stream was interrupted
-        res.write("\n__STREAM_ERROR__");
+        // CRUCIAL FIX: Close the connection if the stream crashes halfway
+        // so the Firebase container doesn't get permanently deadlocked.
         res.end();
       }
     }
@@ -463,10 +426,7 @@ If writing APPENDICES:
 exports.generateSectionStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-    const decoded = await verifyToken(req, res);
-    if (!decoded) return;
-
-    if (!(await consumeCredit(decoded.uid, res))) return;
+    if (!await verifyToken(req, res)) return;
 
     const { topic, chapterTitle, sectionTitle, department } = (req.body && req.body.data) || {};
     if (!topic || !chapterTitle || !sectionTitle) return res.status(400).send("Missing required fields: topic, chapterTitle, sectionTitle");
@@ -518,18 +478,13 @@ CHAPTER 3 sections:
       const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        config: {
-          systemInstruction: PHD_SYSTEM_PROMPT,
-          thinkingConfig: { thinkingBudget: 0 },
-        },
+        config: { systemInstruction: PHD_SYSTEM_PROMPT },
       });
       for await (const chunk of stream) { if (chunk.text) res.write(chunk.text); }
-      res.write("\n__STREAM_COMPLETE__");
       res.end();
     } catch (error) {
       console.error("generateSectionStream error:", error);
       if (!res.headersSent) res.status(500).send("Section stream failed");
-      else { res.write("\n__STREAM_ERROR__"); res.end(); }
     }
   });
 });
@@ -540,10 +495,7 @@ CHAPTER 3 sections:
 exports.elaborateStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-    const decoded = await verifyToken(req, res);
-    if (!decoded) return;
-
-    if (!(await consumeCredit(decoded.uid, res))) return;
+    if (!await verifyToken(req, res)) return;
 
     const { topic, currentText } = (req.body && req.body.data) || {};
     if (!topic) return res.status(400).send("Missing required field: topic");
@@ -565,18 +517,13 @@ STRICT OUTPUT RULES:
       const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        config: {
-          systemInstruction: PHD_SYSTEM_PROMPT,
-          thinkingConfig: { thinkingBudget: 0 },
-        },
+        config: { systemInstruction: PHD_SYSTEM_PROMPT },
       });
       for await (const chunk of stream) { if (chunk.text) res.write(chunk.text); }
-      res.write("\n__STREAM_COMPLETE__");
       res.end();
     } catch (error) {
       console.error("elaborateStream error:", error);
       if (!res.headersSent) res.status(500).send("Elaborate stream failed");
-      else { res.write("\n__STREAM_ERROR__"); res.end(); }
     }
   });
 });

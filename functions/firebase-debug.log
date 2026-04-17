@@ -1,0 +1,68 @@
+[debug] [2026-04-17T18:29:26.679Z] ----------------------------------------------------------------------
+[debug] [2026-04-17T18:29:26.685Z] Command:       C:\nvm4w\nodejs\node.exe C:\Users\IKA\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2026-04-17T18:29:26.685Z] CLI Version:   15.10.0
+[debug] [2026-04-17T18:29:26.686Z] Platform:      win32
+[debug] [2026-04-17T18:29:26.686Z] Node Version:  v20.20.2
+[debug] [2026-04-17T18:29:26.686Z] Time:          Fri Apr 17 2026 14:29:26 GMT-0400 (Amazon Standard Time)
+[debug] [2026-04-17T18:29:26.686Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-17T18:29:32.498Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-17T18:29:32.499Z] > authorizing via signed-in user (zenitech007@gmail.com)
+[debug] [2026-04-17T18:29:32.499Z] [iam] checking project projectmate-485110 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-04-17T18:29:32.504Z] Checked if tokens are valid: false, expires at: 1776451357058
+[debug] [2026-04-17T18:29:32.505Z] Checked if tokens are valid: false, expires at: 1776451357058
+[debug] [2026-04-17T18:29:32.506Z] > refreshing access token with scopes: []
+[debug] [2026-04-17T18:29:32.511Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-17T18:29:32.511Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-17T18:31:47.549Z] ----------------------------------------------------------------------
+[debug] [2026-04-17T18:31:47.579Z] Command:       C:\nvm4w\nodejs\node.exe C:\Users\IKA\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2026-04-17T18:31:47.580Z] CLI Version:   15.10.0
+[debug] [2026-04-17T18:31:47.581Z] Platform:      win32
+[debug] [2026-04-17T18:31:47.581Z] Node Version:  v20.20.2
+[debug] [2026-04-17T18:31:47.582Z] Time:          Fri Apr 17 2026 14:31:47 GMT-0400 (Amazon Standard Time)
+[debug] [2026-04-17T18:31:47.582Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-17T18:32:04.303Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-17T18:32:04.304Z] > authorizing via signed-in user (zenitech007@gmail.com)
+[debug] [2026-04-17T18:32:04.304Z] [iam] checking project projectmate-485110 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-04-17T18:32:04.308Z] Checked if tokens are valid: false, expires at: 1776451357058
+[debug] [2026-04-17T18:32:04.308Z] Checked if tokens are valid: false, expires at: 1776451357058
+[debug] [2026-04-17T18:32:04.309Z] > refreshing access token with scopes: []
+[debug] [2026-04-17T18:32:04.319Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-17T18:32:04.319Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-17T18:32:05.406Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-04-17T18:32:05.407Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-17T18:32:05.527Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/projectmate-485110:testIamPermissions [none]
+[debug] [2026-04-17T18:32:05.528Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/projectmate-485110:testIamPermissions  x-goog-user-project=projectmate-485110
+[debug] [2026-04-17T18:32:05.528Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/projectmate-485110:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-04-17T18:32:06.742Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/projectmate-485110:testIamPermissions 200
+[debug] [2026-04-17T18:32:06.742Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/projectmate-485110:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-04-17T18:32:06.743Z] Checked if tokens are valid: true, expires at: 1776454324407
+[debug] [2026-04-17T18:32:06.743Z] Checked if tokens are valid: true, expires at: 1776454324407
+[debug] [2026-04-17T18:32:06.743Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/projectmate-485110/serviceAccounts/projectmate-485110@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-04-17T18:32:06.744Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/projectmate-485110/serviceAccounts/projectmate-485110@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-04-17T18:32:07.755Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/projectmate-485110/serviceAccounts/projectmate-485110@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-04-17T18:32:07.755Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/projectmate-485110/serviceAccounts/projectmate-485110@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'projectmate-485110'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-04-17T18:32:08.037Z] Checked if tokens are valid: true, expires at: 1776454324407
+[debug] [2026-04-17T18:32:08.037Z] Checked if tokens are valid: true, expires at: 1776454324407
+[debug] [2026-04-17T18:32:08.038Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/projectmate-485110 [none]
+[debug] [2026-04-17T18:32:08.455Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/projectmate-485110 200
+[debug] [2026-04-17T18:32:08.456Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/projectmate-485110 {"projectNumber":"369127916461","projectId":"projectmate-485110","lifecycleState":"ACTIVE","name":"ProjectMate","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-01-22T10:33:01.499956Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-04-17T18:32:08.646Z] Checked if tokens are valid: true, expires at: 1776454324407
+[debug] [2026-04-17T18:32:08.646Z] Checked if tokens are valid: true, expires at: 1776454324407
+[debug] [2026-04-17T18:32:08.646Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/projectmate-485110/adminSdkConfig [none]
+[debug] [2026-04-17T18:32:09.437Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/projectmate-485110/adminSdkConfig 200
+[debug] [2026-04-17T18:32:09.437Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/projectmate-485110/adminSdkConfig {"projectId":"projectmate-485110","storageBucket":"projectmate-485110.firebasestorage.app"}
+[debug] [2026-04-17T18:32:09.439Z] Checked if tokens are valid: true, expires at: 1776454324407
+[debug] [2026-04-17T18:32:09.439Z] Checked if tokens are valid: true, expires at: 1776454324407
+[debug] [2026-04-17T18:32:09.439Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/projectmate-485110/configs [none]
+[debug] [2026-04-17T18:32:10.723Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/projectmate-485110/configs 200
+[debug] [2026-04-17T18:32:10.723Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/projectmate-485110/configs {}
