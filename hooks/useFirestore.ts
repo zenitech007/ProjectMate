@@ -1,15 +1,16 @@
 
 import { useState, useEffect } from 'react';
-import { 
-  collection, 
-  query, 
-  where, 
-  onSnapshot, 
-  addDoc, 
-  updateDoc, 
-  doc, 
-  getDoc, 
-  deleteDoc, 
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  doc,
+  getDoc,
+  deleteDoc,
   serverTimestamp,
   limit
 } from 'firebase/firestore';
@@ -19,25 +20,32 @@ import { Project, TopicHistoryItem } from '../types';
 export const useFirestore = (uid?: string) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [topicHistory, setTopicHistory] = useState<TopicHistoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const loading = loadingProjects || loadingHistory;
 
   useEffect(() => {
     if (!uid) {
-      setLoading(false);
+      setLoadingProjects(false);
+      setLoadingHistory(false);
       return;
     }
 
-    setLoading(true);
+    setLoadingProjects(true);
+    setLoadingHistory(true);
 
     const qProjects = query(
       collection(db, 'projects'),
-      where('userId', '==', uid)
+      where('userId', '==', uid),
+      orderBy('createdAt', 'desc')
     );
 
     const qHistory = query(
       collection(db, 'topic_history'),
       where('userId', '==', uid),
+      orderBy('createdAt', 'desc'),
       limit(30)
     );
 
@@ -46,14 +54,13 @@ export const useFirestore = (uid?: string) => {
       snapshot.forEach((doc) => {
         projs.push({ id: doc.id, ...doc.data() } as Project);
       });
-      
-      projs.sort((a, b) => b.createdAt - a.createdAt);
+
       setProjects(projs);
-      // Ensure loading is set to false if this is the only listener or if history also finishes
+      setLoadingProjects(false);
     }, (err) => {
       console.error("Firestore projects sync error:", err);
       setError(err.message);
-      setLoading(false);
+      setLoadingProjects(false);
     });
 
     const unsubscribeHistory = onSnapshot(qHistory, (snapshot) => {
@@ -61,14 +68,13 @@ export const useFirestore = (uid?: string) => {
       snapshot.forEach((doc) => {
         history.push({ id: doc.id, ...doc.data() } as TopicHistoryItem);
       });
-      
-      history.sort((a, b) => b.createdAt - a.createdAt);
+
       setTopicHistory(history.slice(0, 10));
-      setLoading(false);
+      setLoadingHistory(false);
     }, (err) => {
       console.error("Firestore history sync error:", err);
       setError(err.message);
-      setLoading(false);
+      setLoadingHistory(false);
     });
 
     return () => {
@@ -77,7 +83,7 @@ export const useFirestore = (uid?: string) => {
     };
   }, [uid]);
 
-  const addTopicHistory = async (faculty: string, department: string, topics: {title: string, brief: string}[]) => {
+  const addTopicHistory = async (faculty: string, department: string, topics: { title: string, brief: string }[]) => {
     if (!uid) return;
     try {
       await addDoc(collection(db, 'topic_history'), {

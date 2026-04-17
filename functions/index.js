@@ -329,6 +329,34 @@ const verifyToken = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Helper: consume credit transaction
+// ─────────────────────────────────────────────────────────────────────────────
+const consumeCredit = async (uid, res) => {
+  const userRef = admin.firestore().collection("users").doc(uid);
+  try {
+    return await admin.firestore().runTransaction(async (tx) => {
+      const userSnap = await tx.get(userRef);
+      if (!userSnap.exists) throw new Error("USER_NOT_FOUND");
+
+      const userData = userSnap.data();
+      if (userData.isPremium) return true;
+
+      if ((userData.credits || 0) < 1) {
+        throw new Error("INSUFFICIENT_CREDITS");
+      }
+
+      tx.update(userRef, { credits: admin.firestore.FieldValue.increment(-1) });
+      return true;
+    });
+  } catch (error) {
+    if (error.message === "USER_NOT_FOUND") res.status(403).send("User not found");
+    else if (error.message === "INSUFFICIENT_CREDITS") res.status(402).send("Insufficient credits");
+    else { console.error("Credit transaction failed:", error); res.status(500).send("Credit verification failed"); }
+    return false;
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 3. Generate Full Chapter Stream
 // ─────────────────────────────────────────────────────────────────────────────
 exports.generateChapterStream = onRequest({
@@ -338,7 +366,10 @@ exports.generateChapterStream = onRequest({
 }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-    if (!await verifyToken(req, res)) return;
+    const decoded = await verifyToken(req, res);
+    if (!decoded) return;
+
+    if (!(await consumeCredit(decoded.uid, res))) return;
 
     const { topic, chapterTitle, department } = (req.body && req.body.data) || {};
     if (!topic || !chapterTitle) return res.status(400).send("Missing required fields: topic, chapterTitle");
@@ -432,7 +463,10 @@ If writing APPENDICES:
 exports.generateSectionStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-    if (!await verifyToken(req, res)) return;
+    const decoded = await verifyToken(req, res);
+    if (!decoded) return;
+
+    if (!(await consumeCredit(decoded.uid, res))) return;
 
     const { topic, chapterTitle, sectionTitle, department } = (req.body && req.body.data) || {};
     if (!topic || !chapterTitle || !sectionTitle) return res.status(400).send("Missing required fields: topic, chapterTitle, sectionTitle");
@@ -506,7 +540,10 @@ CHAPTER 3 sections:
 exports.elaborateStream = onRequest({ secrets: ["GEMINI_API_KEY"] }, (req, res) => {
   cors(req, res, async () => {
     if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-    if (!await verifyToken(req, res)) return;
+    const decoded = await verifyToken(req, res);
+    if (!decoded) return;
+
+    if (!(await consumeCredit(decoded.uid, res))) return;
 
     const { topic, currentText } = (req.body && req.body.data) || {};
     if (!topic) return res.status(400).send("Missing required field: topic");

@@ -417,24 +417,98 @@ export const exportToPdf = async (project: Project) => {
       }
 
       if (tag === 'p') {
-        const text = node.textContent || '';
-        if (!text.trim()) return;
-        pdf.setFont('times', 'normal'); pdf.setFontSize(12);
-        const lines = pdf.splitTextToSize(text, contentWidth - 36);
-        lines.forEach((line: string) => { checkNewPage(20); pdf.text(line, margin + 36, y); y += 20; });
-        y += 6;
+        const segments: { text: string; bold: boolean; italic: boolean }[] = [];
+        const extractSegments = (childNode: Node, currentStyles: { bold: boolean; italic: boolean }) => {
+          childNode.childNodes.forEach(child => {
+            if (child.nodeType === Node.TEXT_NODE) {
+              segments.push({ text: child.textContent || '', ...currentStyles });
+            } else if (child.nodeType === Node.ELEMENT_NODE) {
+              const el = child as Element;
+              const childTag = el.tagName?.toLowerCase();
+              const newStyles = { ...currentStyles };
+              if (childTag === 'b' || childTag === 'strong') newStyles.bold = true;
+              if (childTag === 'i' || childTag === 'em') newStyles.italic = true;
+              extractSegments(child, newStyles);
+            }
+          });
+        };
+        extractSegments(node, { bold: false, italic: false });
+        if (segments.every(s => !s.text.trim())) return;
+
+        const lineHeight = 24; // Double-spaced 12pt font
+        const indent = 36; // 0.5 inch
+        pdf.setFontSize(12);
+
+        let currentX = margin + indent;
+        checkNewPage(lineHeight);
+
+        for (const segment of segments) {
+          const style = segment.bold && segment.italic ? 'bolditalic' : segment.bold ? 'bold' : segment.italic ? 'italic' : 'normal';
+          pdf.setFont('times', style);
+
+          const words = segment.text.split(/(\s+)/);
+          for (const word of words) {
+            if (!word) continue;
+            const wordWidth = pdf.getStringUnitWidth(word) * 12 / pdf.internal.scaleFactor;
+            if (currentX + wordWidth > pageWidth - margin) {
+              y += lineHeight;
+              checkNewPage(lineHeight);
+              currentX = margin; // Subsequent lines are not indented
+            }
+            pdf.text(word, currentX, y);
+            currentX += wordWidth;
+          }
+        }
+        y += lineHeight;
         return;
       }
 
-      if (tag === 'li') {
-        pdf.setFont('times', 'normal'); pdf.setFontSize(12);
-        const lines = pdf.splitTextToSize('\u2022  ' + (node.textContent || ''), contentWidth - 36);
-        lines.forEach((line: string) => { checkNewPage(20); pdf.text(line, margin + 20, y); y += 20; });
-        y += 4;
+      if (tag === 'ul' || tag === 'ol') {
+        const listItems = Array.from(node.querySelectorAll('li'));
+        listItems.forEach((li, idx) => {
+          const prefix = tag === 'ol' ? `${idx + 1}. ` : '\u2022  ';
+          const segments: { text: string; bold: boolean; italic: boolean }[] = [];
+          const extractSegments = (childNode: Node, currentStyles: { bold: boolean; italic: boolean }) => {
+            childNode.childNodes.forEach(child => {
+              if (child.nodeType === Node.TEXT_NODE) segments.push({ text: child.textContent || '', ...currentStyles });
+              else if (child.nodeType === Node.ELEMENT_NODE) {
+                const el = child as Element;
+                const newStyles = { ...currentStyles, bold: currentStyles.bold || el.tagName.toLowerCase() === 'b' || el.tagName.toLowerCase() === 'strong', italic: currentStyles.italic || el.tagName.toLowerCase() === 'i' || el.tagName.toLowerCase() === 'em' };
+                extractSegments(child, newStyles);
+              }
+            });
+          };
+          extractSegments(li, { bold: false, italic: false });
+          if (segments.every(s => !s.text.trim())) return;
+
+          const lineHeight = 24;
+          const textIndent = 36;
+          pdf.setFontSize(12);
+          checkNewPage(lineHeight);
+          pdf.setFont('times', 'normal');
+          pdf.text(prefix, margin, y);
+          let currentX = margin + textIndent;
+          for (const segment of segments) {
+            const style = segment.bold && segment.italic ? 'bolditalic' : segment.bold ? 'bold' : segment.italic ? 'italic' : 'normal';
+            pdf.setFont('times', style);
+            const words = segment.text.split(/(\s+)/);
+            for (const word of words) {
+              if (!word) continue;
+              const wordWidth = pdf.getStringUnitWidth(word) * 12 / pdf.internal.scaleFactor;
+              if (currentX + wordWidth > pageWidth - margin) {
+                y += lineHeight;
+                checkNewPage(lineHeight);
+                currentX = margin + textIndent;
+              }
+              pdf.text(word, currentX, y);
+              currentX += wordWidth;
+            }
+          }
+          y += lineHeight;
+        });
         return;
       }
 
-      // recurse
       node.childNodes.forEach(child => {
         if (child.nodeType === Node.ELEMENT_NODE) renderNode(child as Element);
       });

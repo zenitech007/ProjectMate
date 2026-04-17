@@ -32,8 +32,6 @@ class ErrorBoundary extends Component<Props, State> {
     // Only synchronous render errors trigger the error boundary fallback UI.
     this.unhandledRejectionHandler = (event: PromiseRejectionEvent) => {
       console.error('Unhandled promise rejection:', event.reason);
-      // Prevent the default browser handling (console error is already logged)
-      event.preventDefault();
     };
     window.addEventListener('unhandledrejection', this.unhandledRejectionHandler);
   }

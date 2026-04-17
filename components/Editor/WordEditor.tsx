@@ -688,7 +688,9 @@ const EditorArea = ({ value, onChange, generating, spellCheck, generationMode, o
       },
     },
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        // You can disable specific StarterKit extensions here if they ever conflict (e.g., history: false)
+      }),
       Underline,
       TextStyle,         // required by Color + FontSize
       FontFamily,

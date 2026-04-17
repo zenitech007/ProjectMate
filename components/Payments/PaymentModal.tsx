@@ -22,6 +22,7 @@ const generateRef = (uid: string) =>
 const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [payRef, setPayRef] = useState(() => generateRef(user.uid));
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const config = {
     reference: payRef,
@@ -44,9 +45,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
 
   const onSuccess = (response: PaystackResponse) => {
     // Webhook on the backend will handle actual credit allocation
-    alert(`Payment successful! Reference: ${response.reference}. Your credits will update shortly.`);
+    setSuccessMsg(`Reference: ${response.reference}. Your credits will update shortly.`);
     setLoading(false);
-    onClose();
+    setTimeout(() => {
+      onClose();
+    }, 3000);
   };
 
   const onClosePayment = () => {
@@ -54,7 +57,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
   };
 
   const handlePay = () => {
-    setPayRef(generateRef(user.uid)); // Fresh reference per attempt
+    const newRef = generateRef(user.uid);
+    setPayRef(newRef); // Fresh reference per attempt
+    config.reference = newRef; // Pass synchronous ref to config
     setLoading(true);
     initializePayment({ onSuccess, onClose: onClosePayment });
   };
@@ -71,32 +76,45 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
         </button>
 
         <div className="p-8 md:p-12">
-          <div className="flex flex-col items-center text-center mb-10">
-            <div className="bg-yellow-100 p-4 rounded-3xl mb-6">
-              <Zap className="h-10 w-10 text-yellow-700 fill-current" />
+          {successMsg ? (
+            <div className="flex flex-col items-center text-center py-8 animate-in fade-in zoom-in-95 duration-300">
+              <div className="bg-green-100 p-4 rounded-full mb-6">
+                <ShieldCheck className="h-12 w-12 text-green-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">Payment Successful!</h3>
+              <p className="text-slate-500 mb-6">{successMsg}</p>
+              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest animate-pulse">Closing window...</p>
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">Buy Project Credits</h2>
-            <p className="text-slate-500">Each purchase adds <strong>{CREDITS_PER_PURCHASE} credits</strong>. 1 credit = 1 full research project.</p>
-          </div>
+          ) : (
+            <>
+              <div className="flex flex-col items-center text-center mb-10">
+                <div className="bg-yellow-100 p-4 rounded-3xl mb-6">
+                  <Zap className="h-10 w-10 text-yellow-700 fill-current" />
+                </div>
+                <h2 className="text-3xl font-bold text-slate-900 mb-2">Buy Project Credits</h2>
+                <p className="text-slate-500">Each purchase adds <strong>{CREDITS_PER_PURCHASE} credits</strong>. 1 credit = 1 full research project.</p>
+              </div>
 
-          <div className="bg-slate-50 rounded-2xl p-6 mb-8 flex items-center justify-between border border-slate-100">
-            <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Pricing</p>
-              <h3 className="text-3xl font-extrabold text-slate-900">₦{PREMIUM_PRICE_NGN.toLocaleString()}</h3>
-            </div>
-            <div className="text-right">
-              <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-1 rounded-full uppercase">+{CREDITS_PER_PURCHASE} CREDITS</span>
-            </div>
-          </div>
+              <div className="bg-slate-50 rounded-2xl p-6 mb-8 flex items-center justify-between border border-slate-100">
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Pricing</p>
+                  <h3 className="text-3xl font-extrabold text-slate-900">₦{PREMIUM_PRICE_NGN.toLocaleString()}</h3>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-1 rounded-full uppercase">+{CREDITS_PER_PURCHASE} CREDITS</span>
+                </div>
+              </div>
 
-          <button
-            onClick={handlePay}
-            disabled={loading}
-            className="w-full bg-green-700 text-white py-5 rounded-2xl font-bold text-lg hover:bg-green-800 transition-all flex items-center justify-center disabled:opacity-70"
-          >
-            {loading ? <Loader2 className="animate-spin h-6 w-6 mr-2" /> : <ShieldCheck className="h-6 w-6 mr-2" />}
-            Secure Top-up
-          </button>
+              <button
+                onClick={handlePay}
+                disabled={loading}
+                className="w-full bg-green-700 text-white py-5 rounded-2xl font-bold text-lg hover:bg-green-800 transition-all flex items-center justify-center disabled:opacity-70"
+              >
+                {loading ? <Loader2 className="animate-spin h-6 w-6 mr-2" /> : <ShieldCheck className="h-6 w-6 mr-2" />}
+                Secure Top-up
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

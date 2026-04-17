@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronRight, ChevronLeft, Sparkles, Loader2, BookCheck,
   User, IdCard, GraduationCap, FileText,
-  Edit3, RefreshCw, Home, ArrowRight, CheckCircle2, Rocket
+  Edit3, RefreshCw, Home, ArrowRight, CheckCircle2, Rocket, AlertCircle
 } from 'lucide-react';
 import { doc, runTransaction, collection, serverTimestamp, increment } from 'firebase/firestore';
 import { InstitutionType, Faculty, Departments, UserProfile, ProjectOutline, Chapter, TopicHistoryItem } from '../../types';
@@ -24,6 +24,8 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
   const [saving, setSaving] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const isGeneratingRef = useRef(false);
+  const [toast, setToast] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
+  const toastTimer = useRef<number | null>(null);
 
   // Step 1 State
   const [customTopic, setCustomTopic] = useState('');
@@ -68,6 +70,12 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
     setIsManualDepartment(newValue);
   };
 
+  const showToast = (msg: string, type: 'success' | 'error' = 'error') => {
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    setToast({ msg, type });
+    toastTimer.current = window.setTimeout(() => setToast(null), 3000);
+  };
+
   const handleFetchTopics = async () => {
     if (!institutionName.trim() || !faculty.trim() || !department.trim() || isGeneratingRef.current) return;
     isGeneratingRef.current = true;
@@ -78,7 +86,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
       await addTopicHistory(faculty, department, result.map((t: any) => ({ title: t.title, brief: '' })));
       setStep(2);
     } catch (error: any) {
-      alert(error.message || 'Failed to generate topics. Please try again.');
+      showToast(error.message || 'Failed to generate topics. Please try again.', 'error');
     } finally {
       setLoading(false);
       isGeneratingRef.current = false;
@@ -99,7 +107,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
       setOutline(filteredOutline);
       setStep(3);
     } catch (error: any) {
-      alert(error.message || 'Failed to generate outline. Please try again.');
+      showToast(error.message || 'Failed to generate outline. Please try again.', 'error');
     } finally {
       setLoading(false);
       isGeneratingRef.current = false; // ← release lock
@@ -169,7 +177,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
       navigate(`/editor/${projectId}`);
     } catch (e: any) {
       console.error(e);
-      alert(e.message || "Failed to initialize project.");
+      showToast(e.message || "Failed to initialize project.", 'error');
     } finally {
       setSaving(false);
     }
@@ -205,6 +213,14 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
     <div className="min-h-screen bg-slate-50/50 pb-20">
       <div className="max-w-4xl mx-auto px-4 pt-10">
         {showPayment && <PaymentModal user={user} onClose={() => setShowPayment(false)} />}
+
+        {/* TOAST NOTIFICATION */}
+        {toast && (
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-100 bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
+            {toast.type === 'error' ? <AlertCircle className="h-3.5 w-3.5 text-rose-400" /> : <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />}
+            <span className="text-[11px] font-black uppercase tracking-widest">{toast.msg}</span>
+          </div>
+        )}
 
         {/* Universal Header */}
         <div className="flex items-center justify-between mb-8">
@@ -473,7 +489,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
                     </>
                   )}
                 </button>
-                {user.credits >= 1 && (
+                {user.credits >= 1 && !user.isPremium && (
                   <p className="text-center text-xs font-bold text-slate-400 mt-4 uppercase tracking-widest">
                     This will use 1 credit · project unlocked forever
                   </p>
