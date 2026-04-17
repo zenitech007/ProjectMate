@@ -331,9 +331,9 @@ const verifyToken = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. Generate Full Chapter Stream
 // ─────────────────────────────────────────────────────────────────────────────
-exports.generateChapterStream = onRequest({ 
+exports.generateChapterStream = onRequest({
   secrets: ["GEMINI_API_KEY"],
-  timeoutSeconds: 300, // Keep the 5-minute timeout
+  timeoutSeconds: 540, // 9-minute timeout — References/Appendices need more time
   memory: "1GiB"       // Increased memory to handle large outputs safely
 }, (req, res) => {
   cors(req, res, async () => {
@@ -403,18 +403,24 @@ If writing APPENDICES:
       const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        config: { systemInstruction: PHD_SYSTEM_PROMPT },
+        config: {
+          systemInstruction: PHD_SYSTEM_PROMPT,
+          // Disable thinking to prevent timeout on long outputs (References/Appendices)
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       });
       for await (const chunk of stream) { if (chunk.text) res.write(chunk.text); }
+      // Send a sentinel so the frontend knows the stream completed successfully
+      res.write("\n__STREAM_COMPLETE__");
       res.end();
     } catch (error) {
       console.error("generateChapterStream error:", error);
       if (!res.headersSent) {
         res.status(500).send("Stream failed");
       } else {
-        // CRUCIAL FIX: Close the connection if the stream crashes halfway
-        // so the Firebase container doesn't get permanently deadlocked.
-        res.end(); 
+        // Signal to the frontend that the stream was interrupted
+        res.write("\n__STREAM_ERROR__");
+        res.end();
       }
     }
   });
@@ -478,13 +484,18 @@ CHAPTER 3 sections:
       const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        config: { systemInstruction: PHD_SYSTEM_PROMPT },
+        config: {
+          systemInstruction: PHD_SYSTEM_PROMPT,
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       });
       for await (const chunk of stream) { if (chunk.text) res.write(chunk.text); }
+      res.write("\n__STREAM_COMPLETE__");
       res.end();
     } catch (error) {
       console.error("generateSectionStream error:", error);
       if (!res.headersSent) res.status(500).send("Section stream failed");
+      else { res.write("\n__STREAM_ERROR__"); res.end(); }
     }
   });
 });
@@ -517,13 +528,18 @@ STRICT OUTPUT RULES:
       const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        config: { systemInstruction: PHD_SYSTEM_PROMPT },
+        config: {
+          systemInstruction: PHD_SYSTEM_PROMPT,
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       });
       for await (const chunk of stream) { if (chunk.text) res.write(chunk.text); }
+      res.write("\n__STREAM_COMPLETE__");
       res.end();
     } catch (error) {
       console.error("elaborateStream error:", error);
       if (!res.headersSent) res.status(500).send("Elaborate stream failed");
+      else { res.write("\n__STREAM_ERROR__"); res.end(); }
     }
   });
 });
