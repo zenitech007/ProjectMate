@@ -1,7 +1,7 @@
 // firebase.ts
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -15,4 +15,10 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig); // make sure app is exported
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+// Enable offline persistence — data is cached in IndexedDB so the app works
+// without a network connection and syncs automatically when back online.
+// Multi-tab manager allows multiple browser tabs to share the same cache.
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+});

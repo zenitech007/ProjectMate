@@ -304,7 +304,7 @@ const LinkButton = React.memo(() => {
         onClick={openDialog}
       />
       {open && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-200 flex items-center justify-center bg-black/30" onClick={() => setOpen(false)}>
           <div
             className="bg-white rounded-xl shadow-2xl p-5 w-80 flex flex-col gap-3"
             onClick={(e) => e.stopPropagation()}
@@ -542,12 +542,13 @@ const useWordCount = () => {
 // ─────────────────────────────────────────────
 interface ToolbarProps {
   saveStatus: 'saved' | 'saving' | 'unsaved';
+  onRetrySave?: () => void;
   onOpenCopilot?: () => void;
   onExportDocx?: () => void;
   onExportPdf?: () => void;
 }
 
-const Toolbar = React.memo(({ saveStatus, onOpenCopilot, onExportDocx, onExportPdf }: ToolbarProps) => {
+const Toolbar = React.memo(({ saveStatus, onRetrySave, onOpenCopilot, onExportDocx, onExportPdf }: ToolbarProps) => {
   const editor = useEditorStore((s) => s.editor); // Fix #7
   const { words, chars } = useWordCount();         // Enhancement #12
 
@@ -606,14 +607,23 @@ const Toolbar = React.memo(({ saveStatus, onOpenCopilot, onExportDocx, onExportP
 
         <div className="flex items-center gap-2">
           {/* Save Status */}
-          <span className={cn(
-            'text-[10px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-md whitespace-nowrap',
-            saveStatus === 'saved' ? 'text-green-600 bg-green-50' :
-              saveStatus === 'saving' ? 'text-neutral-500 bg-neutral-100' :
-                'text-amber-600 bg-amber-50',
-          )}>
-            {saveStatus === 'saved' ? '✓ Saved' : saveStatus === 'saving' ? 'Saving…' : '● Unsaved'}
-          </span>
+          {saveStatus === 'unsaved' && onRetrySave ? (
+            <button
+              onClick={onRetrySave}
+              className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-md whitespace-nowrap text-red-600 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer"
+              title="Click to retry saving"
+            >
+              Save failed — tap to retry
+            </button>
+          ) : (
+            <span className={cn(
+              'text-[10px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-md whitespace-nowrap',
+              saveStatus === 'saved' ? 'text-green-600 bg-green-50' :
+                'text-neutral-500 bg-neutral-100',
+            )}>
+              {saveStatus === 'saved' ? '✓ Saved' : 'Saving…'}
+            </span>
+          )}
 
           {/* Export Buttons */}
           <div className="flex items-center gap-1.5">
@@ -865,6 +875,7 @@ interface WordEditorProps {
   onChange?: (val: string) => void;
   generating?: boolean;
   saveStatus?: 'saved' | 'saving' | 'unsaved';
+  onRetrySave?: () => void;
   onExportDocx?: () => void;
   onExportPdf?: () => void;
   onOpenCopilot?: () => void;
@@ -877,6 +888,7 @@ interface WordEditorProps {
   onFetchSuggestion?: (context: string, signal?: AbortSignal) => Promise<string | null>;
   /** Enable inline ghost-text suggestions */
   suggestionsEnabled?: boolean;
+  hideToolbar?: boolean;
 }
 
 export default function WordEditor({
@@ -884,6 +896,7 @@ export default function WordEditor({
   onChange = () => { },
   generating = false,
   saveStatus = 'saved',
+  onRetrySave,
   onExportDocx,
   onExportPdf,
   onOpenCopilot,
@@ -892,15 +905,19 @@ export default function WordEditor({
   generationMode = null,
   onFetchSuggestion,
   suggestionsEnabled = false,
+  hideToolbar = false,
 }: WordEditorProps) {
   return (
     <div className="flex flex-col h-full w-full bg-white relative overflow-hidden text-neutral-900 font-sans">
-      <Toolbar
-        saveStatus={saveStatus}
-        onOpenCopilot={onOpenCopilot}
-        onExportDocx={onExportDocx}
-        onExportPdf={onExportPdf}
-      />
+      {!hideToolbar && (
+        <Toolbar
+          saveStatus={saveStatus}
+          onRetrySave={onRetrySave}
+          onOpenCopilot={onOpenCopilot}
+          onExportDocx={onExportDocx}
+          onExportPdf={onExportPdf}
+        />
+      )}
 
       {/* AI streaming banner */}
       {generating && (

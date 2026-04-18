@@ -129,10 +129,14 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
 
   const isCancelled = useRef(false);
   const autosaveTimer = useRef<number | null>(null);
+  const isMountedRef = useRef(true);
+  const lastFailedProject = useRef<Project | null>(null);
 
   // Cleanup autosave timer on unmount to prevent memory leaks
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
       if (autosaveTimer.current) window.clearTimeout(autosaveTimer.current);
     };
   }, []);
@@ -177,21 +181,42 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         );
       })
       .catch(() => setError("Failed to load project. Please try again."));
-  }, [projectId]);
+  }, [projectId, getProject]);
 
   // ── Autosave ────────────────────────────────────────────────────────────────
   const triggerAutosave = useCallback((updated: Project) => {
     setSaveStatus('saving');
+    lastFailedProject.current = null;
     if (autosaveTimer.current) window.clearTimeout(autosaveTimer.current);
     autosaveTimer.current = window.setTimeout(async () => {
+      if (!isMountedRef.current) return;
       try {
         await updateProject(updated.id, { chapters: updated.chapters, outline: updated.outline });
-        setSaveStatus('saved');
+        if (isMountedRef.current) {
+          setSaveStatus('saved');
+          lastFailedProject.current = null;
+        }
       } catch {
-        setSaveStatus('unsaved');
+        if (isMountedRef.current) {
+          setSaveStatus('unsaved');
+          lastFailedProject.current = updated;
+        }
       }
     }, 2500);
   }, [updateProject]);
+
+  const retrySave = useCallback(async () => {
+    const proj = lastFailedProject.current || project;
+    if (!proj) return;
+    setSaveStatus('saving');
+    try {
+      await updateProject(proj.id, { chapters: proj.chapters, outline: proj.outline });
+      setSaveStatus('saved');
+      lastFailedProject.current = null;
+    } catch {
+      setSaveStatus('unsaved');
+    }
+  }, [updateProject, project]);
 
   // ── Access gate ─────────────────────────────────────────────────────────────
   const checkAccess = (): boolean => {
@@ -414,7 +439,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
 
       {/* ── Toast ──────────────────────────────────────────────────────── */}
       {toast && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-100 bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
           <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />
           <span className="text-[11px] font-black uppercase tracking-widest">{toast}</span>
         </div>
@@ -555,12 +580,14 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
           generating={generating}
           generationMode={generationMode}
           saveStatus={saveStatus}
+          onRetrySave={retrySave}
           onExportDocx={() => exportToDocx(project)}
           onExportPdf={() => exportToPdf(project)}
           onOpenCopilot={() => setIsCopilotOpen(prev => !prev)}
           onCancelGeneration={() => { isCancelled.current = true; }}
           onFetchSuggestion={handleFetchSuggestion}
           suggestionsEnabled={!generating}
+          hideToolbar={isMobileSidebarOpen}
         />
 
         {/* ── AI Copilot panel (Enhanced) ────────────────────────────────── */}

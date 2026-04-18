@@ -11,7 +11,8 @@ const allowedOrigins = [
 const cors = require("cors")({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, server-to-server)
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Also allow "null" string origin (sandboxed iframes, privacy redirects)
+    if (!origin || origin === "null" || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
@@ -257,7 +258,10 @@ exports.generateTopics = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request)
   if (!request.auth) throw new HttpsError("unauthenticated", "Login required.");
   if (!checkRateLimit(request.auth.uid)) throw new HttpsError("resource-exhausted", "Too many requests. Please wait a moment.");
 
-  const { institutionName, faculty, department } = request.data;
+  const { institutionName, faculty, department } = request.data || {};
+  if (!institutionName || !faculty || !department) {
+    throw new HttpsError("invalid-argument", "Missing required fields: institutionName, faculty, department.");
+  }
   const ai = getAi();
   const prompt = `Generate 5 high-level research project topics for a student at ${sanitize(institutionName)}, Faculty of ${sanitize(faculty)}, Department of ${sanitize(department)}. Return ONLY a JSON array of objects with a "title" string property. No other text.`;
 
@@ -281,7 +285,10 @@ exports.generateOutline = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request
   if (!request.auth) throw new HttpsError("unauthenticated", "Login required.");
   if (!checkRateLimit(request.auth.uid)) throw new HttpsError("resource-exhausted", "Too many requests. Please wait a moment.");
 
-  const { topic } = request.data;
+  const { topic } = request.data || {};
+  if (!topic) {
+    throw new HttpsError("invalid-argument", "Missing required field: topic.");
+  }
   const ai = getAi();
   const prompt = `Create a Nigerian University Project Table of Contents for: "${sanitize(topic)}".
   Use EXACTLY this structure — no extra items, no renamed sections:
@@ -484,7 +491,11 @@ CHAPTER 3 sections:
       res.end();
     } catch (error) {
       console.error("generateSectionStream error:", error);
-      if (!res.headersSent) res.status(500).send("Section stream failed");
+      if (!res.headersSent) {
+        res.status(500).send("Section stream failed");
+      } else {
+        res.end();
+      }
     }
   });
 });
@@ -523,7 +534,11 @@ STRICT OUTPUT RULES:
       res.end();
     } catch (error) {
       console.error("elaborateStream error:", error);
-      if (!res.headersSent) res.status(500).send("Elaborate stream failed");
+      if (!res.headersSent) {
+        res.status(500).send("Elaborate stream failed");
+      } else {
+        res.end();
+      }
     }
   });
 });

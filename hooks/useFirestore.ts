@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   collection,
   query,
@@ -83,7 +83,7 @@ export const useFirestore = (uid?: string) => {
     };
   }, [uid]);
 
-  const addTopicHistory = async (faculty: string, department: string, topics: { title: string, brief: string }[]) => {
+  const addTopicHistory = useCallback(async (faculty: string, department: string, topics: { title: string, brief: string }[]) => {
     if (!uid) return;
     try {
       await addDoc(collection(db, 'topic_history'), {
@@ -96,9 +96,9 @@ export const useFirestore = (uid?: string) => {
     } catch (err) {
       console.error("Failed to save topic history", err);
     }
-  };
+  }, [uid]);
 
-  const createProject = async (project: Omit<Project, 'id'>) => {
+  const createProject = useCallback(async (project: Omit<Project, 'id'>) => {
     try {
       const docRef = await addDoc(collection(db, 'projects'), {
         ...project,
@@ -110,9 +110,9 @@ export const useFirestore = (uid?: string) => {
       console.error("Failed to create project:", err);
       throw err;
     }
-  };
+  }, []);
 
-  const updateProject = async (projectId: string, updates: Partial<Project>) => {
+  const updateProject = useCallback(async (projectId: string, updates: Partial<Project>) => {
     try {
       const docRef = doc(db, 'projects', projectId);
       await updateDoc(docRef, {
@@ -123,9 +123,9 @@ export const useFirestore = (uid?: string) => {
       console.error("Failed to update project:", err);
       throw err;
     }
-  };
+  }, []);
 
-  const getProject = async (projectId: string) => {
+  const getProject = useCallback(async (projectId: string) => {
     try {
       const docRef = doc(db, 'projects', projectId);
       const snap = await getDoc(docRef);
@@ -137,16 +137,16 @@ export const useFirestore = (uid?: string) => {
       console.error("Failed to get project:", err);
       throw err;
     }
-  };
+  }, []);
 
-  const deleteProject = async (projectId: string) => {
+  const deleteProject = useCallback(async (projectId: string) => {
     try {
       await deleteDoc(doc(db, 'projects', projectId));
     } catch (err: any) {
       console.error("Failed to delete project:", err);
       throw err;
     }
-  };
+  }, []);
 
   return { projects, topicHistory, loading, error, createProject, updateProject, getProject, deleteProject, addTopicHistory };
 };

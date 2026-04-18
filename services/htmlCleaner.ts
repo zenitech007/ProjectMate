@@ -27,15 +27,24 @@ const stripDangerousAttributes = (html: string): string => {
 };
 
 /**
- * Remove disallowed HTML tags (like <script>, <iframe>, <object>, <embed>, <form>)
- * while keeping their text content.
+ * Remove disallowed HTML tags while keeping their text content.
+ * Two-pass approach:
+ *   1. Completely remove dangerous tags AND their content (script, iframe, etc.)
+ *   2. Strip any remaining tag not in ALLOWED_TAGS (keeps inner text)
  */
 const stripDisallowedTags = (html: string): string => {
-  // Completely remove these tags and their content
-  let c = html.replace(/<(script|iframe|object|embed|form|link|meta|base)[^>]*>[\s\S]*?<\/\1>/gi, '');
-  c = c.replace(/<(script|iframe|object|embed|form|link|meta|base)[^>]*\/?>/gi, '');
+  // Pass 1: Completely remove these tags AND their content (no text kept)
+  let c = html.replace(/<(script|iframe|object|embed|form|link|meta|base|style)[^>]*>[\s\S]*?<\/\1>/gi, '');
+  c = c.replace(/<(script|iframe|object|embed|form|link|meta|base|style)[^>]*\/?>/gi, '');
   // Remove <img> tags with any event handler (onerror, onload, etc.)
   c = c.replace(/<img[^>]*\bon\w+[^>]*>/gi, '');
+
+  // Pass 2: Strip any tag NOT in the ALLOWED_TAGS whitelist (keeps inner text)
+  // Matches opening tags like <svg ...>, closing tags like </svg>, and self-closing <svg ... />
+  c = c.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*\/?>/gi, (match, tagName) => {
+    return ALLOWED_TAGS.has(tagName.toLowerCase()) ? match : '';
+  });
+
   return c;
 };
 

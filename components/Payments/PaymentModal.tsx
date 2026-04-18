@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { X, ShieldCheck, Zap, Loader2 } from 'lucide-react';
 import { usePaystackPayment } from 'react-paystack';
 import { UserProfile } from '../../types';
@@ -19,15 +19,59 @@ interface PaystackResponse {
 const generateRef = (uid: string) =>
   `${Date.now()}_${Math.random().toString(36).slice(2, 9)}_${uid}`;
 
+/**
+ * Inner component that calls usePaystackPayment with a FRESH config on every mount.
+ * This avoids the stale-closure bug where the hook captures an old reference.
+ * Each time the user clicks "Pay", we bump a key to remount this component,
+ * guaranteeing usePaystackPayment sees the latest reference.
+ */
+const PaystackTrigger: React.FC<{
+  config: Record<string, any>;
+  onSuccess: (response: PaystackResponse) => void;
+  onClose: () => void;
+}> = ({ config, onSuccess, onClose }) => {
+  const initializePayment = usePaystackPayment(config as any);
+
+  // Fire payment immediately on mount
+  React.useEffect(() => {
+    initializePayment({ onSuccess, onClose } as any);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return null;
+};
+
 const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
   const [loading, setLoading] = useState(false);
-  const [payRef, setPayRef] = useState(() => generateRef(user.uid));
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  // payAttempt: when non-null, mounts PaystackTrigger with a fresh config
+  const [payAttempt, setPayAttempt] = useState<{ ref: string; key: number } | null>(null);
 
-  const config = {
-    reference: payRef,
+  const onSuccess = useCallback((response: PaystackResponse) => {
+    setSuccessMsg(`Reference: ${response.reference}. Your credits will update shortly.`);
+    setLoading(false);
+    setPayAttempt(null);
+    setTimeout(() => {
+      onClose();
+    }, 3000);
+  }, [onClose]);
+
+  const onClosePayment = useCallback(() => {
+    setLoading(false);
+    setPayAttempt(null);
+  }, []);
+
+  const handlePay = () => {
+    const newRef = generateRef(user.uid);
+    setLoading(true);
+    // Bump key to force remount of PaystackTrigger with the new reference
+    setPayAttempt({ ref: newRef, key: Date.now() });
+  };
+
+  const paystackConfig = payAttempt ? {
+    reference: payAttempt.ref,
     email: user.email,
-    amount: PREMIUM_PRICE_NGN * 100, // Paystack expects amount in kobo
+    amount: PREMIUM_PRICE_NGN * 100,
     publicKey: PAYSTACK_PUBLIC_KEY,
     currency: 'NGN',
     metadata: {
@@ -39,33 +83,20 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
         }
       ]
     }
-  };
-
-  const initializePayment = usePaystackPayment(config);
-
-  const onSuccess = (response: PaystackResponse) => {
-    // Webhook on the backend will handle actual credit allocation
-    setSuccessMsg(`Reference: ${response.reference}. Your credits will update shortly.`);
-    setLoading(false);
-    setTimeout(() => {
-      onClose();
-    }, 3000);
-  };
-
-  const onClosePayment = () => {
-    setLoading(false);
-  };
-
-  const handlePay = () => {
-    const newRef = generateRef(user.uid);
-    setPayRef(newRef); // Fresh reference per attempt
-    config.reference = newRef; // Pass synchronous ref to config
-    setLoading(true);
-    initializePayment({ onSuccess, onClose: onClosePayment });
-  };
+  } : null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+      {/* Mount PaystackTrigger only when paying — key forces remount per attempt */}
+      {payAttempt && paystackConfig && (
+        <PaystackTrigger
+          key={payAttempt.key}
+          config={paystackConfig}
+          onSuccess={onSuccess}
+          onClose={onClosePayment}
+        />
+      )}
+
       <div className="bg-white rounded-4xl shadow-2xl max-w-lg w-full overflow-hidden relative">
         <button
           onClick={onClose}
