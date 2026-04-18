@@ -21,6 +21,36 @@ import { Project } from '../types';
 //   body for each section). We walk those nodes and convert them to proper
 //   docx Paragraph objects preserving headings, bold, body text, page breaks.
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Recursively collect TextRun objects from a DOM node, inheriting inline styles.
+ * Shared by both <p> and <li> converters to avoid duplication.
+ */
+const collectTextRuns = (rootNode: Node, initialStyles: Record<string, any> = {}): TextRun[] => {
+  const runs: TextRun[] = [];
+
+  const walk = (node: Node, currentStyles: Record<string, any>) => {
+    node.childNodes.forEach(child => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const text = child.textContent || '';
+        if (text) {
+          runs.push(new TextRun({ text, font: 'Times New Roman', size: 24, ...currentStyles }));
+        }
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        const el = child as Element;
+        const childTag = el.tagName?.toLowerCase();
+        const newStyles = { ...currentStyles };
+        if (childTag === 'b' || childTag === 'strong') newStyles.bold = true;
+        if (childTag === 'i' || childTag === 'em') newStyles.italics = true;
+        if (childTag === 'u') newStyles.underline = { type: UnderlineType.SINGLE };
+        walk(child, newStyles);
+      }
+    });
+  };
+
+  walk(rootNode, initialStyles);
+  return runs;
+};
+
 const htmlToParagraphs = (html: string | undefined | null): Paragraph[] => {
   if (!html || !html.trim()) return [];
 
@@ -97,28 +127,7 @@ const htmlToParagraphs = (html: string | undefined | null): Paragraph[] => {
 
     // <p> → justified body paragraph; handle inline formatting
     if (tag === 'p') {
-      const runs: TextRun[] = [];
-
-      const extractRuns = (childNode: Node, currentStyles: any) => {
-        childNode.childNodes.forEach(child => {
-          if (child.nodeType === Node.TEXT_NODE) {
-            const text = child.textContent || '';
-            if (text) {
-              runs.push(new TextRun({ text, font: 'Times New Roman', size: 24, ...currentStyles }));
-            }
-          } else if (child.nodeType === Node.ELEMENT_NODE) {
-            const el = child as Element;
-            const childTag = el.tagName?.toLowerCase();
-            const newStyles = { ...currentStyles };
-            if (childTag === 'b' || childTag === 'strong') newStyles.bold = true;
-            if (childTag === 'i' || childTag === 'em') newStyles.italics = true;
-            if (childTag === 'u') newStyles.underline = { type: UnderlineType.SINGLE };
-            extractRuns(child, newStyles);
-          }
-        });
-      };
-
-      extractRuns(node, {});
+      const runs = collectTextRuns(node);
 
       if (runs.length > 0) {
         paragraphs.push(
@@ -133,42 +142,19 @@ const htmlToParagraphs = (html: string | undefined | null): Paragraph[] => {
       return;
     }
 
-    // <ul>/<ol> → bullet/numbered list items
+    // <ul>/<ol> → bullet/numbered list items (direct children only — Fix #14)
     if (tag === 'ul' || tag === 'ol') {
-      node.querySelectorAll('li').forEach((li, idx) => {
+      const directLis = Array.from(node.children).filter(
+        child => child.tagName?.toLowerCase() === 'li'
+      );
+      directLis.forEach((li, idx) => {
         const prefix = tag === 'ol' ? `${idx + 1}. ` : '\u2022  ';
-        const runs: TextRun[] = [
-          new TextRun({
-            text: prefix,
-            font: 'Times New Roman',
-            size: 24,
-          })
-        ];
-
-        const extractRuns = (childNode: Node, currentStyles: any) => {
-          childNode.childNodes.forEach(child => {
-            if (child.nodeType === Node.TEXT_NODE) {
-              const text = child.textContent || '';
-              if (text) {
-                runs.push(new TextRun({ text, font: 'Times New Roman', size: 24, ...currentStyles }));
-              }
-            } else if (child.nodeType === Node.ELEMENT_NODE) {
-              const el = child as Element;
-              const childTag = el.tagName?.toLowerCase();
-              const newStyles = { ...currentStyles };
-              if (childTag === 'b' || childTag === 'strong') newStyles.bold = true;
-              if (childTag === 'i' || childTag === 'em') newStyles.italics = true;
-              if (childTag === 'u') newStyles.underline = { type: UnderlineType.SINGLE };
-              extractRuns(child, newStyles);
-            }
-          });
-        };
-
-        extractRuns(li, {});
+        const prefixRun = new TextRun({ text: prefix, font: 'Times New Roman', size: 24 });
+        const contentRuns = collectTextRuns(li);
 
         paragraphs.push(
           new Paragraph({
-            children: runs,
+            children: [prefixRun, ...contentRuns],
             alignment: AlignmentType.JUSTIFIED,
             spacing: { line: 480, after: 80 },
             indent: { left: 720, hanging: 360 },
@@ -338,7 +324,7 @@ export const exportToPdf = async (project: Project) => {
     pdf.setTextColor(0, 0, 0);
   };
 
-  // Title page
+  // Title page — intentionally no page number footer (standard academic format)
   pdf.setFont('times', 'bold'); pdf.setFontSize(18);
   const titleLines = pdf.splitTextToSize(project.topic.toUpperCase(), contentWidth);
   pdf.text(titleLines, pageWidth / 2, 140, { align: 'center' });
@@ -376,6 +362,50 @@ export const exportToPdf = async (project: Project) => {
     }
 
     const dom = new DOMParser().parseFromString(storedHtml, 'text/html');
+
+    /** Collect styled text segments from a DOM node for PDF rendering. */
+    const collectPdfSegments = (rootNode: Node, initialStyles = { bold: false, italic: false }): { text: string; bold: boolean; italic: boolean }[] => {
+      const segments: { text: string; bold: boolean; italic: boolean }[] = [];
+      const walk = (node: Node, styles: { bold: boolean; italic: boolean }) => {
+        node.childNodes.forEach(child => {
+          if (child.nodeType === Node.TEXT_NODE) {
+            segments.push({ text: child.textContent || '', ...styles });
+          } else if (child.nodeType === Node.ELEMENT_NODE) {
+            const el = child as Element;
+            const childTag = el.tagName?.toLowerCase();
+            const newStyles = { ...styles };
+            if (childTag === 'b' || childTag === 'strong') newStyles.bold = true;
+            if (childTag === 'i' || childTag === 'em') newStyles.italic = true;
+            walk(child, newStyles);
+          }
+        });
+      };
+      walk(rootNode, initialStyles);
+      return segments;
+    };
+
+    /** Render styled segments as word-wrapped PDF text at the current y position. */
+    const renderPdfSegments = (segments: { text: string; bold: boolean; italic: boolean }[], startX: number, wrapX: number) => {
+      const lineHeight = 24;
+      let currentX = startX;
+      for (const segment of segments) {
+        const style = segment.bold && segment.italic ? 'bolditalic' : segment.bold ? 'bold' : segment.italic ? 'italic' : 'normal';
+        pdf.setFont('times', style);
+        const words = segment.text.split(/(\s+)/);
+        for (const word of words) {
+          if (!word) continue;
+          const wordWidth = pdf.getStringUnitWidth(word) * 12 / pdf.internal.scaleFactor;
+          if (currentX + wordWidth > pageWidth - margin) {
+            y += lineHeight;
+            checkNewPage(lineHeight);
+            currentX = wrapX;
+          }
+          pdf.text(word, currentX, y);
+          currentX += wordWidth;
+        }
+      }
+      y += lineHeight;
+    };
 
     const renderNode = (node: Element) => {
       const tag = node.tagName?.toLowerCase();
@@ -417,68 +447,25 @@ export const exportToPdf = async (project: Project) => {
       }
 
       if (tag === 'p') {
-        const segments: { text: string; bold: boolean; italic: boolean }[] = [];
-        const extractSegments = (childNode: Node, currentStyles: { bold: boolean; italic: boolean }) => {
-          childNode.childNodes.forEach(child => {
-            if (child.nodeType === Node.TEXT_NODE) {
-              segments.push({ text: child.textContent || '', ...currentStyles });
-            } else if (child.nodeType === Node.ELEMENT_NODE) {
-              const el = child as Element;
-              const childTag = el.tagName?.toLowerCase();
-              const newStyles = { ...currentStyles };
-              if (childTag === 'b' || childTag === 'strong') newStyles.bold = true;
-              if (childTag === 'i' || childTag === 'em') newStyles.italic = true;
-              extractSegments(child, newStyles);
-            }
-          });
-        };
-        extractSegments(node, { bold: false, italic: false });
+        const segments = collectPdfSegments(node);
         if (segments.every(s => !s.text.trim())) return;
 
-        const lineHeight = 24; // Double-spaced 12pt font
-        const indent = 36; // 0.5 inch
+        const lineHeight = 24;
+        const indent = 36;
         pdf.setFontSize(12);
-
-        let currentX = margin + indent;
         checkNewPage(lineHeight);
-
-        for (const segment of segments) {
-          const style = segment.bold && segment.italic ? 'bolditalic' : segment.bold ? 'bold' : segment.italic ? 'italic' : 'normal';
-          pdf.setFont('times', style);
-
-          const words = segment.text.split(/(\s+)/);
-          for (const word of words) {
-            if (!word) continue;
-            const wordWidth = pdf.getStringUnitWidth(word) * 12 / pdf.internal.scaleFactor;
-            if (currentX + wordWidth > pageWidth - margin) {
-              y += lineHeight;
-              checkNewPage(lineHeight);
-              currentX = margin; // Subsequent lines are not indented
-            }
-            pdf.text(word, currentX, y);
-            currentX += wordWidth;
-          }
-        }
-        y += lineHeight;
+        renderPdfSegments(segments, margin + indent, margin);
         return;
       }
 
       if (tag === 'ul' || tag === 'ol') {
-        const listItems = Array.from(node.querySelectorAll('li'));
-        listItems.forEach((li, idx) => {
+        // Direct children only to avoid flattening nested lists (Fix #14)
+        const directLis = Array.from(node.children).filter(
+          child => child.tagName?.toLowerCase() === 'li'
+        );
+        directLis.forEach((li, idx) => {
           const prefix = tag === 'ol' ? `${idx + 1}. ` : '\u2022  ';
-          const segments: { text: string; bold: boolean; italic: boolean }[] = [];
-          const extractSegments = (childNode: Node, currentStyles: { bold: boolean; italic: boolean }) => {
-            childNode.childNodes.forEach(child => {
-              if (child.nodeType === Node.TEXT_NODE) segments.push({ text: child.textContent || '', ...currentStyles });
-              else if (child.nodeType === Node.ELEMENT_NODE) {
-                const el = child as Element;
-                const newStyles = { ...currentStyles, bold: currentStyles.bold || el.tagName.toLowerCase() === 'b' || el.tagName.toLowerCase() === 'strong', italic: currentStyles.italic || el.tagName.toLowerCase() === 'i' || el.tagName.toLowerCase() === 'em' };
-                extractSegments(child, newStyles);
-              }
-            });
-          };
-          extractSegments(li, { bold: false, italic: false });
+          const segments = collectPdfSegments(li);
           if (segments.every(s => !s.text.trim())) return;
 
           const lineHeight = 24;
@@ -487,24 +474,7 @@ export const exportToPdf = async (project: Project) => {
           checkNewPage(lineHeight);
           pdf.setFont('times', 'normal');
           pdf.text(prefix, margin, y);
-          let currentX = margin + textIndent;
-          for (const segment of segments) {
-            const style = segment.bold && segment.italic ? 'bolditalic' : segment.bold ? 'bold' : segment.italic ? 'italic' : 'normal';
-            pdf.setFont('times', style);
-            const words = segment.text.split(/(\s+)/);
-            for (const word of words) {
-              if (!word) continue;
-              const wordWidth = pdf.getStringUnitWidth(word) * 12 / pdf.internal.scaleFactor;
-              if (currentX + wordWidth > pageWidth - margin) {
-                y += lineHeight;
-                checkNewPage(lineHeight);
-                currentX = margin + textIndent;
-              }
-              pdf.text(word, currentX, y);
-              currentX += wordWidth;
-            }
-          }
-          y += lineHeight;
+          renderPdfSegments(segments, margin + textIndent, margin + textIndent);
         });
         return;
       }

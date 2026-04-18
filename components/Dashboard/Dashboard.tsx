@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { UserProfile, TopicHistoryItem } from '../../types';
 import { useFirestore } from '../../hooks/useFirestore';
-import TopicHistory from './TopicHistory';
 
 interface DashboardProps {
   user: UserProfile;
@@ -35,6 +34,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const [showFullHistory, setShowFullHistory] = useState(false);
   const [toast, setToast] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{id: string, topic: string} | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const toastTimer = useRef<number | null>(null);
 
@@ -55,13 +55,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   };
 
   const confirmDeletion = async () => {
-    if (!confirmDelete) return;
+    if (!confirmDelete || deleting) return;
+    setDeleting(true);
     try {
       await deleteProject(confirmDelete.id);
       showToast('Project deleted successfully');
     } catch (err) {
       showToast('Failed to delete project. Please try again.', 'error');
     } finally {
+      setDeleting(false);
       setConfirmDelete(null);
     }
   };
@@ -76,7 +78,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     <div className="min-h-screen bg-[#f8fafc]">
       {/* TOAST NOTIFICATION */}
       {toast && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-100 bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
           {toast.type === 'error' ? <AlertCircle className="h-3.5 w-3.5 text-rose-400" /> : <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />}
           <span className="text-[11px] font-black uppercase tracking-widest">{toast.msg}</span>
         </div>
@@ -89,8 +91,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             <h3 className="text-xl font-black text-slate-900 mb-2">Delete Project?</h3>
             <p className="text-slate-500 mb-6">Are you sure you want to delete "{confirmDelete.topic}"? This action cannot be undone.</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setConfirmDelete(null)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
-              <button onClick={confirmDeletion} className="px-5 py-2.5 bg-rose-600 text-white font-bold rounded-xl hover:bg-rose-700 transition-colors shadow-lg shadow-rose-600/20">Yes, Delete</button>
+              <button onClick={() => setConfirmDelete(null)} disabled={deleting} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50">Cancel</button>
+              <button onClick={confirmDeletion} disabled={deleting} className="px-5 py-2.5 bg-rose-600 text-white font-bold rounded-xl hover:bg-rose-700 transition-colors shadow-lg shadow-rose-600/20 disabled:opacity-50 flex items-center gap-2">
+                {deleting && <Loader2 className="h-4 w-4 animate-spin" />}
+                {deleting ? 'Deleting…' : 'Yes, Delete'}
+              </button>
             </div>
           </div>
         </div>

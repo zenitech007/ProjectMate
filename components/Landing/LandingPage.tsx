@@ -53,7 +53,10 @@ const LandingPage: React.FC = () => {
               Start Your Project Free
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="w-full sm:w-auto border border-slate-300 text-slate-700 px-8 py-4 rounded-lg font-bold text-lg hover:bg-slate-50 transition-all">
+            <button
+              onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+              className="w-full sm:w-auto border border-slate-300 text-slate-700 px-8 py-4 rounded-lg font-bold text-lg hover:bg-slate-50 transition-all"
+            >
               See How It Works
             </button>
           </div>
@@ -368,25 +371,25 @@ const Footer = () => (
             The AI-powered assistant for Nigerian undergraduate students. Finish your final year project in hours, not months.
           </p>
           <div className="flex items-center space-x-4">
-            <button className="p-2.5 rounded-full bg-green-900/50 hover:bg-green-600 transition-colors text-green-100/60 hover:text-white">
+            <a href="https://twitter.com/projectmate_ng" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-green-900/50 hover:bg-green-600 transition-colors text-green-100/60 hover:text-white">
               <Twitter className="h-4 w-4" />
-            </button>
-            <button className="p-2.5 rounded-full bg-green-900/50 hover:bg-green-600 transition-colors text-green-100/60 hover:text-white">
+            </a>
+            <a href="https://instagram.com/projectmate_ng" target="_blank" rel="noopener noreferrer" className="p-2.5 rounded-full bg-green-900/50 hover:bg-green-600 transition-colors text-green-100/60 hover:text-white">
               <Instagram className="h-4 w-4" />
-            </button>
-            <button className="p-2.5 rounded-full bg-green-900/50 hover:bg-green-600 transition-colors text-green-100/60 hover:text-white">
+            </a>
+            <a href="mailto:support@projectmate.com.ng" className="p-2.5 rounded-full bg-green-900/50 hover:bg-green-600 transition-colors text-green-100/60 hover:text-white">
               <Mail className="h-4 w-4" />
-            </button>
+            </a>
           </div>
         </div>
 
         <div className="md:pl-12">
           <h4 className="font-bold text-sm uppercase tracking-widest text-green-500 mb-6">Quick Links</h4>
           <ul className="space-y-4 text-sm text-green-100/60">
-            <li><button className="hover:text-white transition-colors">Features</button></li>
-            <li><button className="hover:text-white transition-colors">Pricing</button></li>
-            <li><button className="hover:text-white transition-colors">How It Works</button></li>
-            <li><button className="hover:text-white transition-colors">Sign In</button></li>
+            <li><button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Features</button></li>
+            <li><button onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">Pricing</button></li>
+            <li><button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">How It Works</button></li>
+            <li><a href="#/auth" className="hover:text-white transition-colors">Sign In</a></li>
           </ul>
         </div>
 
@@ -402,10 +405,10 @@ const Footer = () => (
         <div>
           <h4 className="font-bold text-sm uppercase tracking-widest text-green-500 mb-6">Support</h4>
           <p className="text-green-100/60 text-xs mb-6 leading-relaxed">Have questions or need help? Contact our academic support team.</p>
-          <button className="flex items-center space-x-2 text-green-100/60 hover:text-white transition-colors">
+          <a href="mailto:support@projectmate.com.ng" className="flex items-center space-x-2 text-green-100/60 hover:text-white transition-colors">
             <Mail className="h-4 w-4" />
             <span className="text-sm">support@projectmate.com.ng</span>
-          </button>
+          </a>
         </div>
       </div>
 

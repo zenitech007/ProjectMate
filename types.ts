@@ -1,9 +1,4 @@
 
-export enum UserRole {
-  FREE = 'FREE',
-  PREMIUM = 'PREMIUM'
-}
-
 export interface UserProfile {
   uid: string;
   email: string;

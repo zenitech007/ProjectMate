@@ -58,14 +58,9 @@ import {
   Extension,
 } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
-import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table';
-import TaskItem from '@tiptap/extension-task-item';
-import TaskList from '@tiptap/extension-task-list';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
-import ImageResize from 'tiptap-extension-resize-image';
 // Enhancement extensions — install with:
 //   npm i @tiptap/extension-color @tiptap/extension-text-style @tiptap/extension-highlight @tiptap/extension-font-size
 import Color from '@tiptap/extension-color';
@@ -309,7 +304,7 @@ const LinkButton = React.memo(() => {
         onClick={openDialog}
       />
       {open && (
-        <div className="fixed inset-0 z-200 flex items-center justify-center bg-black/30" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30" onClick={() => setOpen(false)}>
           <div
             className="bg-white rounded-xl shadow-2xl p-5 w-80 flex flex-col gap-3"
             onClick={(e) => e.stopPropagation()}
@@ -649,7 +644,7 @@ interface EditorAreaProps {
   generating: boolean;
   spellCheck: boolean;
   generationMode?: 'full' | 'append' | null;
-  onFetchSuggestion?: (context: string) => Promise<string | null>;
+  onFetchSuggestion?: (context: string, signal?: AbortSignal) => Promise<string | null>;
   suggestionsEnabled?: boolean;
 }
 
@@ -699,12 +694,6 @@ const EditorArea = ({ value, onChange, generating, spellCheck, generationMode, o
       Highlight.configure({ multicolor: true }), // Enhancement #15
       Link.configure({ openOnClick: false }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Image,
-      ImageResize,
-      Table.configure({ resizable: true }),
-      TableRow, TableHeader, TableCell,
-      TaskItem.configure({ nested: true }),
-      TaskList,
       GhostText,
     ],
     immediatelyRender: false,
@@ -798,7 +787,7 @@ const EditorArea = ({ value, onChange, generating, spellCheck, generationMode, o
 
         try {
           abortControllerRef.current = new AbortController();
-          const suggestion = await onFetchSuggestion(docText);
+          const suggestion = await onFetchSuggestion(docText, abortControllerRef.current.signal);
 
           if (suggestion && editor.isFocused && !editor.isDestroyed) {
             editor.commands.setSuggestion(suggestion);
@@ -885,7 +874,7 @@ interface WordEditorProps {
   /** Generation mode: 'full' = chapter from scratch, 'append' = section/copilot */
   generationMode?: 'full' | 'append' | null;
   /** Fetch an inline suggestion given surrounding text context */
-  onFetchSuggestion?: (context: string) => Promise<string | null>;
+  onFetchSuggestion?: (context: string, signal?: AbortSignal) => Promise<string | null>;
   /** Enable inline ghost-text suggestions */
   suggestionsEnabled?: boolean;
 }

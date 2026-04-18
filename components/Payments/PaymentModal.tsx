@@ -65,7 +65,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
       <div className="bg-white rounded-4xl shadow-2xl max-w-lg w-full overflow-hidden relative">
         <button
           onClick={onClose}

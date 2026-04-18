@@ -216,7 +216,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
 
         {/* TOAST NOTIFICATION */}
         {toast && (
-          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-100 bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
             {toast.type === 'error' ? <AlertCircle className="h-3.5 w-3.5 text-rose-400" /> : <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />}
             <span className="text-[11px] font-black uppercase tracking-widest">{toast.msg}</span>
           </div>
