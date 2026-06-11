@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ChevronLeft, Loader2, Wand2, ChevronRight, BookOpen,
@@ -13,7 +13,8 @@ import {
 import { cleanHTML } from '../../services/htmlCleaner';
 import { exportToDocx, exportToPdf } from '../../services/exportService';
 import { useFirestore } from '../../hooks/useFirestore';
-import PaymentModal from '../Payments/PaymentModal';
+// Lazy — defers vendor-paystack (~116 kB) until the user actually clicks "Top up".
+const PaymentModal = lazy(() => import('../Payments/PaymentModal'));
 import WordEditor, { useEditorStore } from './WordEditor';
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
@@ -44,18 +45,72 @@ const wrapChapterContent = (chapterTitle: string, bodyHTML: string): string => {
 // ─── Helper: append a section to existing chapter HTML ──────────────────────
 // Adds a page break before the section heading, then the body.
 // The AI is told NOT to repeat the section title, so we add it once here.
+const PAGE_BREAK_HTML = '<div data-page-break="" class="pm-page-break"></div>';
 const appendSection = (
   existing: string,
   sectionTitle: string,
   bodyHTML: string
 ): string => {
   // Only add page break if there's already content
-  const pageBreak = existing.trim()
-    ? '<div data-page-break="" class="pm-page-break"></div>'
-    : '';
+  const pageBreak = existing.trim() ? PAGE_BREAK_HTML : '';
   // Section heading (h2), then cleaned body (AI should not repeat the heading)
   const sectionHTML = `<h2>${escapeHTML(sectionTitle)}</h2>${cleanHTML(bodyHTML)}`;
   return existing + pageBreak + sectionHTML;
+};
+
+// ─── Helper: reorder section blocks inside a chapter's rendered HTML ────────
+// `<h2>` headings demarcate section boundaries. We split the chapter body on
+// those headings, match each block to its title (entity-decoded), then
+// re-stitch in the new order with page-break separators between blocks.
+// Any section title in `newOrder` that doesn't appear in the HTML is skipped
+// (e.g. ungenerated sections). Any block found in HTML but not in newOrder
+// is defensively appended at the end.
+const reorderChapterSectionsInHTML = (html: string, newOrder: string[]): string => {
+  if (!html || newOrder.length === 0) return html;
+
+  const h2Matches: Array<{ title: string; start: number }> = [];
+  const h2Pattern = /<h2[^>]*>([\s\S]*?)<\/h2>/gi;
+  let m: RegExpExecArray | null;
+  const decoder = document.createElement('div');
+  while ((m = h2Pattern.exec(html)) !== null) {
+    decoder.innerHTML = m[1];
+    const title = (decoder.textContent || '').trim();
+    h2Matches.push({ title, start: m.index });
+  }
+  if (h2Matches.length === 0) return html;
+
+  // Preamble: everything before the first <h2> (chapter <h1>, intro paragraphs)
+  const preamble = html.slice(0, h2Matches[0].start);
+
+  // Strip a trailing page-break div from a section block (it belongs BETWEEN
+  // blocks, not as part of any individual block).
+  const stripTrailingBreak = (s: string): string =>
+    s.endsWith(PAGE_BREAK_HTML) ? s.slice(0, -PAGE_BREAK_HTML.length) : s;
+
+  const titleToBlock = new Map<string, string>();
+  for (let i = 0; i < h2Matches.length; i++) {
+    const start = h2Matches[i].start;
+    const end = i + 1 < h2Matches.length ? h2Matches[i + 1].start : html.length;
+    titleToBlock.set(h2Matches[i].title, stripTrailingBreak(html.slice(start, end)));
+  }
+
+  const orderedBlocks: string[] = [];
+  const used = new Set<string>();
+  for (const title of newOrder) {
+    const block = titleToBlock.get(title);
+    if (block && !used.has(title)) {
+      orderedBlocks.push(block);
+      used.add(title);
+    }
+  }
+  // Defensive: append any block whose title wasn't in newOrder (e.g. a
+  // section title was edited externally — keep the content rather than drop it).
+  for (const [title, block] of titleToBlock) {
+    if (!used.has(title)) orderedBlocks.push(block);
+  }
+
+  const stitched = orderedBlocks.join(PAGE_BREAK_HTML);
+  return preamble + (preamble.trim() && stitched ? PAGE_BREAK_HTML : '') + stitched;
 };
 
 // ─── Sortable section row ────────────────────────────────────────────────────
@@ -76,13 +131,15 @@ const SortableSection: React.FC<{
       style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.3 : 1 }}
       className="flex items-center group/s gap-1 py-0.5"
     >
-      <span
+      <button
+        type="button"
+        aria-label={`Reorder section ${section}`}
         {...attributes}
         {...listeners}
-        className="cursor-grab text-slate-200 hover:text-slate-400 shrink-0 touch-none"
+        className="cursor-grab text-slate-400 md:text-slate-200 hover:text-slate-500 md:hover:text-slate-400 shrink-0 touch-none bg-transparent border-0 p-0"
       >
-        <GripVertical className="h-3 w-3" />
-      </span>
+        <GripVertical className="h-3.5 w-3.5 md:h-3 md:w-3" aria-hidden="true" />
+      </button>
       <button
         onClick={() => onSelect(chapterTitle)}
         className={`flex-1 text-left text-[10px] truncate transition-colors leading-relaxed ${
@@ -94,14 +151,15 @@ const SortableSection: React.FC<{
         {section}
       </button>
       {generatingSection === section ? (
-        <Loader2 className="h-3 w-3 animate-spin text-green-600 shrink-0" />
+        <Loader2 className="h-4 w-4 md:h-3 md:w-3 animate-spin text-green-600 shrink-0" aria-label="Generating section" />
       ) : (
         <button
           onClick={e => { e.stopPropagation(); onGenerate(section); }}
           title={`Generate "${section}"`}
-          className="shrink-0 p-1 text-slate-200 hover:text-green-600 hover:bg-green-50 rounded opacity-0 group-hover/s:opacity-100 transition-all"
+          aria-label={`Generate section ${section}`}
+          className="shrink-0 p-1.5 md:p-1 text-green-600 bg-green-50 md:text-slate-200 md:bg-transparent hover:text-green-700 hover:bg-green-100 md:hover:text-green-600 md:hover:bg-green-50 rounded opacity-100 md:opacity-0 md:group-hover/s:opacity-100 transition-all"
         >
-          <Wand2 className="h-3 w-3" />
+          <Wand2 className="h-4 w-4 md:h-3 md:w-3" aria-hidden="true" />
         </button>
       )}
     </div>
@@ -127,17 +185,27 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   const [copilotQuery, setCopilotQuery] = useState('');
   const [toast, setToast] = useState<string | null>(null);
 
-  const isCancelled = useRef(false);
+  // Synchronous lock — prevents two clicks within the same render from both
+  // entering a generate handler (state `generating` flips async).
+  const isGeneratingRef = useRef(false);
+  // AbortController for the active stream — set when a generate starts,
+  // aborted on unmount / user cancel / overlapping cancel.
+  const abortControllerRef = useRef<AbortController | null>(null);
+  // Snapshot of the chapter's content immediately before we mutate it,
+  // so a mid-stream failure can be rolled back.
+  const chapterBackupRef = useRef<{ title: string; content: string } | null>(null);
   const autosaveTimer = useRef<number | null>(null);
   const isMountedRef = useRef(true);
   const lastFailedProject = useRef<Project | null>(null);
 
-  // Cleanup autosave timer on unmount to prevent memory leaks
+  // Cleanup on unmount: stop the in-flight stream and pending timers.
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
       if (autosaveTimer.current) window.clearTimeout(autosaveTimer.current);
+      if (toastTimer.current) window.clearTimeout(toastTimer.current);
+      if (abortControllerRef.current) abortControllerRef.current.abort();
     };
   }, []);
 
@@ -168,7 +236,17 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
             && !t.includes('TABLE OF CONTENTS') && !t.includes('LIST OF');
         });
 
-        const cleanProject = { ...proj, outline: cleanOutline };
+        // Defense-in-depth: re-sanitize chapter HTML loaded from Firestore.
+        // Content was already cleaned before save, but any future code path
+        // that writes to /projects (sharing, SDK call, migration) reaches
+        // the editor through here, so we cleanse on render.
+        const cleanChapters: typeof proj.chapters = {};
+        for (const [k, ch] of Object.entries(proj.chapters || {})) {
+          cleanChapters[k] = ch.content
+            ? { ...ch, content: cleanHTML(ch.content) }
+            : ch;
+        }
+        const cleanProject = { ...proj, outline: cleanOutline, chapters: cleanChapters };
         setProject(cleanProject);
 
         // Select the first pending chapter (if any) or default to the first chapter.
@@ -229,7 +307,23 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   // Accepts explicit chapterTitle to avoid stale-closure bugs when called via setTimeout
   const handleGenerateChapter = async (chapterTitle?: string) => {
     const target = chapterTitle || activeChapter;
-    if (!project || generating || !checkAccess()) return;
+    if (!project || isGeneratingRef.current || !checkAccess()) return;
+    // Synchronous lock — flips before any async work to block overlapping clicks.
+    isGeneratingRef.current = true;
+
+    // Flush a pending autosave timer so a stale debounced write can't clobber
+    // the cleared content mid-stream.
+    if (autosaveTimer.current) {
+      window.clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = null;
+    }
+
+    // Snapshot the chapter so a mid-stream failure can be rolled back.
+    chapterBackupRef.current = {
+      title: target,
+      content: project.chapters[target]?.content || '',
+    };
+
     // Clear content before generation to prevent blank first page bug
     setProject(prev => {
       if (!prev) return prev;
@@ -240,34 +334,64 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     setGenerating(true);
     setGenerationMode('full');
     setGeneratingSection(target);
-    isCancelled.current = false;
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       let streamedBody = '';
       await generateChapterContentStream(
+        project.id,
         project.topic,
         target,
         project.department,
         chunk => {
-          if (isCancelled.current) throw new Error('CANCELLED');
+          if (controller.signal.aborted) return;
           streamedBody = chunk;
           const html = wrapChapterContent(target, streamedBody);
+          // Functional update so the latest chapters state is used, not a
+          // snapshot captured before this stream started.
           setProject(prev => {
             if (!prev) return prev;
             const chapters = { ...prev.chapters };
             chapters[target] = { title: target, content: html, status: 'completed' };
             return { ...prev, chapters };
           });
-        }
+        },
+        controller.signal,
       );
+      // Success — clear the rollback snapshot, then autosave.
+      chapterBackupRef.current = null;
       setProject(current => { if (current) triggerAutosave(current); return current; });
-      showToast('Chapter generated');
+      if (isMountedRef.current) showToast('Chapter generated');
     } catch (e: any) {
-      if (e.message !== 'CANCELLED') showToast('Generation interrupted');
+      const isAbort = e?.name === 'AbortError' || controller.signal.aborted;
+      // Restore the pre-stream content on any failure (including abort) so
+      // we never leave the chapter wiped or partially written.
+      const backup = chapterBackupRef.current;
+      if (backup && backup.title === target) {
+        setProject(prev => {
+          if (!prev) return prev;
+          const chapters = { ...prev.chapters };
+          const wasGenerated = !!backup.content;
+          chapters[target] = {
+            title: target,
+            content: backup.content,
+            status: wasGenerated ? 'completed' : 'empty',
+          };
+          return { ...prev, chapters };
+        });
+      }
+      chapterBackupRef.current = null;
+      if (!isAbort && isMountedRef.current) showToast(e?.message || 'Generation interrupted');
     } finally {
-      setGenerating(false);
-      setGenerationMode(null);
-      setGeneratingSection(null);
+      if (abortControllerRef.current === controller) abortControllerRef.current = null;
+      isGeneratingRef.current = false;
+      if (isMountedRef.current) {
+        setGenerating(false);
+        setGenerationMode(null);
+        setGeneratingSection(null);
+      }
     }
   };
 
@@ -275,51 +399,94 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   // Accepts explicit chapterTitle to avoid stale-closure bugs from setTimeout
   const handleGenerateSection = async (sectionTitle: string, chapterTitle?: string) => {
     const target = chapterTitle || activeChapter;
-    if (!project || generating || !checkAccess()) return;
+    if (!project || isGeneratingRef.current || !checkAccess()) return;
+    isGeneratingRef.current = true;
+
+    if (autosaveTimer.current) {
+      window.clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = null;
+    }
+
+    // Capture the chapter's content at stream start. Every chunk re-renders
+    // by appending against this fixed base, so any concurrent edit attempt
+    // (which is also blocked by handleEdit's generating guard) can't be
+    // silently overwritten by a stale snapshot.
+    const baseAtStart = project.chapters[target]?.content || '';
+    chapterBackupRef.current = { title: target, content: baseAtStart };
+
     setGenerating(true);
     setGenerationMode('append');
     setGeneratingSection(sectionTitle);
-    isCancelled.current = false;
 
-    const existing = project.chapters[target]?.content || '';
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       let streamedBody = '';
       await generateSectionContentStream(
+        project.id,
         project.topic,
         target,
         sectionTitle,
         project.department,
         chunk => {
-          if (isCancelled.current) throw new Error('CANCELLED');
+          if (controller.signal.aborted) return;
           streamedBody = chunk;
           // appendSection adds the heading once — AI must NOT repeat it
-          const html = appendSection(existing, sectionTitle, streamedBody);
+          const html = appendSection(baseAtStart, sectionTitle, streamedBody);
           setProject(prev => {
             if (!prev) return prev;
             const chapters = { ...prev.chapters };
             chapters[target] = { title: target, content: html, status: 'completed' };
             return { ...prev, chapters };
           });
-        }
+        },
+        controller.signal,
       );
+      chapterBackupRef.current = null;
       setProject(current => { if (current) triggerAutosave(current); return current; });
-      showToast(`"${sectionTitle}" generated`);
+      if (isMountedRef.current) showToast(`"${sectionTitle}" generated`);
     } catch (e: any) {
-      if (e.message !== 'CANCELLED') showToast('Generation interrupted');
+      const isAbort = e?.name === 'AbortError' || controller.signal.aborted;
+      // Roll back to the content as it was at stream start.
+      const backup = chapterBackupRef.current;
+      if (backup && backup.title === target) {
+        setProject(prev => {
+          if (!prev) return prev;
+          const chapters = { ...prev.chapters };
+          chapters[target] = {
+            title: target,
+            content: backup.content,
+            status: backup.content ? 'completed' : 'empty',
+          };
+          return { ...prev, chapters };
+        });
+      }
+      chapterBackupRef.current = null;
+      if (!isAbort && isMountedRef.current) showToast(e?.message || 'Generation interrupted');
     } finally {
-      setGenerating(false);
-      setGenerationMode(null);
-      setGeneratingSection(null);
+      if (abortControllerRef.current === controller) abortControllerRef.current = null;
+      isGeneratingRef.current = false;
+      if (isMountedRef.current) {
+        setGenerating(false);
+        setGenerationMode(null);
+        setGeneratingSection(null);
+      }
     }
   };
 
   // ── AI Copilot ──────────────────────────────────────────────────────────────
   // Inserts AI content at the current cursor position — no page breaks.
   const handleCopilot = async () => {
-    if (!copilotQuery.trim() || !project || generating) return;
+    if (!copilotQuery.trim() || !project || isGeneratingRef.current) return;
     const editor = useEditorStore.getState().editor;
     if (!editor) return;
+
+    isGeneratingRef.current = true;
+    if (autosaveTimer.current) {
+      window.clearTimeout(autosaveTimer.current);
+      autosaveTimer.current = null;
+    }
 
     // Snapshot HTML before & after cursor using ProseMirror DOMSerializer
     const { from } = editor.state.selection;
@@ -335,18 +502,29 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     const htmlAfter  = toHTML(editor.state.doc.slice(from, docSize).content);
     const fullBefore = editor.getHTML(); // for AI context prompt
 
+    // Snapshot the chapter so we can roll back on stream failure.
+    chapterBackupRef.current = {
+      title: activeChapter,
+      content: project.chapters[activeChapter]?.content || '',
+    };
+
     setGenerating(true);
     setGenerationMode('append');
     setIsCopilotOpen(false);
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       const chapterOutline = project.outline.find(ch => ch.title === activeChapter);
       const sectionNames = chapterOutline?.sections?.join(', ') || 'N/A';
 
       await elaborateContentStream(
+        project.id,
         project.topic,
         `Chapter: ${activeChapter}\nSections in this chapter: ${sectionNames}\nInstruction: ${copilotQuery}\n\nExisting content (last 3000 chars for context):\n${fullBefore.slice(-3000)}`,
         chunk => {
+          if (controller.signal.aborted) return;
           // Splice cleaned AI text between the before/after cursor snapshots
           const fullHTML = htmlBefore + cleanHTML(chunk) + htmlAfter;
           setProject(prev => {
@@ -359,21 +537,50 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
             };
             return { ...prev, chapters };
           });
-        }
+        },
+        controller.signal,
       );
+      chapterBackupRef.current = null;
       setCopilotQuery('');
       setProject(current => { if (current) triggerAutosave(current); return current; });
-    } catch (e) {
-      console.error('Copilot error:', e);
+    } catch (e: any) {
+      const isAbort = e?.name === 'AbortError' || controller.signal.aborted;
+      const backup = chapterBackupRef.current;
+      if (backup && backup.title === activeChapter) {
+        setProject(prev => {
+          if (!prev) return prev;
+          const chapters = { ...prev.chapters };
+          chapters[activeChapter] = {
+            title: activeChapter,
+            content: backup.content,
+            status: backup.content ? 'completed' : 'empty',
+          };
+          return { ...prev, chapters };
+        });
+      }
+      chapterBackupRef.current = null;
+      if (!isAbort) {
+        console.error('Copilot error:', e);
+        if (isMountedRef.current) showToast(e?.message || 'Generation interrupted');
+      }
     } finally {
-      setGenerating(false);
-      setGenerationMode(null);
+      if (abortControllerRef.current === controller) abortControllerRef.current = null;
+      isGeneratingRef.current = false;
+      if (isMountedRef.current) {
+        setGenerating(false);
+        setGenerationMode(null);
+      }
     }
   };
 
   // ── Manual edit ─────────────────────────────────────────────────────────────
   const handleEdit = (val: string) => {
     if (!project) return;
+    // While a stream is writing into this chapter, drop incoming edits.
+    // TipTap is set non-editable but a debounced onChange queued just
+    // before the lock can still fire — without this guard it would
+    // overwrite the streaming content (and be wiped on the next chunk).
+    if (isGeneratingRef.current) return;
     setSaveStatus('unsaved');
     const chapters = { ...project.chapters };
     chapters[activeChapter] = {
@@ -390,13 +597,16 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   const handleFetchSuggestion = useCallback(async (context: string, signal?: AbortSignal): Promise<string | null> => {
     if (!project || generating) return null;
     const { fetchSuggestion } = await import('../../services/geminiService');
-    return fetchSuggestion(project.topic, context, signal);
+    return fetchSuggestion(project.id, project.topic, context, signal);
   }, [project, generating]);
 
   // ── Reorder outline sections ─────────────────────────────────────────────────
+  // Reorders both the sidebar outline AND the section blocks inside the
+  // chapter's HTML, so the rendered document and export match the new order.
   const handleDragEnd = (chapterIdx: number, event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id || !project) return;
+    if (isGeneratingRef.current) return; // Don't reorder while a stream is writing
     const ch = project.outline[chapterIdx];
     const prefix = `${ch.title}-`;
     const oldIdx = ch.sections.indexOf((active.id as string).replace(prefix, ''));
@@ -405,7 +615,20 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     const newSections = arrayMove(ch.sections, oldIdx, newIdx);
     const newOutline = [...project.outline];
     newOutline[chapterIdx] = { ...ch, sections: newSections };
-    const updated = { ...project, outline: newOutline };
+
+    // Re-stitch the chapter HTML so section blocks follow the new order.
+    const chapterContent = project.chapters[ch.title]?.content || '';
+    const reorderedContent = reorderChapterSectionsInHTML(chapterContent, newSections);
+    const newChapters = { ...project.chapters };
+    if (reorderedContent !== chapterContent) {
+      newChapters[ch.title] = {
+        ...(newChapters[ch.title] || { title: ch.title, status: 'empty' }),
+        title: ch.title,
+        content: reorderedContent,
+      };
+    }
+
+    const updated = { ...project, outline: newOutline, chapters: newChapters };
     setProject(updated);
     triggerAutosave(updated);
   };
@@ -435,7 +658,11 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
 
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden">
-      {showPayment && <PaymentModal user={user} onClose={() => setShowPayment(false)} />}
+      {showPayment && (
+        <Suspense fallback={null}>
+          <PaymentModal user={user} onClose={() => setShowPayment(false)} />
+        </Suspense>
+      )}
 
       {/* ── Toast ──────────────────────────────────────────────────────── */}
       {toast && (
@@ -491,7 +718,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
 
                     {/* Generate chapter button */}
                     {generatingSection === chapter.title ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin text-green-600 shrink-0" />
+                      <Loader2 className="h-4 w-4 md:h-3.5 md:w-3.5 animate-spin text-green-600 shrink-0" aria-label={`Generating ${chapter.title}`} />
                     ) : (
                       <button
                         onClick={() => {
@@ -499,9 +726,10 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
                           setTimeout(() => handleGenerateChapter(chapter.title), 80);
                         }}
                         title={`Auto-draft ${chapter.title}`}
-                        className="shrink-0 p-1 text-slate-200 hover:text-green-600 hover:bg-green-50 rounded opacity-0 group-hover/ch:opacity-100 transition-all"
+                        aria-label={`Auto-draft ${chapter.title}`}
+                        className="shrink-0 p-1.5 md:p-1 text-green-600 bg-green-50 md:text-slate-200 md:bg-transparent hover:text-green-700 hover:bg-green-100 md:hover:text-green-600 md:hover:bg-green-50 rounded opacity-100 md:opacity-0 md:group-hover/ch:opacity-100 transition-all"
                       >
-                        <Sparkles className="h-3.5 w-3.5" />
+                        <Sparkles className="h-4 w-4 md:h-3.5 md:w-3.5" aria-hidden="true" />
                       </button>
                     )}
                   </div>
@@ -584,7 +812,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
           onExportDocx={() => exportToDocx(project)}
           onExportPdf={() => exportToPdf(project)}
           onOpenCopilot={() => setIsCopilotOpen(prev => !prev)}
-          onCancelGeneration={() => { isCancelled.current = true; }}
+          onCancelGeneration={() => { abortControllerRef.current?.abort(); }}
           onFetchSuggestion={handleFetchSuggestion}
           suggestionsEnabled={!generating}
           hideToolbar={isMobileSidebarOpen}

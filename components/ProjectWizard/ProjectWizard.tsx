@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronRight, ChevronLeft, Sparkles, Loader2, BookCheck,
   User, IdCard, GraduationCap, FileText,
   Edit3, RefreshCw, Home, ArrowRight, CheckCircle2, Rocket, AlertCircle
 } from 'lucide-react';
-import { doc, runTransaction, collection, serverTimestamp, increment } from 'firebase/firestore';
-import { InstitutionType, Faculty, Departments, UserProfile, ProjectOutline, Chapter, TopicHistoryItem } from '../../types';
+import { httpsCallable, getFunctions } from 'firebase/functions';
+import { InstitutionType, Faculty, Departments, UserProfile, TopicHistoryItem } from '../../types';
 import { generateTopics, generateOutline } from '../../services/geminiService';
 import { useFirestore } from '../../hooks/useFirestore';
-import { db } from '../../firebase';
-import PaymentModal from '../Payments/PaymentModal';
+import { app } from '../../firebase';
+// Lazy — defers vendor-paystack (~116 kB) until the user opens the modal.
+const PaymentModal = lazy(() => import('../Payments/PaymentModal'));
 
 interface ProjectWizardProps { user: UserProfile; }
 
@@ -46,7 +47,9 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
   const [supervisorName, setSupervisorName] = useState('');
 
   // Step 4 State
-  const [outline, setOutline] = useState<ProjectOutline[]>([]);
+  const [outline, setOutline] = useState<import('../../types').ProjectOutline[]>([]);
+  // Stable per-attempt nonce so a retried createProject call doesn't double-charge
+  const createNonceRef = useRef<string>('');
 
   useEffect(() => {
     const state = location.state as { prefilledHistory?: TopicHistoryItem };
@@ -121,63 +124,43 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
     }
     setSaving(true);
     try {
-      const chapterMap: Record<string, Chapter> = {};
+      // Stable nonce per attempt — if the call retries due to a network
+      // hiccup, the server returns the same projectId instead of charging twice.
+      if (!createNonceRef.current) {
+        createNonceRef.current = `${user.uid}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      }
 
-      outline.forEach(ch => {
-        let status: Chapter['status'] = 'empty';
-        // Auto-draft chapter 1 by default
-        if (ch.title.toUpperCase().includes('CHAPTER 1') || ch.title.toUpperCase().includes('CHAPTER ONE')) {
-          status = 'pending';
-        }
-        chapterMap[ch.title] = { title: ch.title, content: '', status };
-      });
+      const createProject = httpsCallable<
+        unknown,
+        { projectId: string; replayed: boolean }
+      >(getFunctions(app, 'us-central1'), 'createProject');
 
-      const newProjectData = {
-        userId: user.uid,
+      const result = await createProject({
+        clientNonce: createNonceRef.current,
         topic: selectedTopic,
         studentName: studentName.trim(),
         matricNumber: matricNumber.trim(),
         supervisorName: supervisorName.trim(),
         institutionType: institutionType as InstitutionType,
-        institutionName: institutionName.trim() || 'N/A',
-        faculty: faculty.trim() || 'N/A',
-        department: department.trim() || 'N/A',
-        chapters: chapterMap,
+        institutionName: institutionName.trim(),
+        faculty: faculty.trim(),
+        department: department.trim(),
         outline,
-        settings: { showPageNumbers: true, showHeader: true, academicFormat: 'standard' },
-        status: 'draft',
-        isUnlocked: true,
-        createdAt: Date.now(),
-        updatedAt: serverTimestamp()
-      };
-
-      const userRef = doc(db, 'users', user.uid);
-      const projectsCollectionRef = collection(db, 'projects');
-
-      const projectId = await runTransaction(db, async (transaction) => {
-        const userDoc = await transaction.get(userRef);
-        if (!userDoc.exists() || (userDoc.data() as UserProfile).credits < 1) {
-          if (!user.isPremium) throw new Error("Insufficient credits.");
-        }
-        const newProjectRef = doc(projectsCollectionRef);
-
-        if (!user.isPremium) {
-          transaction.update(userRef, {
-            credits: increment(-1),
-            lifetime_projects: increment(1)
-          });
-        } else {
-          transaction.update(userRef, { lifetime_projects: increment(1) });
-        }
-
-        transaction.set(newProjectRef, newProjectData);
-        return newProjectRef.id;
       });
 
+      const projectId = result.data?.projectId;
+      if (!projectId) throw new Error('Project creation returned no id.');
       navigate(`/editor/${projectId}`);
     } catch (e: any) {
       console.error(e);
-      showToast(e.message || "Failed to initialize project.", 'error');
+      // Firebase callable errors expose a "code" field
+      const code = e?.code as string | undefined;
+      if (code === 'functions/failed-precondition') {
+        setShowPayment(true);
+        return;
+      }
+      const msg = e?.message || 'Failed to initialize project.';
+      showToast(msg.replace(/^Firebase: /, ''), 'error');
     } finally {
       setSaving(false);
     }
@@ -212,7 +195,11 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
       <div className="max-w-4xl mx-auto px-4 pt-10">
-        {showPayment && <PaymentModal user={user} onClose={() => setShowPayment(false)} />}
+        {showPayment && (
+          <Suspense fallback={null}>
+            <PaymentModal user={user} onClose={() => setShowPayment(false)} />
+          </Suspense>
+        )}
 
         {/* TOAST NOTIFICATION */}
         {toast && (

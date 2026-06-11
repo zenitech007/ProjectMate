@@ -18,32 +18,52 @@ service cloud.firestore {
                     && request.resource.data.credits == 0
                     && request.resource.data.isPremium == false;
 
-      // Users can update their own profile with these rules:
-      // 1. isPremium can never be changed by the client (only admin SDK)
-      // 2. credits can only DECREASE (deduction when launching a project)
-      //    Credits can never INCREASE from the client — only the webhook does that
+      // Users can update their own profile, but only specific fields.
+      // - isPremium, credits, lifetime_projects are server-authoritative
+      //   (Cloud Functions / webhook via admin SDK only — bypasses rules).
+      // - displayName / photoURL are the only fields the client can change.
+      // Any write that touches a field outside the whitelist is rejected.
       allow update: if isOwner(userId)
-                    && request.resource.data.isPremium == resource.data.isPremium
-                    && request.resource.data.credits <= resource.data.credits
-                    && request.resource.data.credits >= 0;
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['displayName', 'photoURL']);
 
       // Payment history written by Cloud Function admin SDK only
       match /paymentHistory/{paymentId} {
         allow read: if isOwner(userId);
         allow write: if false;
       }
+
+      // Idempotency markers for createProject — admin SDK only
+      match /projectNonces/{nonceId} {
+        allow read, write: if false;
+      }
+    }
+
+    // Per-user rate-limit counters — admin SDK only
+    match /rateLimits/{userId} {
+      allow read, write: if false;
+    }
+
+    // Server-bound payment intents (created by initiatePayment) and the
+    // audit queue for webhook rejections — admin SDK only.
+    match /payments/{reference} {
+      allow read, write: if false;
+    }
+    match /failed_payments/{docId} {
+      allow read, write: if false;
     }
 
     match /projects/{projectId} {
       allow read, delete: if isAuthenticated()
                           && request.auth.uid == resource.data.userId;
 
-      allow create: if isAuthenticated()
-                    && request.auth.uid == request.resource.data.userId
-                    && request.resource.data.topic is string
-                    && request.resource.data.topic.size() > 0
-                    && request.resource.data.status in ['draft', 'completed'];
+      // Project creation goes through the createProject Cloud Function
+      // (server-authoritative credit deduction). Client cannot create
+      // a project directly.
+      allow create: if false;
 
+      // Owners may freely update their unlocked project — content edits,
+      // outline reorders, regenerated chapters all cost 0 credits.
       allow update: if isAuthenticated()
                     && request.auth.uid == resource.data.userId
                     && request.resource.data.userId == resource.data.userId
@@ -55,7 +75,8 @@ service cloud.firestore {
                   && request.auth.uid == resource.data.userId;
       allow create: if isAuthenticated()
                     && request.auth.uid == request.resource.data.userId;
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if isAuthenticated() && request.auth.uid == resource.data.userId;
     }
   }
 }

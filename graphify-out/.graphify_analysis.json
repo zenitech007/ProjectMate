@@ -1,0 +1,445 @@
+{
+  "communities": {
+    "0": [
+      "functions_package_dependencies",
+      "functions_package_dependencies_firebase_admin",
+      "functions_package_dependencies_firebase_functions",
+      "projectmate_package_dependencies_autoprefixer",
+      "projectmate_package_dependencies_dnd_kit_core",
+      "projectmate_package_dependencies_dnd_kit_sortable",
+      "projectmate_package_dependencies_dnd_kit_utilities",
+      "projectmate_package_dependencies_docx",
+      "projectmate_package_dependencies_file_saver",
+      "projectmate_package_dependencies_firebase",
+      "projectmate_package_dependencies_jspdf",
+      "projectmate_package_dependencies_lucide_react",
+      "projectmate_package_dependencies_postcss",
+      "projectmate_package_dependencies_quill",
+      "projectmate_package_dependencies_react",
+      "projectmate_package_dependencies_react_color",
+      "projectmate_package_dependencies_react_dom",
+      "projectmate_package_dependencies_react_icons",
+      "projectmate_package_dependencies_react_paystack",
+      "projectmate_package_dependencies_react_quill",
+      "projectmate_package_dependencies_react_router_dom",
+      "projectmate_package_dependencies_tailwindcss",
+      "projectmate_package_dependencies_tailwindcss_postcss",
+      "projectmate_package_dependencies_tiptap_extension_color",
+      "projectmate_package_dependencies_tiptap_extension_font_family",
+      "projectmate_package_dependencies_tiptap_extension_highlight",
+      "projectmate_package_dependencies_tiptap_extension_image",
+      "projectmate_package_dependencies_tiptap_extension_link",
+      "projectmate_package_dependencies_tiptap_extension_resize_image",
+      "projectmate_package_dependencies_tiptap_extension_table",
+      "projectmate_package_dependencies_tiptap_extension_task_item",
+      "projectmate_package_dependencies_tiptap_extension_task_list",
+      "projectmate_package_dependencies_tiptap_extension_text_align",
+      "projectmate_package_dependencies_tiptap_extension_text_style",
+      "projectmate_package_dependencies_tiptap_extension_underline",
+      "projectmate_package_dependencies_tiptap_react",
+      "projectmate_package_dependencies_tiptap_starter_kit",
+      "projectmate_package_dependencies_zustand"
+    ],
+    "1": [
+      "components_editor_ghosttextextension_ts",
+      "components_editor_wordeditor_tsx",
+      "editor_ghosttextextension_commands",
+      "editor_ghosttextextension_ghosttext",
+      "editor_ghosttextextension_ghosttextstorage",
+      "editor_wordeditor_cn",
+      "editor_wordeditor_debounce",
+      "editor_wordeditor_editorarea",
+      "editor_wordeditor_editorstate",
+      "editor_wordeditor_font_families",
+      "editor_wordeditor_font_sizes",
+      "editor_wordeditor_fontfamilyselector",
+      "editor_wordeditor_fontsize",
+      "editor_wordeditor_fontsizeselector",
+      "editor_wordeditor_highlightpicker",
+      "editor_wordeditor_linkbutton",
+      "editor_wordeditor_separator",
+      "editor_wordeditor_textcolorpicker",
+      "editor_wordeditor_toolbar",
+      "editor_wordeditor_toolbarbutton",
+      "editor_wordeditor_toolbarprops",
+      "editor_wordeditor_useeditorstore",
+      "editor_wordeditor_usewordcount",
+      "editor_wordeditor_wordeditor",
+      "editor_wordeditor_wordeditorprops"
+    ],
+    "2": [
+      "components_dashboard_dashboard_tsx",
+      "components_editor_tableofcontents_tsx",
+      "components_layout_navbar_tsx",
+      "dashboard_dashboard_dashboardprops",
+      "dashboard_topichistory_topichistory",
+      "editor_projecteditor_sortablesection",
+      "editor_tableofcontents_sortablesectionprops",
+      "editor_tableofcontents_tocprops",
+      "hooks_usefirestore_ts",
+      "layout_navbar_navbar",
+      "layout_navbar_navbarprops",
+      "projectmate_app_dashboard",
+      "projectmate_app_projectwizard",
+      "projectmate_types_chapter",
+      "projectmate_types_departments",
+      "projectmate_types_faculty",
+      "projectmate_types_institutiontype",
+      "projectmate_types_projectoutline",
+      "projectmate_types_projectsettings",
+      "projectmate_types_topichistoryitem",
+      "projectmate_types_userprofile",
+      "projectwizard_projectwizard_projectwizardprops",
+      "types_ts"
+    ],
+    "3": [
+      "functions_index_admin",
+      "functions_index_ai",
+      "functions_index_allowedorigins",
+      "functions_index_checkratelimit",
+      "functions_index_cors",
+      "functions_index_creditstoadd",
+      "functions_index_crypto",
+      "functions_index_extractjson",
+      "functions_index_getai",
+      "functions_index_googlegenai",
+      "functions_index_hash",
+      "functions_index_js",
+      "functions_index_now",
+      "functions_index_oncall_onrequest_httpserror",
+      "functions_index_paymentref",
+      "functions_index_ratelimitmap",
+      "functions_index_sanitize",
+      "functions_index_sanitizelong",
+      "functions_index_userref",
+      "functions_index_verifytoken"
+    ],
+    "4": [
+      "functions_package_engines",
+      "functions_package_engines_node",
+      "functions_package_main",
+      "functions_package_private",
+      "metadata_json",
+      "package_json",
+      "projectmate_metadata_requestframepermissions",
+      "projectmate_package_type",
+      "projectmate_package_version",
+      "public_manifest_background_color",
+      "public_manifest_description",
+      "public_manifest_display",
+      "public_manifest_icons",
+      "public_manifest_json",
+      "public_manifest_name",
+      "public_manifest_orientation",
+      "public_manifest_screenshots",
+      "public_manifest_short_name",
+      "public_manifest_start_url",
+      "public_manifest_theme_color"
+    ],
+    "5": [
+      "auth_authpage_authpage",
+      "components_auth_authpage_tsx",
+      "firebase_ts",
+      "projectmate_app_app",
+      "projectmate_firebase_auth",
+      "projectmate_firebase_db",
+      "projectmate_firebase_firebaseconfig",
+      "services_geminiservice_assertonline",
+      "services_geminiservice_elaboratecontentstream",
+      "services_geminiservice_fetchsuggestion",
+      "services_geminiservice_fetchwithretry",
+      "services_geminiservice_generatechaptercontentstream",
+      "services_geminiservice_generateoutline",
+      "services_geminiservice_generatesectioncontentstream",
+      "services_geminiservice_generatetopics",
+      "services_geminiservice_getauthheaders",
+      "services_geminiservice_readstreamwithtimeout",
+      "services_geminiservice_ts",
+      "services_geminiservice_waitforauth"
+    ],
+    "6": [
+      "components_landing_landingpage_tsx",
+      "constants_ts",
+      "landing_landingpage_featurecard",
+      "landing_landingpage_footer",
+      "landing_landingpage_pricingitem",
+      "landing_landingpage_stepcard",
+      "payments_paymentmodal_generateref",
+      "payments_paymentmodal_paymentmodal",
+      "payments_paymentmodal_paymentmodalprops",
+      "payments_paymentmodal_paystackresponse",
+      "payments_paymentmodal_paystacktrigger",
+      "premium_upgradepage_benefititem",
+      "premium_upgradepage_pricingcheck",
+      "premium_upgradepage_upgradepageprops",
+      "projectmate_app_landingpage",
+      "projectmate_app_upgradepage",
+      "projectmate_constants_academic_format",
+      "projectmate_constants_nigerian_cities"
+    ],
+    "7": [
+      "projectmate_tsconfig_compileroptions",
+      "projectmate_tsconfig_compileroptions_allowimportingtsextensions",
+      "projectmate_tsconfig_compileroptions_allowjs",
+      "projectmate_tsconfig_compileroptions_experimentaldecorators",
+      "projectmate_tsconfig_compileroptions_isolatedmodules",
+      "projectmate_tsconfig_compileroptions_jsx",
+      "projectmate_tsconfig_compileroptions_lib",
+      "projectmate_tsconfig_compileroptions_module",
+      "projectmate_tsconfig_compileroptions_moduledetection",
+      "projectmate_tsconfig_compileroptions_moduleresolution",
+      "projectmate_tsconfig_compileroptions_noemit",
+      "projectmate_tsconfig_compileroptions_paths",
+      "projectmate_tsconfig_compileroptions_skiplibcheck",
+      "projectmate_tsconfig_compileroptions_target",
+      "projectmate_tsconfig_compileroptions_types",
+      "projectmate_tsconfig_compileroptions_usedefineforclassfields",
+      "projectmate_tsconfig_paths",
+      "tsconfig_json"
+    ],
+    "8": [
+      "app_tsx",
+      "context_authcontext_authcontext",
+      "context_authcontext_authprovider",
+      "context_authcontext_tsx",
+      "context_authcontext_useauth",
+      "hooks_useonlinestatus_ts",
+      "hooks_usepremium_ts",
+      "index_tsx",
+      "layout_offlinebanner_offlinebanner",
+      "premium_premiumlock_premiumlock",
+      "premium_premiumlock_premiumlockprops",
+      "projectmate_app_appcontent",
+      "projectmate_app_pageloader",
+      "projectmate_app_protectedroute",
+      "projectmate_index_root",
+      "projectmate_index_rootelement"
+    ],
+    "9": [
+      "editor_projecteditor_appendsection",
+      "editor_projecteditor_escapehtml",
+      "editor_projecteditor_wrapchaptercontent",
+      "projectmate_app_projecteditor",
+      "projectmate_types_project",
+      "services_exportservice_collecttextruns",
+      "services_exportservice_exporttodocx",
+      "services_exportservice_exporttopdf",
+      "services_exportservice_ts",
+      "services_htmlcleaner_allowed_tags",
+      "services_htmlcleaner_cleanhtml",
+      "services_htmlcleaner_stripdangerousattributes",
+      "services_htmlcleaner_stripdisallowedtags",
+      "services_htmlcleaner_ts"
+    ],
+    "10": [
+      "components_layout_errorboundary_tsx",
+      "layout_errorboundary_errorboundary",
+      "layout_errorboundary_errorboundary_componentdidcatch",
+      "layout_errorboundary_errorboundary_componentdidmount",
+      "layout_errorboundary_errorboundary_componentwillunmount",
+      "layout_errorboundary_errorboundary_constructor",
+      "layout_errorboundary_errorboundary_getderivedstatefromerror",
+      "layout_errorboundary_errorboundary_render",
+      "layout_errorboundary_props",
+      "layout_errorboundary_state"
+    ],
+    "11": [
+      "functions_package_scripts",
+      "functions_package_scripts_deploy",
+      "functions_package_scripts_logs",
+      "functions_package_scripts_serve",
+      "functions_package_scripts_shell",
+      "functions_package_scripts_start",
+      "projectmate_package_scripts_build",
+      "projectmate_package_scripts_dev",
+      "projectmate_package_scripts_lint",
+      "projectmate_package_scripts_preview"
+    ],
+    "12": [
+      "firebase_json",
+      "projectmate_firebase_firestore",
+      "projectmate_firebase_firestore_rules",
+      "projectmate_firebase_functions",
+      "projectmate_firebase_functions_source",
+      "projectmate_firebase_hosting",
+      "projectmate_firebase_hosting_ignore",
+      "projectmate_firebase_hosting_public",
+      "projectmate_firebase_hosting_rewrites"
+    ],
+    "13": [
+      "projectmate_package_devdependencies",
+      "projectmate_package_devdependencies_types_node",
+      "projectmate_package_devdependencies_types_react",
+      "projectmate_package_devdependencies_types_react_color",
+      "projectmate_package_devdependencies_typescript",
+      "projectmate_package_devdependencies_vite",
+      "projectmate_package_devdependencies_vite_plugin_pwa",
+      "projectmate_package_devdependencies_vitejs_plugin_react",
+      "projectmate_package_devdependencies_workbox_window"
+    ],
+    "14": [
+      "claude_settings_hooks",
+      "claude_settings_hooks_pretooluse",
+      "claude_settings_json"
+    ],
+    "15": [
+      "firestore_indexes_json",
+      "projectmate_firestore_indexes_fieldoverrides",
+      "projectmate_firestore_indexes_indexes"
+    ],
+    "16": [
+      "editor_a4editor_a4editor",
+      "editor_a4editor_a4editorprops"
+    ],
+    "17": [
+      "claude_graphify",
+      "index_projectmate"
+    ],
+    "18": [
+      "projectmate_vite_config_env",
+      "vite_config_ts"
+    ],
+    "19": [
+      "postcss_config_js"
+    ],
+    "20": [
+      "tailwind_config_js"
+    ]
+  },
+  "cohesion": {
+    "0": 0.05,
+    "1": 0.09,
+    "2": 0.15,
+    "3": 0.11,
+    "4": 0.11,
+    "5": 0.23,
+    "6": 0.12,
+    "7": 0.11,
+    "8": 0.17,
+    "9": 0.25,
+    "10": 0.2,
+    "11": 0.2,
+    "12": 0.25,
+    "13": 0.22,
+    "14": 0.67,
+    "15": 0.67,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0
+  },
+  "gods": [
+    {
+      "id": "functions_package_dependencies",
+      "label": "dependencies",
+      "degree": 40
+    },
+    {
+      "id": "projectmate_app_projecteditor",
+      "label": "ProjectEditor",
+      "degree": 22
+    },
+    {
+      "id": "projectmate_app_projectwizard",
+      "label": "ProjectWizard",
+      "degree": 17
+    },
+    {
+      "id": "projectmate_tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "payments_paymentmodal_paymentmodal",
+      "label": "PaymentModal()",
+      "degree": 10
+    },
+    {
+      "id": "functions_package_scripts",
+      "label": "scripts",
+      "degree": 10
+    },
+    {
+      "id": "projectmate_package_devdependencies",
+      "label": "devDependencies",
+      "degree": 9
+    },
+    {
+      "id": "projectmate_app_upgradepage",
+      "label": "UpgradePage",
+      "degree": 8
+    },
+    {
+      "id": "projectmate_types_userprofile",
+      "label": "UserProfile",
+      "degree": 8
+    },
+    {
+      "id": "services_htmlcleaner_cleanhtml",
+      "label": "cleanHTML()",
+      "degree": 8
+    }
+  ],
+  "surprises": [
+    {
+      "source": "ProtectedRoute()",
+      "target": "useAuth()",
+      "source_files": [
+        "App.tsx",
+        "context/AuthContext.tsx"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; peripheral node `ProtectedRoute()` unexpectedly reaches hub `useAuth()`"
+    },
+    {
+      "source": "AppContent()",
+      "target": "useAuth()",
+      "source_files": [
+        "App.tsx",
+        "context/AuthContext.tsx"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; peripheral node `AppContent()` unexpectedly reaches hub `useAuth()`"
+    },
+    {
+      "source": "wrapChapterContent()",
+      "target": "cleanHTML()",
+      "source_files": [
+        "components/Editor/ProjectEditor.tsx",
+        "services/htmlCleaner.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories"
+    },
+    {
+      "source": "appendSection()",
+      "target": "cleanHTML()",
+      "source_files": [
+        "components/Editor/ProjectEditor.tsx",
+        "services/htmlCleaner.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories"
+    },
+    {
+      "source": "graphify",
+      "target": "ProjectMate - Nigerian Student Project Assistant",
+      "source_files": [
+        "CLAUDE.md",
+        "index.html"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    }
+  ],
+  "tokens": {
+    "input": 120039,
+    "output": 285
+  }
+}

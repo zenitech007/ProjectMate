@@ -1,32 +1,25 @@
-import {
-  Document, Packer, Paragraph, TextRun, AlignmentType,
-  HeadingLevel, PageNumber, Header, Footer, PageBreak,
-  UnderlineType,
-} from 'docx';
-import { jsPDF } from 'jspdf';
+/**
+ * exportService.ts
+ *
+ * KEY CHANGE: docx and jsPDF are dynamically imported INSIDE each export
+ * function. This means the ~883 kB vendor-export chunk is never downloaded
+ * until the user actually clicks "Export". On a Nigerian 3G connection that's
+ * roughly 6 seconds of load time saved on every page that isn't the editor.
+ *
+ * Everything else (the HTML parsing logic, paragraph helpers) is identical
+ * to the original — only the import style changed.
+ */
 import { Project } from '../types';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HTML → docx Paragraph converter
-//
-// ROOT CAUSE OF THE BUG (now fixed):
-//   The old exportService looped over outline sections and for EACH section
-//   dumped the ENTIRE chapter HTML as raw plain text. So if Chapter 1 had 7
-//   sections, the same "Background of the Study" wall-of-text was written 7
-//   times under every section heading.
-//
-// THE FIX:
-//   We parse the stored HTML ONCE per chapter. The HTML is already correctly
-//   structured (wrapChapterContent adds <h1>, appendSection adds <h2> + <p>
-//   body for each section). We walk those nodes and convert them to proper
-//   docx Paragraph objects preserving headings, bold, body text, page breaks.
-// ─────────────────────────────────────────────────────────────────────────────
-/**
- * Recursively collect TextRun objects from a DOM node, inheriting inline styles.
- * Shared by both <p> and <li> converters to avoid duplication.
- */
-const collectTextRuns = (rootNode: Node, initialStyles: Record<string, any> = {}): TextRun[] => {
-  const runs: TextRun[] = [];
+// ─── Inline style helpers (no imports needed) ─────────────────────────────────
+
+const collectTextRuns = async (
+  rootNode: Node,
+  initialStyles: Record<string, any> = {},
+  TextRun: any,
+  UnderlineType: any
+): Promise<any[]> => {
+  const runs: any[] = [];
 
   const walk = (node: Node, currentStyles: Record<string, any>) => {
     node.childNodes.forEach(child => {
@@ -37,11 +30,11 @@ const collectTextRuns = (rootNode: Node, initialStyles: Record<string, any> = {}
         }
       } else if (child.nodeType === Node.ELEMENT_NODE) {
         const el = child as Element;
-        const childTag = el.tagName?.toLowerCase();
+        const tag = el.tagName?.toLowerCase();
         const newStyles = { ...currentStyles };
-        if (childTag === 'b' || childTag === 'strong') newStyles.bold = true;
-        if (childTag === 'i' || childTag === 'em') newStyles.italics = true;
-        if (childTag === 'u') newStyles.underline = { type: UnderlineType.SINGLE };
+        if (tag === 'b' || tag === 'strong') newStyles.bold = true;
+        if (tag === 'i' || tag === 'em') newStyles.italics = true;
+        if (tag === 'u') newStyles.underline = { type: UnderlineType.SINGLE };
         walk(child, newStyles);
       }
     });
@@ -51,229 +44,118 @@ const collectTextRuns = (rootNode: Node, initialStyles: Record<string, any> = {}
   return runs;
 };
 
-const htmlToParagraphs = (html: string | undefined | null): Paragraph[] => {
-  if (!html || !html.trim()) return [];
+// ─── DOCX Export ──────────────────────────────────────────────────────────────
 
-  const dom = new DOMParser().parseFromString(html, 'text/html');
-  const paragraphs: Paragraph[] = [];
+export const exportToDocx = async (project: Project) => {
+  // Dynamically import docx — only downloaded when this function is called
+  const {
+    Document, Packer, Paragraph, TextRun, AlignmentType,
+    HeadingLevel, PageNumber, Header, Footer, PageBreak, UnderlineType,
+  } = await import('docx');
 
-  const processNode = (node: Element) => {
-    const tag = node.tagName?.toLowerCase();
+  const htmlToParagraphs = async (html: string | undefined | null): Promise<any[]> => {
+    if (!html || !html.trim()) return [];
+    const dom = new DOMParser().parseFromString(html, 'text/html');
+    const paragraphs: any[] = [];
 
-    // Page-break div inserted by appendSection()
-    if (tag === 'div' && node.getAttribute('data-page-break') !== null) {
-      paragraphs.push(new Paragraph({ children: [new PageBreak()] }));
-      return;
-    }
+    const processNode = async (node: Element): Promise<void> => {
+      const tag = node.tagName?.toLowerCase();
 
-    // <h1> → chapter title (centered, bold, large)
-    if (tag === 'h1') {
-      paragraphs.push(
-        new Paragraph({
+      if (tag === 'div' && node.getAttribute('data-page-break') !== null) {
+        paragraphs.push(new Paragraph({ children: [new PageBreak()] }));
+        return;
+      }
+      if (tag === 'h1') {
+        paragraphs.push(new Paragraph({
           heading: HeadingLevel.HEADING_1,
           alignment: AlignmentType.CENTER,
           spacing: { before: 400, after: 400 },
-          children: [
-            new TextRun({
-              text: node.textContent?.toUpperCase() || '',
-              bold: true,
-              font: 'Times New Roman',
-              size: 28,
-            }),
-          ],
-        })
-      );
-      return;
-    }
-
-    // <h2> → section heading (bold, underlined)
-    if (tag === 'h2') {
-      paragraphs.push(
-        new Paragraph({
+          children: [new TextRun({ text: node.textContent?.toUpperCase() || '', bold: true, font: 'Times New Roman', size: 28 })],
+        }));
+        return;
+      }
+      if (tag === 'h2') {
+        paragraphs.push(new Paragraph({
           heading: HeadingLevel.HEADING_2,
           spacing: { before: 360, after: 200 },
-          children: [
-            new TextRun({
-              text: node.textContent?.toUpperCase() || '',
-              bold: true,
-              font: 'Times New Roman',
-              size: 24,
-              underline: { type: UnderlineType.SINGLE },
-            }),
-          ],
-        })
-      );
-      return;
-    }
-
-    // <h3> → sub-section heading
-    if (tag === 'h3') {
-      paragraphs.push(
-        new Paragraph({
+          children: [new TextRun({ text: node.textContent?.toUpperCase() || '', bold: true, font: 'Times New Roman', size: 24, underline: { type: UnderlineType.SINGLE } })],
+        }));
+        return;
+      }
+      if (tag === 'h3') {
+        paragraphs.push(new Paragraph({
           heading: HeadingLevel.HEADING_3,
           spacing: { before: 240, after: 120 },
-          children: [
-            new TextRun({
-              text: node.textContent || '',
-              bold: true,
-              font: 'Times New Roman',
-              size: 24,
-            }),
-          ],
-        })
-      );
-      return;
-    }
-
-    // <p> → justified body paragraph; handle inline formatting
-    if (tag === 'p') {
-      const runs = collectTextRuns(node);
-
-      if (runs.length > 0) {
-        paragraphs.push(
-          new Paragraph({
+          children: [new TextRun({ text: node.textContent || '', bold: true, font: 'Times New Roman', size: 24 })],
+        }));
+        return;
+      }
+      if (tag === 'p') {
+        const runs = await collectTextRuns(node, {}, TextRun, UnderlineType);
+        if (runs.length > 0) {
+          paragraphs.push(new Paragraph({
             children: runs,
             alignment: AlignmentType.JUSTIFIED,
             spacing: { line: 480, after: 120 },
             indent: { firstLine: 720 },
-          })
-        );
+          }));
+        }
+        return;
       }
-      return;
-    }
-
-    // <ul>/<ol> → bullet/numbered list items (direct children only — Fix #14)
-    if (tag === 'ul' || tag === 'ol') {
-      const directLis = Array.from(node.children).filter(
-        child => child.tagName?.toLowerCase() === 'li'
-      );
-      directLis.forEach((li, idx) => {
-        const prefix = tag === 'ol' ? `${idx + 1}. ` : '\u2022  ';
-        const prefixRun = new TextRun({ text: prefix, font: 'Times New Roman', size: 24 });
-        const contentRuns = collectTextRuns(li);
-
-        paragraphs.push(
-          new Paragraph({
+      if (tag === 'ul' || tag === 'ol') {
+        const directLis = Array.from(node.children).filter(c => c.tagName?.toLowerCase() === 'li');
+        for (const [idx, li] of directLis.entries()) {
+          const prefix = tag === 'ol' ? `${idx + 1}. ` : '\u2022  ';
+          const prefixRun = new TextRun({ text: prefix, font: 'Times New Roman', size: 24 });
+          const contentRuns = await collectTextRuns(li, {}, TextRun, UnderlineType);
+          paragraphs.push(new Paragraph({
             children: [prefixRun, ...contentRuns],
             alignment: AlignmentType.JUSTIFIED,
             spacing: { line: 480, after: 80 },
             indent: { left: 720, hanging: 360 },
-          })
-        );
-      });
-      return;
-    }
+          }));
+        }
+        return;
+      }
+      for (const child of Array.from(node.childNodes)) {
+        if (child.nodeType === Node.ELEMENT_NODE) await processNode(child as Element);
+      }
+    };
 
-    // Recurse into any other container element
-    node.childNodes.forEach(child => {
-      if (child.nodeType === Node.ELEMENT_NODE) processNode(child as Element);
-    });
+    for (const child of Array.from(dom.body.childNodes)) {
+      if (child.nodeType === Node.ELEMENT_NODE) await processNode(child as Element);
+    }
+    return paragraphs;
   };
 
-  dom.body.childNodes.forEach(child => {
-    if (child.nodeType === Node.ELEMENT_NODE) processNode(child as Element);
-  });
-
-  return paragraphs;
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// DOCX Export  (fixed)
-// ─────────────────────────────────────────────────────────────────────────────
-export const exportToDocx = async (project: Project) => {
-
-  // Title page paragraphs
-  const titlePage: Paragraph[] = [
-    new Paragraph({
-      text: project.topic.toUpperCase(),
-      heading: HeadingLevel.HEADING_1,
-      alignment: AlignmentType.CENTER,
-      spacing: { before: 2000, after: 1000 },
-    }),
+  const titlePage = [
+    new Paragraph({ text: project.topic.toUpperCase(), heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER, spacing: { before: 2000, after: 1000 } }),
     new Paragraph({ text: 'BY', alignment: AlignmentType.CENTER, spacing: { after: 400 } }),
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 200 },
-      children: [new TextRun({ text: project.studentName.toUpperCase(), bold: true, size: 28 })],
-    }),
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 }, children: [new TextRun({ text: project.studentName.toUpperCase(), bold: true, size: 28 })] }),
     new Paragraph({ text: project.matricNumber, alignment: AlignmentType.CENTER, spacing: { after: 1000 } }),
-    new Paragraph({
-      text: `A RESEARCH PROJECT SUBMITTED TO THE DEPARTMENT OF ${project.department.toUpperCase()}, FACULTY OF ${project.faculty.toUpperCase()}, ${project.institutionName.toUpperCase()}`,
-      alignment: AlignmentType.CENTER,
-      spacing: { line: 480 },
-    }),
-    new Paragraph({
-      text: `IN PARTIAL FULFILMENT OF THE REQUIREMENTS FOR THE AWARD OF THE DEGREE OF BACHELOR OF SCIENCE (B.Sc) IN ${project.department.toUpperCase()}`,
-      alignment: AlignmentType.CENTER,
-      spacing: { before: 1000, after: 1000 },
-    }),
-    new Paragraph({
-      text: `SUPERVISOR: ${project.supervisorName.toUpperCase()}`,
-      alignment: AlignmentType.CENTER,
-      spacing: { before: 2000 },
-    }),
-    new Paragraph({
-      text: new Date().getFullYear().toString(),
-      alignment: AlignmentType.CENTER,
-      spacing: { before: 1000 },
-    }),
+    new Paragraph({ text: `A RESEARCH PROJECT SUBMITTED TO THE DEPARTMENT OF ${project.department.toUpperCase()}, FACULTY OF ${project.faculty.toUpperCase()}, ${project.institutionName.toUpperCase()}`, alignment: AlignmentType.CENTER, spacing: { line: 480 } }),
+    new Paragraph({ text: `IN PARTIAL FULFILMENT OF THE REQUIREMENTS FOR THE AWARD OF THE DEGREE OF BACHELOR OF SCIENCE (B.Sc) IN ${project.department.toUpperCase()}`, alignment: AlignmentType.CENTER, spacing: { before: 1000, after: 1000 } }),
+    new Paragraph({ text: `SUPERVISOR: ${project.supervisorName.toUpperCase()}`, alignment: AlignmentType.CENTER, spacing: { before: 2000 } }),
+    new Paragraph({ text: new Date().getFullYear().toString(), alignment: AlignmentType.CENTER, spacing: { before: 1000 } }),
   ];
 
-  // One docx section per chapter — parse HTML ONCE, no more per-section duplication
-  const chapterSections = project.outline.map(chapter => {
+  const chapterSections = await Promise.all(project.outline.map(async chapter => {
     const storedHtml = project.chapters[chapter.title]?.content || '';
-
-    const contentParagraphs: Paragraph[] = storedHtml
-      ? htmlToParagraphs(storedHtml)
-      : [
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `[${chapter.title} — content not yet generated]`,
-                font: 'Times New Roman',
-                size: 24,
-                italics: true,
-                color: 'AAAAAA',
-              }),
-            ],
-          }),
-        ];
+    const contentParagraphs = storedHtml
+      ? await htmlToParagraphs(storedHtml)
+      : [new Paragraph({ children: [new TextRun({ text: `[${chapter.title} — content not yet generated]`, font: 'Times New Roman', size: 24, italics: true, color: 'AAAAAA' })] })];
 
     return {
       properties: {},
-      headers: project.settings?.showHeader
-        ? {
-            default: new Header({
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.RIGHT,
-                  children: [
-                    new TextRun({
-                      text: `${project.topic.substring(0, 50)}… | ${chapter.title}`,
-                      size: 16,
-                      color: '999999',
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          }
-        : undefined,
-      footers: project.settings?.showPageNumbers
-        ? {
-            default: new Footer({
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.CENTER,
-                  children: [new TextRun('Page '), new TextRun({ children: [PageNumber.CURRENT] })],
-                }),
-              ],
-            }),
-          }
-        : undefined,
+      headers: project.settings?.showHeader ? {
+        default: new Header({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: `${project.topic.substring(0, 50)}… | ${chapter.title}`, size: 16, color: '999999' })] })] }),
+      } : undefined,
+      footers: project.settings?.showPageNumbers ? {
+        default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun('Page '), new TextRun({ children: [PageNumber.CURRENT] })] })] }),
+      } : undefined,
       children: contentParagraphs,
     };
-  });
+  }));
 
   const doc = new Document({ sections: [{ children: titlePage }, ...chapterSections] });
   const blob = await Packer.toBlob(doc);
@@ -285,12 +167,14 @@ export const exportToDocx = async (project: Project) => {
   window.URL.revokeObjectURL(url);
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PDF Export  (fixed)
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── PDF Export ───────────────────────────────────────────────────────────────
+
 export const exportToPdf = async (project: Project) => {
+  // Dynamically import jsPDF — only downloaded when this function is called
+  const { jsPDF } = await import('jspdf');
+
   const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
-  const pageWidth  = pdf.internal.pageSize.getWidth();
+  const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 72;
   const contentWidth = pageWidth - margin * 2;
@@ -298,195 +182,122 @@ export const exportToPdf = async (project: Project) => {
   let currentPage = 1;
 
   const checkNewPage = (needed: number) => {
-    if (y + needed > pageHeight - margin) {
-      addFooter();
-      pdf.addPage();
-      currentPage++;
-      y = margin + 20;
-    }
+    if (y + needed > pageHeight - margin) { addFooter(); pdf.addPage(); currentPage++; y = margin + 20; }
   };
-
   const addFooter = () => {
     if (!project.settings?.showPageNumbers) return;
-    pdf.setFont('times', 'normal');
-    pdf.setFontSize(10);
-    pdf.setTextColor(100, 100, 100);
+    pdf.setFont('times', 'normal'); pdf.setFontSize(10); pdf.setTextColor(100, 100, 100);
     pdf.text(String(currentPage), pageWidth / 2, pageHeight - 30, { align: 'center' });
     pdf.setTextColor(0, 0, 0);
   };
-
   const addHeader = (title: string) => {
     if (!project.settings?.showHeader) return;
-    pdf.setFont('times', 'italic');
-    pdf.setFontSize(8);
-    pdf.setTextColor(150, 150, 150);
+    pdf.setFont('times', 'italic'); pdf.setFontSize(8); pdf.setTextColor(150, 150, 150);
     pdf.text(`${project.topic.substring(0, 60)}… | ${title}`, pageWidth - margin, 30, { align: 'right' });
     pdf.setTextColor(0, 0, 0);
   };
 
-  // Title page — intentionally no page number footer (standard academic format)
+  // Title page
   pdf.setFont('times', 'bold'); pdf.setFontSize(18);
-  const titleLines = pdf.splitTextToSize(project.topic.toUpperCase(), contentWidth);
-  pdf.text(titleLines, pageWidth / 2, 140, { align: 'center' });
-
+  pdf.text(pdf.splitTextToSize(project.topic.toUpperCase(), contentWidth), pageWidth / 2, 140, { align: 'center' });
   pdf.setFont('times', 'normal'); pdf.setFontSize(12);
   pdf.text('BY', pageWidth / 2, 220, { align: 'center' });
   pdf.setFont('times', 'bold'); pdf.setFontSize(14);
   pdf.text(project.studentName.toUpperCase(), pageWidth / 2, 245, { align: 'center' });
   pdf.setFont('times', 'normal'); pdf.setFontSize(12);
   pdf.text(project.matricNumber, pageWidth / 2, 265, { align: 'center' });
-
-  const submissionText = `A RESEARCH PROJECT SUBMITTED TO THE DEPARTMENT OF ${project.department.toUpperCase()}, FACULTY OF ${project.faculty.toUpperCase()}, ${project.institutionName.toUpperCase()} IN PARTIAL FULFILMENT OF THE REQUIREMENTS FOR THE AWARD OF THE DEGREE OF BACHELOR OF SCIENCE (B.Sc) IN ${project.department.toUpperCase()}`;
-  const subLines = pdf.splitTextToSize(submissionText, contentWidth - 80);
-  pdf.text(subLines, pageWidth / 2, 360, { align: 'center' });
-
+  const subText = `A RESEARCH PROJECT SUBMITTED TO THE DEPARTMENT OF ${project.department.toUpperCase()}, FACULTY OF ${project.faculty.toUpperCase()}, ${project.institutionName.toUpperCase()} IN PARTIAL FULFILMENT OF THE REQUIREMENTS FOR THE AWARD OF THE DEGREE OF BACHELOR OF SCIENCE (B.Sc) IN ${project.department.toUpperCase()}`;
+  pdf.text(pdf.splitTextToSize(subText, contentWidth - 80), pageWidth / 2, 360, { align: 'center' });
   pdf.setFont('times', 'bold');
   pdf.text(`SUPERVISOR: ${project.supervisorName.toUpperCase()}`, pageWidth / 2, 500, { align: 'center' });
   pdf.text(new Date().getFullYear().toString(), pageWidth / 2, 560, { align: 'center' });
 
-  // Chapter pages — parse HTML once per chapter
+  // Chapters
   for (const chapter of project.outline) {
-    addFooter();
-    pdf.addPage();
-    currentPage++;
-    y = margin + 20;
-    addHeader(chapter.title);
-
+    addFooter(); pdf.addPage(); currentPage++; y = margin + 20; addHeader(chapter.title);
     const storedHtml = project.chapters[chapter.title]?.content || '';
     if (!storedHtml) {
-      pdf.setFont('times', 'italic'); pdf.setFontSize(12);
-      pdf.setTextColor(170, 170, 170);
+      pdf.setFont('times', 'italic'); pdf.setFontSize(12); pdf.setTextColor(170, 170, 170);
       pdf.text(`[${chapter.title} — content not yet generated]`, margin, y);
-      pdf.setTextColor(0, 0, 0);
-      continue;
+      pdf.setTextColor(0, 0, 0); continue;
     }
 
     const dom = new DOMParser().parseFromString(storedHtml, 'text/html');
 
-    /** Collect styled text segments from a DOM node for PDF rendering. */
-    const collectPdfSegments = (rootNode: Node, initialStyles = { bold: false, italic: false }): { text: string; bold: boolean; italic: boolean }[] => {
-      const segments: { text: string; bold: boolean; italic: boolean }[] = [];
-      const walk = (node: Node, styles: { bold: boolean; italic: boolean }) => {
-        node.childNodes.forEach(child => {
-          if (child.nodeType === Node.TEXT_NODE) {
-            segments.push({ text: child.textContent || '', ...styles });
-          } else if (child.nodeType === Node.ELEMENT_NODE) {
-            const el = child as Element;
-            const childTag = el.tagName?.toLowerCase();
-            const newStyles = { ...styles };
-            if (childTag === 'b' || childTag === 'strong') newStyles.bold = true;
-            if (childTag === 'i' || childTag === 'em') newStyles.italic = true;
-            walk(child, newStyles);
+    const collectPdfSegs = (node: Node, styles = { bold: false, italic: false }): { text: string; bold: boolean; italic: boolean }[] => {
+      const segs: { text: string; bold: boolean; italic: boolean }[] = [];
+      const walk = (n: Node, s: { bold: boolean; italic: boolean }) => {
+        n.childNodes.forEach(c => {
+          if (c.nodeType === Node.TEXT_NODE) { segs.push({ text: c.textContent || '', ...s }); }
+          else if (c.nodeType === Node.ELEMENT_NODE) {
+            const tag = (c as Element).tagName?.toLowerCase();
+            const ns = { ...s };
+            if (tag === 'b' || tag === 'strong') ns.bold = true;
+            if (tag === 'i' || tag === 'em') ns.italic = true;
+            walk(c, ns);
           }
         });
       };
-      walk(rootNode, initialStyles);
-      return segments;
+      walk(node, styles);
+      return segs;
     };
 
-    /** Render styled segments as word-wrapped PDF text at the current y position. */
-    const renderPdfSegments = (segments: { text: string; bold: boolean; italic: boolean }[], startX: number, wrapX: number) => {
-      const lineHeight = 24;
-      let currentX = startX;
-      for (const segment of segments) {
-        const style = segment.bold && segment.italic ? 'bolditalic' : segment.bold ? 'bold' : segment.italic ? 'italic' : 'normal';
+    const renderSegs = (segs: { text: string; bold: boolean; italic: boolean }[], startX: number, wrapX: number) => {
+      const lh = 24; let cx = startX;
+      for (const seg of segs) {
+        const style = seg.bold && seg.italic ? 'bolditalic' : seg.bold ? 'bold' : seg.italic ? 'italic' : 'normal';
         pdf.setFont('times', style);
-        const words = segment.text.split(/(\s+)/);
-        for (const word of words) {
+        for (const word of seg.text.split(/(\s+)/)) {
           if (!word) continue;
-          const wordWidth = pdf.getStringUnitWidth(word) * 12 / pdf.internal.scaleFactor;
-          if (currentX + wordWidth > pageWidth - margin) {
-            y += lineHeight;
-            checkNewPage(lineHeight);
-            currentX = wrapX;
-          }
-          pdf.text(word, currentX, y);
-          currentX += wordWidth;
+          const ww = pdf.getStringUnitWidth(word) * 12 / pdf.internal.scaleFactor;
+          if (cx + ww > pageWidth - margin) { y += lh; checkNewPage(lh); cx = wrapX; }
+          pdf.text(word, cx, y); cx += ww;
         }
       }
-      y += lineHeight;
+      y += 24;
     };
 
     const renderNode = (node: Element) => {
       const tag = node.tagName?.toLowerCase();
-
       if (tag === 'div' && node.getAttribute('data-page-break') !== null) {
-        addFooter();
-        pdf.addPage(); currentPage++; y = margin + 20;
-        addHeader(chapter.title);
-        return;
+        addFooter(); pdf.addPage(); currentPage++; y = margin + 20; addHeader(chapter.title); return;
       }
-
       if (tag === 'h1') {
-        checkNewPage(40);
-        pdf.setFont('times', 'bold'); pdf.setFontSize(16);
+        checkNewPage(40); pdf.setFont('times', 'bold'); pdf.setFontSize(16);
         const lines = pdf.splitTextToSize((node.textContent || '').toUpperCase(), contentWidth);
-        pdf.text(lines, pageWidth / 2, y, { align: 'center' });
-        y += lines.length * 22 + 16;
-        return;
+        pdf.text(lines, pageWidth / 2, y, { align: 'center' }); y += lines.length * 22 + 16; return;
       }
-
       if (tag === 'h2') {
-        checkNewPage(36);
-        y += 12;
-        pdf.setFont('times', 'bold'); pdf.setFontSize(13);
+        checkNewPage(36); y += 12; pdf.setFont('times', 'bold'); pdf.setFontSize(13);
         const lines = pdf.splitTextToSize((node.textContent || '').toUpperCase(), contentWidth);
-        pdf.text(lines, margin, y);
-        y += lines.length * 18 + 8;
-        return;
+        pdf.text(lines, margin, y); y += lines.length * 18 + 8; return;
       }
-
       if (tag === 'h3') {
-        checkNewPage(28);
-        y += 8;
-        pdf.setFont('times', 'bold'); pdf.setFontSize(12);
+        checkNewPage(28); y += 8; pdf.setFont('times', 'bold'); pdf.setFontSize(12);
         const lines = pdf.splitTextToSize(node.textContent || '', contentWidth);
-        pdf.text(lines, margin, y);
-        y += lines.length * 16 + 6;
-        return;
+        pdf.text(lines, margin, y); y += lines.length * 16 + 6; return;
       }
-
       if (tag === 'p') {
-        const segments = collectPdfSegments(node);
-        if (segments.every(s => !s.text.trim())) return;
-
-        const lineHeight = 24;
-        const indent = 36;
-        pdf.setFontSize(12);
-        checkNewPage(lineHeight);
-        renderPdfSegments(segments, margin + indent, margin);
-        return;
+        const segs = collectPdfSegs(node);
+        if (segs.every(s => !s.text.trim())) return;
+        pdf.setFontSize(12); checkNewPage(24);
+        renderSegs(segs, margin + 36, margin); return;
       }
-
       if (tag === 'ul' || tag === 'ol') {
-        // Direct children only to avoid flattening nested lists (Fix #14)
-        const directLis = Array.from(node.children).filter(
-          child => child.tagName?.toLowerCase() === 'li'
-        );
-        directLis.forEach((li, idx) => {
+        Array.from(node.children).filter(c => c.tagName?.toLowerCase() === 'li').forEach((li, idx) => {
           const prefix = tag === 'ol' ? `${idx + 1}. ` : '\u2022  ';
-          const segments = collectPdfSegments(li);
-          if (segments.every(s => !s.text.trim())) return;
-
-          const lineHeight = 24;
-          const textIndent = 36;
-          pdf.setFontSize(12);
-          checkNewPage(lineHeight);
-          pdf.setFont('times', 'normal');
+          const segs = collectPdfSegs(li);
+          if (segs.every(s => !s.text.trim())) return;
+          pdf.setFontSize(12); checkNewPage(24); pdf.setFont('times', 'normal');
           pdf.text(prefix, margin, y);
-          renderPdfSegments(segments, margin + textIndent, margin + textIndent);
+          renderSegs(segs, margin + 36, margin + 36);
         });
         return;
       }
-
-      node.childNodes.forEach(child => {
-        if (child.nodeType === Node.ELEMENT_NODE) renderNode(child as Element);
-      });
+      node.childNodes.forEach(c => { if (c.nodeType === Node.ELEMENT_NODE) renderNode(c as Element); });
     };
 
-    dom.body.childNodes.forEach(child => {
-      if (child.nodeType === Node.ELEMENT_NODE) renderNode(child as Element);
-    });
+    dom.body.childNodes.forEach(c => { if (c.nodeType === Node.ELEMENT_NODE) renderNode(c as Element); });
   }
 
   addFooter();

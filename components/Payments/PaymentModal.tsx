@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { X, ShieldCheck, Zap, Loader2 } from 'lucide-react';
 import { usePaystackPayment } from 'react-paystack';
+import { httpsCallable, getFunctions } from 'firebase/functions';
+import { app } from '../../firebase';
 import { UserProfile } from '../../types';
 import { PREMIUM_PRICE_NGN, PAYSTACK_PUBLIC_KEY, CREDITS_PER_PURCHASE } from '../../constants';
 
@@ -15,9 +17,6 @@ interface PaystackResponse {
   transaction: string;
   message: string;
 }
-
-const generateRef = (uid: string) =>
-  `${Date.now()}_${Math.random().toString(36).slice(2, 9)}_${uid}`;
 
 /**
  * Inner component that calls usePaystackPayment with a FRESH config on every mount.
@@ -44,6 +43,7 @@ const PaystackTrigger: React.FC<{
 const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   // payAttempt: when non-null, mounts PaystackTrigger with a fresh config
   const [payAttempt, setPayAttempt] = useState<{ ref: string; key: number } | null>(null);
 
@@ -61,11 +61,26 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
     setPayAttempt(null);
   }, []);
 
-  const handlePay = () => {
-    const newRef = generateRef(user.uid);
+  const handlePay = async () => {
     setLoading(true);
-    // Bump key to force remount of PaystackTrigger with the new reference
-    setPayAttempt({ ref: newRef, key: Date.now() });
+    setErrorMsg(null);
+    try {
+      // Server creates /payments/{reference} bound to the authenticated user,
+      // returns the reference. The client cannot mint references that credit
+      // someone else's account.
+      const initiatePayment = httpsCallable<
+        { amountKobo: number },
+        { reference: string }
+      >(getFunctions(app, 'us-central1'), 'initiatePayment');
+      const result = await initiatePayment({ amountKobo: PREMIUM_PRICE_NGN * 100 });
+      const ref = result.data?.reference;
+      if (!ref) throw new Error('Server did not return a payment reference.');
+      // Bump key to force remount of PaystackTrigger with the new reference
+      setPayAttempt({ ref, key: Date.now() });
+    } catch (e: any) {
+      setLoading(false);
+      setErrorMsg((e?.message || 'Could not start payment.').replace(/^Firebase: /, ''));
+    }
   };
 
   const paystackConfig = payAttempt ? {
@@ -136,6 +151,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ user, onClose }) => {
                 </div>
               </div>
 
+              {errorMsg && (
+                <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+                  {errorMsg}
+                </div>
+              )}
               <button
                 onClick={handlePay}
                 disabled={loading}

@@ -46,7 +46,7 @@ export const useFirestore = (uid?: string) => {
       collection(db, 'topic_history'),
       where('userId', '==', uid),
       orderBy('createdAt', 'desc'),
-      limit(30)
+      limit(10)
     );
 
     const unsubscribeProjects = onSnapshot(qProjects, (snapshot) => {
@@ -69,7 +69,7 @@ export const useFirestore = (uid?: string) => {
         history.push({ id: doc.id, ...doc.data() } as TopicHistoryItem);
       });
 
-      setTopicHistory(history.slice(0, 10));
+      setTopicHistory(history);
       setLoadingHistory(false);
     }, (err) => {
       console.error("Firestore history sync error:", err);

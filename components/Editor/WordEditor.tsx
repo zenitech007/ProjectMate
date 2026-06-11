@@ -694,7 +694,11 @@ const EditorArea = ({ value, onChange, generating, spellCheck, generationMode, o
     },
     extensions: [
       StarterKit.configure({
-        // You can disable specific StarterKit extensions here if they ever conflict (e.g., history: false)
+        // TipTap v3 StarterKit bundles Link and Underline by default. We add
+        // our own configured versions below, so disable the bundled ones to
+        // avoid the "Duplicate extension names found" warning.
+        link: false,
+        underline: false,
       }),
       Underline,
       TextStyle,         // required by Color + FontSize

@@ -356,7 +356,9 @@ const PricingItem = ({ text, premium = false, disabled = false }: { text: string
   </li>
 );
 
-const Footer = () => (
+const Footer = () => {
+  const navigate = useNavigate();
+  return (
   <footer className="bg-[#0e271b] text-white pt-20 pb-10">
     <div className="max-w-7xl mx-auto px-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
@@ -396,9 +398,9 @@ const Footer = () => (
         <div>
           <h4 className="font-bold text-sm uppercase tracking-widest text-green-500 mb-6">Legal</h4>
           <ul className="space-y-4 text-sm text-green-100/60">
-            <li><button className="hover:text-white transition-colors">Terms of Service</button></li>
-            <li><button className="hover:text-white transition-colors">Privacy Policy</button></li>
-            <li><button className="hover:text-white transition-colors">Refund Policy</button></li>
+            <li><button onClick={() => navigate('/legal/terms')} className="hover:text-white transition-colors">Terms of Service</button></li>
+            <li><button onClick={() => navigate('/legal/privacy')} className="hover:text-white transition-colors">Privacy Policy</button></li>
+            <li><button onClick={() => navigate('/legal/refund')} className="hover:text-white transition-colors">Refund Policy</button></li>
           </ul>
         </div>
 
@@ -427,6 +429,7 @@ const Footer = () => (
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 export default LandingPage;

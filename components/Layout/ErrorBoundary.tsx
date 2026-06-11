@@ -1,5 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertCircle, RefreshCcw } from 'lucide-react';
+import { AlertCircle, RefreshCcw, Download } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
@@ -8,32 +8,68 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  isChunkError: boolean;
 }
+
+// Detect dynamic-import / chunk-load failures. These happen most often when
+// the PWA cache references chunks that have been replaced by a new deploy.
+// The fix is a hard reload — the SW picks up the new manifest.
+const isChunkLoadError = (err: unknown): boolean => {
+  if (!err) return false;
+  const msg = err instanceof Error ? err.message : String(err);
+  const name = err instanceof Error ? err.name : '';
+  return (
+    name === 'ChunkLoadError' ||
+    /Failed to fetch dynamically imported module/i.test(msg) ||
+    /Loading chunk \S+ failed/i.test(msg) ||
+    /error loading dynamically imported module/i.test(msg)
+  );
+};
+
+// Session-scoped flag so a real CDN outage doesn't get the user stuck in a
+// reload loop. We auto-reload at most once per session for chunk errors.
+const RELOAD_FLAG_KEY = '__pm_chunk_reloaded';
 
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-    error: null
+    error: null,
+    isChunkError: false,
   };
 
   private unhandledRejectionHandler: ((event: PromiseRejectionEvent) => void) | null = null;
 
-  constructor(props: Props) {
-    super(props);
-  }
-
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error, isChunkError: isChunkLoadError(error) };
   }
 
   public componentDidMount() {
-    // Log unhandled promise rejections without replacing the entire UI.
-    // Transient failures (API calls, network errors) should not crash the app.
-    // Only synchronous render errors trigger the error boundary fallback UI.
+    // Catch chunk-load failures that surface as unhandled promise rejections
+    // (e.g. router-level lazy imports that reject before React rethrows).
     this.unhandledRejectionHandler = (event: PromiseRejectionEvent) => {
+      if (isChunkLoadError(event.reason)) {
+        event.preventDefault(); // we'll handle it
+        this.setState({ hasError: true, error: event.reason as Error, isChunkError: true });
+        return;
+      }
       console.error('Unhandled promise rejection:', event.reason);
     };
     window.addEventListener('unhandledrejection', this.unhandledRejectionHandler);
+  }
+
+  public componentDidUpdate(_prev: Props, prevState: State) {
+    // First time we land on a chunk error in this session, auto-reload once.
+    if (this.state.isChunkError && !prevState.isChunkError) {
+      try {
+        if (sessionStorage.getItem(RELOAD_FLAG_KEY) !== '1') {
+          sessionStorage.setItem(RELOAD_FLAG_KEY, '1');
+          // Brief delay so the user sees the message before reload.
+          setTimeout(() => window.location.reload(), 1500);
+        }
+      } catch {
+        // sessionStorage unavailable (private mode) — just skip auto-reload.
+      }
+    }
   }
 
   public componentWillUnmount() {
@@ -48,6 +84,28 @@ class ErrorBoundary extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
+      if (this.state.isChunkError) {
+        return (
+          <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+            <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-10 border border-slate-100 text-center">
+              <div className="inline-flex items-center justify-center p-4 bg-blue-50 rounded-2xl mb-6">
+                <Download className="h-10 w-10 text-blue-600" />
+              </div>
+              <h1 className="text-2xl font-black text-slate-900 mb-4">App update available</h1>
+              <p className="text-slate-500 font-medium mb-8 leading-relaxed">
+                A newer version of ProjectMate is ready. Reloading now to get the latest version — your data is safe.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-lg flex items-center justify-center hover:bg-blue-700 transition-all shadow-xl shadow-blue-900/10"
+              >
+                <RefreshCcw className="h-5 w-5 mr-2" />
+                Reload Now
+              </button>
+            </div>
+          </div>
+        );
+      }
       return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
           <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-10 border border-slate-100 text-center">
