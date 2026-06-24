@@ -30,6 +30,7 @@ interface TOCProps {
 }
 
 interface SortableSectionProps {
+  id: string;
   section: string;
   chapterTitle: string;
   activeChapter: string;
@@ -39,6 +40,7 @@ interface SortableSectionProps {
 }
 
 const SortableSection: React.FC<SortableSectionProps> = ({
+  id,
   section,
   chapterTitle,
   activeChapter,
@@ -53,7 +55,7 @@ const SortableSection: React.FC<SortableSectionProps> = ({
     transform,
     transition,
     isDragging
-  } = useSortable({ id: `${chapterTitle}-${section}` });
+  } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -69,7 +71,7 @@ const SortableSection: React.FC<SortableSectionProps> = ({
       className="flex flex-col group/item relative bg-white"
     >
       <div className="toc-row text-[10px] text-slate-400 font-semibold items-center">
-        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 text-slate-200 hover:text-slate-400">
+        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing touch-none p-1 text-slate-200 hover:text-slate-400">
           <GripVertical className="h-3 w-3" />
         </div>
         <button
@@ -112,7 +114,7 @@ const TableOfContents: React.FC<TOCProps> = ({
   generatingSection
 }) => {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -122,10 +124,9 @@ const TableOfContents: React.FC<TOCProps> = ({
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const chapterTitle = outline[chapterIdx].title;
-      const oldIndex = outline[chapterIdx].sections.indexOf((active.id as string).replace(`${chapterTitle}-`, ''));
-      const newIndex = outline[chapterIdx].sections.indexOf((over.id as string).replace(`${chapterTitle}-`, ''));
-      if (oldIndex === -1 || newIndex === -1) return;
+      const oldIndex = Number((active.id as string).replace('sec-', ''));
+      const newIndex = Number((over.id as string).replace('sec-', ''));
+      if (Number.isNaN(oldIndex) || Number.isNaN(newIndex)) return;
 
       const newSections = arrayMove(outline[chapterIdx].sections, oldIndex, newIndex);
       const newOutline = [...outline];
@@ -166,12 +167,13 @@ const TableOfContents: React.FC<TOCProps> = ({
                   onDragEnd={(event) => handleDragEnd(chapterIdx, event)}
                 >
                   <SortableContext
-                    items={chapter.sections.map(s => `${chapter.title}-${s}`)}
+                    items={chapter.sections.map((_, i) => `sec-${i}`)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {chapter.sections.map((section) => (
+                    {chapter.sections.map((section, sectionIdx) => (
                       <SortableSection
-                        key={section}
+                        key={`sec-${sectionIdx}`}
+                        id={`sec-${sectionIdx}`}
                         section={section}
                         chapterTitle={chapter.title}
                         activeChapter={activeChapter}

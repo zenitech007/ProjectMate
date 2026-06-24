@@ -81,3 +81,30 @@ export const cleanHTML = (html: string): string => {
 
   return c.trim();
 };
+
+/**
+ * Sanitize a FULL stored document (chapter HTML) without destroying its
+ * structure. Unlike cleanHTML — which is for AI body fragments where
+ * headings are forbidden — this preserves the app's own <h1>/<h2>/<h3>
+ * headings and page-break divs. Use on the Firestore load path and anywhere
+ * a whole chapter (not a fragment) passes through sanitization.
+ */
+export const cleanDocumentHTML = (html: string): string => {
+  if (!html) return '';
+  let c = sanitize(html);
+
+  // Normalise bold/italic to the editor's schema
+  c = c.replace(/<strong[^>]*>/gi, '<b>');
+  c = c.replace(/<\/strong>/gi, '</b>');
+  c = c.replace(/<em[^>]*>/gi, '<i>');
+  c = c.replace(/<\/em>/gi, '</i>');
+
+  // Balance unclosed tags (defensive — stored content should be balanced)
+  ['p', 'b', 'i'].forEach(tag => {
+    const opens = (c.match(new RegExp(`<${tag}>`, 'g')) || []).length;
+    const closes = (c.match(new RegExp(`</${tag}>`, 'g')) || []).length;
+    if (opens > closes) c += `</${tag}>`.repeat(opens - closes);
+  });
+
+  return c.trim();
+};

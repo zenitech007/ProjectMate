@@ -4,11 +4,8 @@
  * WordEditor.tsx — Fully upgraded version
  *
  * BUGS FIXED:
- *  1. Removed redundant setInterval polling in PageBreakView; ResizeObserver is sufficient.
  *  2. setEditor no longer called on every selection update / keypress — only on onCreate/onDestroy.
  *  3. prevValueRef is now initialized to the incoming `value` prop to prevent a double-set on mount.
- *  4. PageBreakView now uses scrollTop-aware offsetTop (el.offsetTop) instead of getBoundingClientRect
- *     so page-break height is correct even when the editor is scrolled.
  *  5. ToolbarButton now accepts an `aria-label` and renders it, making every button screen-reader accessible.
  *  6. onDestroy handler added to useEditor to clear the stale editor reference from the Zustand store.
  *
@@ -25,7 +22,7 @@
  * 14. Text-colour picker (requires @tiptap/extension-color + @tiptap/extension-text-style).
  * 15. Highlight-colour picker (requires @tiptap/extension-highlight).
  * 16. Link insertion/edit dialog triggered by a toolbar button.
- * 17. "Ctrl+Enter = page break" hint shown in the toolbar as a keyboard badge.
+ * 17. Ctrl/Cmd+Enter inserts a page break (PageBreak node — see PageBreakExtension.ts).
  * 18. spellCheck is now a configurable prop (defaults to true).
  *
  * AI-SPECIFIC FIXES:
@@ -55,19 +52,8 @@ import React, {
 import {
   EditorContent,
   useEditor,
-  Extension,
 } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
-import TextAlign from '@tiptap/extension-text-align';
-import Underline from '@tiptap/extension-underline';
-// Enhancement extensions — install with:
-//   npm i @tiptap/extension-color @tiptap/extension-text-style @tiptap/extension-highlight @tiptap/extension-font-size
-import Color from '@tiptap/extension-color';
-import { TextStyle } from '@tiptap/extension-text-style';
-import Highlight from '@tiptap/extension-highlight';
-import FontFamily from '@tiptap/extension-font-family';
-import { GhostText } from './GhostTextExtension';
+import { buildEditorExtensions } from './editorExtensions';
 import { create } from 'zustand';
 import type { Editor as TiptapEditor } from '@tiptap/react';
 import {
@@ -91,32 +77,6 @@ import {
   Undo2Icon,
   X,
 } from 'lucide-react';
-
-// ─────────────────────────────────────────────
-// CUSTOM FONT SIZE EXTENSION (Inline Fix)
-// ─────────────────────────────────────────────
-const FontSize = Extension.create({
-  name: 'fontSize',
-  addOptions() { return { types: ['textStyle'] }; },
-  addGlobalAttributes() {
-    return [{
-      types: this.options.types,
-      attributes: {
-        fontSize: {
-          default: null,
-          parseHTML: element => element.style.fontSize.replace(/['"]+/g, ''),
-          renderHTML: attributes => (!attributes.fontSize ? {} : { style: `font-size: ${attributes.fontSize}` }),
-        },
-      },
-    }];
-  },
-  addCommands() { 
-    return { 
-      setFontSize: fontSize => ({ chain }) => chain().setMark('textStyle', { fontSize }).run(),
-      unsetFontSize: () => ({ chain }) => chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run()
-    }; 
-  },
-});
 
 // ─────────────────────────────────────────────
 // CONSTANTS (A4 at 96 dpi)
@@ -692,24 +652,7 @@ const EditorArea = ({ value, onChange, generating, spellCheck, generationMode, o
         spellcheck: String(spellCheck),
       },
     },
-    extensions: [
-      StarterKit.configure({
-        // TipTap v3 StarterKit bundles Link and Underline by default. We add
-        // our own configured versions below, so disable the bundled ones to
-        // avoid the "Duplicate extension names found" warning.
-        link: false,
-        underline: false,
-      }),
-      Underline,
-      TextStyle,         // required by Color + FontSize
-      FontFamily,
-      Color,             // Enhancement #14
-      FontSize,          // Enhancement #13
-      Highlight.configure({ multicolor: true }), // Enhancement #15
-      Link.configure({ openOnClick: false }),
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      GhostText,
-    ],
+    extensions: buildEditorExtensions(),
     immediatelyRender: false,
   });
 

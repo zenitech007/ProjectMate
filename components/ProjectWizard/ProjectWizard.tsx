@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronRight, ChevronLeft, Sparkles, Loader2, BookCheck,
   User, IdCard, GraduationCap, FileText,
-  Edit3, RefreshCw, Home, ArrowRight, CheckCircle2, Rocket, AlertCircle
+  Edit3, RefreshCw, Home, ArrowRight, CheckCircle2, Rocket, AlertCircle, Settings2
 } from 'lucide-react';
 import { httpsCallable, getFunctions } from 'firebase/functions';
 import { InstitutionType, Faculty, Departments, UserProfile, TopicHistoryItem } from '../../types';
 import { generateTopics, generateOutline } from '../../services/geminiService';
+import StructureEditor from '../Editor/StructureEditor';
+import { StructureEdits, editsToOutline } from '../../services/outlineReconciler';
 import { useFirestore } from '../../hooks/useFirestore';
 import { app } from '../../firebase';
 // Lazy — defers vendor-paystack (~116 kB) until the user opens the modal.
@@ -25,6 +27,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
   const [saving, setSaving] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const isGeneratingRef = useRef(false);
+  const outlineCustomizedRef = useRef(false);
   const [toast, setToast] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
   const toastTimer = useRef<number | null>(null);
 
@@ -48,6 +51,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
 
   // Step 4 State
   const [outline, setOutline] = useState<import('../../types').ProjectOutline[]>([]);
+  const [isStructureOpen, setIsStructureOpen] = useState(false);
   // Stable per-attempt nonce so a retried createProject call doesn't double-charge
   const createNonceRef = useRef<string>('');
 
@@ -98,6 +102,12 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
 
   const handleTopicSelect = async (topicTitle: string) => {
     if (!topicTitle.trim() || isGeneratingRef.current) return; // ← hard block re-entry
+    if (outlineCustomizedRef.current) {
+      const ok = window.confirm(
+        'You customized your project structure. Picking a topic again will regenerate the outline and discard those changes. Continue?'
+      );
+      if (!ok) return;
+    }
     isGeneratingRef.current = true;
     setSelectedTopic(topicTitle);
     setLoading(true);
@@ -108,6 +118,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
         !ch.title.toUpperCase().includes('FRONT MATTER')
       );
       setOutline(filteredOutline);
+      outlineCustomizedRef.current = false;
       setStep(3);
     } catch (error: any) {
       showToast(error.message || 'Failed to generate outline. Please try again.', 'error');
@@ -166,6 +177,18 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
     }
   };
 
+  // Customize structure before the credit is spent — edits the outline that
+  // will be sent to createProject. No content reconciliation needed: no
+  // chapters exist yet.
+  const closeStructureEditor = useCallback(() => setIsStructureOpen(false), []);
+
+  const handleStructureSave = (edits: StructureEdits) => {
+    setOutline(editsToOutline(edits));
+    outlineCustomizedRef.current = true;
+    setIsStructureOpen(false);
+    showToast('Structure updated', 'success');
+  };
+
   // UI Step Indicator Component
   const Stepper = () => (
     <div className="flex items-center justify-center mb-12">
@@ -201,6 +224,14 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
           </Suspense>
         )}
 
+        {isStructureOpen && (
+          <StructureEditor
+            outline={outline}
+            onSave={handleStructureSave}
+            onClose={closeStructureEditor}
+          />
+        )}
+
         {/* TOAST NOTIFICATION */}
         {toast && (
           <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
@@ -216,7 +247,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
               <Home className="h-4 w-4 mr-2" /> Back to Dashboard
             </button>
           ) : (
-            <button onClick={() => setStep(step - 1)} disabled={loading} className="flex items-center text-slate-500 hover:text-[#1a4731] font-bold text-sm transition-all hover:-translate-x-1 disabled:opacity-50 disabled:hover:translate-x-0">
+            <button onClick={() => setStep(step - 1)} disabled={loading || saving} className="flex items-center text-slate-500 hover:text-[#1a4731] font-bold text-sm transition-all hover:-translate-x-1 disabled:opacity-50 disabled:hover:translate-x-0">
               <ChevronLeft className="h-4 w-4 mr-1" /> Back
             </button>
           )}
@@ -456,6 +487,15 @@ const ProjectWizard: React.FC<ProjectWizardProps> = ({ user }) => {
                       </div>
                     ))}
                   </div>
+
+                  <button
+                    onClick={() => setIsStructureOpen(true)}
+                    disabled={saving}
+                    className="mt-6 w-full py-3.5 border border-white/20 text-emerald-300 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/10 transition-colors disabled:opacity-50"
+                  >
+                    <Settings2 className="h-4 w-4" aria-hidden="true" />
+                    Customize structure for your department
+                  </button>
                 </div>
               </div>
 

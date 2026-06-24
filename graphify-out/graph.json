@@ -9,7 +9,7 @@
       "source_file": "App.tsx",
       "source_location": "L1",
       "id": "app_tsx",
-      "community": 8,
+      "community": 2,
       "norm_label": "app.tsx"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "App.tsx",
       "source_location": "L19",
       "id": "projectmate_app_landingpage",
-      "community": 6,
+      "community": 2,
       "norm_label": "landingpage"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "App.tsx",
       "source_location": "L20",
       "id": "projectmate_app_authpage",
-      "community": 8,
+      "community": 2,
       "norm_label": "authpage"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "App.tsx",
       "source_location": "L26",
       "id": "projectmate_app_termsofservice",
-      "community": 8,
+      "community": 2,
       "norm_label": "termsofservice"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "App.tsx",
       "source_location": "L27",
       "id": "projectmate_app_privacypolicy",
-      "community": 8,
+      "community": 2,
       "norm_label": "privacypolicy"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "App.tsx",
       "source_location": "L28",
       "id": "projectmate_app_refundpolicy",
-      "community": 8,
+      "community": 2,
       "norm_label": "refundpolicy"
     },
     {
@@ -99,7 +99,7 @@
       "source_file": "App.tsx",
       "source_location": "L33",
       "id": "projectmate_app_pageloader",
-      "community": 8,
+      "community": 2,
       "norm_label": "pageloader()"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "App.tsx",
       "source_location": "L40",
       "id": "projectmate_app_protectedroute",
-      "community": 8,
+      "community": 2,
       "norm_label": "protectedroute()"
     },
     {
@@ -117,7 +117,7 @@
       "source_file": "App.tsx",
       "source_location": "L49",
       "id": "projectmate_app_projecteditorroute",
-      "community": 8,
+      "community": 2,
       "norm_label": "projecteditorroute()"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "App.tsx",
       "source_location": "L55",
       "id": "projectmate_app_appcontent",
-      "community": 8,
+      "community": 2,
       "norm_label": "appcontent()"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "firebase.ts",
       "source_location": "L17",
       "id": "projectmate_firebase_auth",
-      "community": 8,
+      "community": 2,
       "norm_label": "auth"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "index.tsx",
       "source_location": "L1",
       "id": "index_tsx",
-      "community": 8,
+      "community": 2,
       "norm_label": "index.tsx"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "index.tsx",
       "source_location": "L7",
       "id": "projectmate_index_rootelement",
-      "community": 8,
+      "community": 2,
       "norm_label": "rootelement"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "index.tsx",
       "source_location": "L12",
       "id": "projectmate_index_root",
-      "community": 8,
+      "community": 2,
       "norm_label": "root"
     },
     {
@@ -481,10 +481,19 @@
       "norm_label": "lint"
     },
     {
+      "label": "test",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L11",
+      "id": "projectmate_package_scripts_test",
+      "community": 11,
+      "norm_label": "test"
+    },
+    {
       "label": "dependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L12",
+      "source_location": "L13",
       "id": "projectmate_package_dependencies",
       "community": 0,
       "norm_label": "dependencies"
@@ -493,7 +502,7 @@
       "label": "@dnd-kit/core",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L13",
+      "source_location": "L14",
       "id": "projectmate_package_dependencies_dnd_kit_core",
       "community": 0,
       "norm_label": "@dnd-kit/core"
@@ -502,7 +511,7 @@
       "label": "@dnd-kit/sortable",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L14",
+      "source_location": "L15",
       "id": "projectmate_package_dependencies_dnd_kit_sortable",
       "community": 0,
       "norm_label": "@dnd-kit/sortable"
@@ -511,7 +520,7 @@
       "label": "@dnd-kit/utilities",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "id": "projectmate_package_dependencies_dnd_kit_utilities",
       "community": 0,
       "norm_label": "@dnd-kit/utilities"
@@ -520,7 +529,7 @@
       "label": "@google/genai",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "id": "projectmate_package_dependencies_google_genai",
       "community": 0,
       "norm_label": "@google/genai"
@@ -529,7 +538,7 @@
       "label": "@tailwindcss/postcss",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "id": "projectmate_package_dependencies_tailwindcss_postcss",
       "community": 0,
       "norm_label": "@tailwindcss/postcss"
@@ -538,7 +547,7 @@
       "label": "@tiptap/extension-color",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L18",
+      "source_location": "L19",
       "id": "projectmate_package_dependencies_tiptap_extension_color",
       "community": 0,
       "norm_label": "@tiptap/extension-color"
@@ -547,7 +556,7 @@
       "label": "@tiptap/extension-font-family",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L19",
+      "source_location": "L20",
       "id": "projectmate_package_dependencies_tiptap_extension_font_family",
       "community": 0,
       "norm_label": "@tiptap/extension-font-family"
@@ -556,7 +565,7 @@
       "label": "@tiptap/extension-highlight",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "id": "projectmate_package_dependencies_tiptap_extension_highlight",
       "community": 0,
       "norm_label": "@tiptap/extension-highlight"
@@ -565,7 +574,7 @@
       "label": "@tiptap/extension-image",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L21",
+      "source_location": "L22",
       "id": "projectmate_package_dependencies_tiptap_extension_image",
       "community": 0,
       "norm_label": "@tiptap/extension-image"
@@ -574,7 +583,7 @@
       "label": "@tiptap/extension-link",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L23",
       "id": "projectmate_package_dependencies_tiptap_extension_link",
       "community": 0,
       "norm_label": "@tiptap/extension-link"
@@ -583,7 +592,7 @@
       "label": "@tiptap/extension-table",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L24",
       "id": "projectmate_package_dependencies_tiptap_extension_table",
       "community": 0,
       "norm_label": "@tiptap/extension-table"
@@ -592,7 +601,7 @@
       "label": "@tiptap/extension-task-item",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L25",
       "id": "projectmate_package_dependencies_tiptap_extension_task_item",
       "community": 0,
       "norm_label": "@tiptap/extension-task-item"
@@ -601,7 +610,7 @@
       "label": "@tiptap/extension-task-list",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L25",
+      "source_location": "L26",
       "id": "projectmate_package_dependencies_tiptap_extension_task_list",
       "community": 0,
       "norm_label": "@tiptap/extension-task-list"
@@ -610,7 +619,7 @@
       "label": "@tiptap/extension-text-align",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L27",
       "id": "projectmate_package_dependencies_tiptap_extension_text_align",
       "community": 0,
       "norm_label": "@tiptap/extension-text-align"
@@ -619,7 +628,7 @@
       "label": "@tiptap/extension-text-style",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L27",
+      "source_location": "L28",
       "id": "projectmate_package_dependencies_tiptap_extension_text_style",
       "community": 0,
       "norm_label": "@tiptap/extension-text-style"
@@ -628,7 +637,7 @@
       "label": "@tiptap/extension-underline",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L28",
+      "source_location": "L29",
       "id": "projectmate_package_dependencies_tiptap_extension_underline",
       "community": 0,
       "norm_label": "@tiptap/extension-underline"
@@ -637,7 +646,7 @@
       "label": "@tiptap/react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L29",
+      "source_location": "L30",
       "id": "projectmate_package_dependencies_tiptap_react",
       "community": 0,
       "norm_label": "@tiptap/react"
@@ -646,7 +655,7 @@
       "label": "@tiptap/starter-kit",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L30",
+      "source_location": "L31",
       "id": "projectmate_package_dependencies_tiptap_starter_kit",
       "community": 0,
       "norm_label": "@tiptap/starter-kit"
@@ -655,7 +664,7 @@
       "label": "autoprefixer",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L31",
+      "source_location": "L32",
       "id": "projectmate_package_dependencies_autoprefixer",
       "community": 0,
       "norm_label": "autoprefixer"
@@ -664,7 +673,7 @@
       "label": "cors",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L32",
+      "source_location": "L33",
       "id": "projectmate_package_dependencies_cors",
       "community": 0,
       "norm_label": "cors"
@@ -673,7 +682,7 @@
       "label": "docx",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L33",
+      "source_location": "L34",
       "id": "projectmate_package_dependencies_docx",
       "community": 0,
       "norm_label": "docx"
@@ -682,7 +691,7 @@
       "label": "file-saver",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L34",
+      "source_location": "L35",
       "id": "projectmate_package_dependencies_file_saver",
       "community": 0,
       "norm_label": "file-saver"
@@ -691,7 +700,7 @@
       "label": "firebase",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L35",
+      "source_location": "L36",
       "id": "projectmate_package_dependencies_firebase",
       "community": 0,
       "norm_label": "firebase"
@@ -700,7 +709,7 @@
       "label": "firebase-admin",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L36",
+      "source_location": "L37",
       "id": "projectmate_package_dependencies_firebase_admin",
       "community": 0,
       "norm_label": "firebase-admin"
@@ -709,7 +718,7 @@
       "label": "firebase-functions",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L37",
+      "source_location": "L38",
       "id": "projectmate_package_dependencies_firebase_functions",
       "community": 0,
       "norm_label": "firebase-functions"
@@ -718,7 +727,7 @@
       "label": "isomorphic-dompurify",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L38",
+      "source_location": "L39",
       "id": "projectmate_package_dependencies_isomorphic_dompurify",
       "community": 0,
       "norm_label": "isomorphic-dompurify"
@@ -727,7 +736,7 @@
       "label": "jspdf",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L39",
+      "source_location": "L40",
       "id": "projectmate_package_dependencies_jspdf",
       "community": 0,
       "norm_label": "jspdf"
@@ -736,7 +745,7 @@
       "label": "lucide-react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L40",
+      "source_location": "L41",
       "id": "projectmate_package_dependencies_lucide_react",
       "community": 0,
       "norm_label": "lucide-react"
@@ -745,7 +754,7 @@
       "label": "postcss",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L41",
+      "source_location": "L42",
       "id": "projectmate_package_dependencies_postcss",
       "community": 0,
       "norm_label": "postcss"
@@ -754,7 +763,7 @@
       "label": "quill",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L42",
+      "source_location": "L43",
       "id": "projectmate_package_dependencies_quill",
       "community": 0,
       "norm_label": "quill"
@@ -763,7 +772,7 @@
       "label": "react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L43",
+      "source_location": "L44",
       "id": "projectmate_package_dependencies_react",
       "community": 0,
       "norm_label": "react"
@@ -772,7 +781,7 @@
       "label": "react-color",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L44",
+      "source_location": "L45",
       "id": "projectmate_package_dependencies_react_color",
       "community": 0,
       "norm_label": "react-color"
@@ -781,7 +790,7 @@
       "label": "react-dom",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L45",
+      "source_location": "L46",
       "id": "projectmate_package_dependencies_react_dom",
       "community": 0,
       "norm_label": "react-dom"
@@ -790,7 +799,7 @@
       "label": "react-icons",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L46",
+      "source_location": "L47",
       "id": "projectmate_package_dependencies_react_icons",
       "community": 0,
       "norm_label": "react-icons"
@@ -799,7 +808,7 @@
       "label": "react-paystack",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L47",
+      "source_location": "L48",
       "id": "projectmate_package_dependencies_react_paystack",
       "community": 0,
       "norm_label": "react-paystack"
@@ -808,7 +817,7 @@
       "label": "react-quill",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L48",
+      "source_location": "L49",
       "id": "projectmate_package_dependencies_react_quill",
       "community": 0,
       "norm_label": "react-quill"
@@ -817,7 +826,7 @@
       "label": "react-router-dom",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L49",
+      "source_location": "L50",
       "id": "projectmate_package_dependencies_react_router_dom",
       "community": 0,
       "norm_label": "react-router-dom"
@@ -826,7 +835,7 @@
       "label": "tailwindcss",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L50",
+      "source_location": "L51",
       "id": "projectmate_package_dependencies_tailwindcss",
       "community": 0,
       "norm_label": "tailwindcss"
@@ -835,7 +844,7 @@
       "label": "tiptap-extension-resize-image",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L51",
+      "source_location": "L52",
       "id": "projectmate_package_dependencies_tiptap_extension_resize_image",
       "community": 0,
       "norm_label": "tiptap-extension-resize-image"
@@ -844,7 +853,7 @@
       "label": "zustand",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L52",
+      "source_location": "L53",
       "id": "projectmate_package_dependencies_zustand",
       "community": 0,
       "norm_label": "zustand"
@@ -853,7 +862,7 @@
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L54",
+      "source_location": "L55",
       "id": "projectmate_package_devdependencies",
       "community": 11,
       "norm_label": "devdependencies"
@@ -862,7 +871,7 @@
       "label": "@types/node",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L55",
+      "source_location": "L56",
       "id": "projectmate_package_devdependencies_types_node",
       "community": 11,
       "norm_label": "@types/node"
@@ -871,7 +880,7 @@
       "label": "@types/react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L56",
+      "source_location": "L57",
       "id": "projectmate_package_devdependencies_types_react",
       "community": 11,
       "norm_label": "@types/react"
@@ -880,7 +889,7 @@
       "label": "@types/react-color",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L57",
+      "source_location": "L58",
       "id": "projectmate_package_devdependencies_types_react_color",
       "community": 11,
       "norm_label": "@types/react-color"
@@ -889,7 +898,7 @@
       "label": "@types/react-dom",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L58",
+      "source_location": "L59",
       "id": "projectmate_package_devdependencies_types_react_dom",
       "community": 11,
       "norm_label": "@types/react-dom"
@@ -898,16 +907,25 @@
       "label": "@vitejs/plugin-react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L59",
+      "source_location": "L60",
       "id": "projectmate_package_devdependencies_vitejs_plugin_react",
       "community": 11,
       "norm_label": "@vitejs/plugin-react"
     },
     {
+      "label": "jsdom",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L61",
+      "id": "projectmate_package_devdependencies_jsdom",
+      "community": 11,
+      "norm_label": "jsdom"
+    },
+    {
       "label": "typescript",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L60",
+      "source_location": "L62",
       "id": "projectmate_package_devdependencies_typescript",
       "community": 11,
       "norm_label": "typescript"
@@ -916,7 +934,7 @@
       "label": "vite",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L61",
+      "source_location": "L63",
       "id": "projectmate_package_devdependencies_vite",
       "community": 11,
       "norm_label": "vite"
@@ -925,16 +943,25 @@
       "label": "vite-plugin-pwa",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L62",
+      "source_location": "L64",
       "id": "projectmate_package_devdependencies_vite_plugin_pwa",
       "community": 11,
       "norm_label": "vite-plugin-pwa"
     },
     {
+      "label": "vitest",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L65",
+      "id": "projectmate_package_devdependencies_vitest",
+      "community": 11,
+      "norm_label": "vitest"
+    },
+    {
       "label": "workbox-window",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L63",
+      "source_location": "L66",
       "id": "projectmate_package_devdependencies_workbox_window",
       "community": 11,
       "norm_label": "workbox-window"
@@ -1228,6 +1255,15 @@
       "norm_label": "env"
     },
     {
+      "label": "vitest.config.ts",
+      "file_type": "code",
+      "source_file": "vitest.config.ts",
+      "source_location": "L1",
+      "id": "vitest_config_ts",
+      "community": 25,
+      "norm_label": "vitest.config.ts"
+    },
+    {
       "label": "settings.json",
       "file_type": "code",
       "source_file": ".claude/settings.json",
@@ -1260,7 +1296,7 @@
       "source_file": "components/Auth/AuthPage.tsx",
       "source_location": "L1",
       "id": "components_auth_authpage_tsx",
-      "community": 8,
+      "community": 2,
       "norm_label": "authpage.tsx"
     },
     {
@@ -1269,7 +1305,7 @@
       "source_file": "components/Auth/AuthPage.tsx",
       "source_location": "L14",
       "id": "auth_authpage_authpage",
-      "community": 8,
+      "community": 2,
       "norm_label": "authpage()"
     },
     {
@@ -1354,6 +1390,78 @@
       "norm_label": "a4editor"
     },
     {
+      "label": "editorExtensions.test.ts",
+      "file_type": "code",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L1",
+      "id": "components_editor_editorextensions_test_ts",
+      "community": 1,
+      "norm_label": "editorextensions.test.ts"
+    },
+    {
+      "label": "extensions",
+      "file_type": "code",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L13",
+      "id": "editor_editorextensions_test_extensions",
+      "community": 1,
+      "norm_label": "extensions"
+    },
+    {
+      "label": "roundTrip()",
+      "file_type": "code",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L14",
+      "id": "editor_editorextensions_test_roundtrip",
+      "community": 1,
+      "norm_label": "roundtrip()"
+    },
+    {
+      "label": "out",
+      "file_type": "code",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L24",
+      "id": "editor_editorextensions_test_out",
+      "community": 1,
+      "norm_label": "out"
+    },
+    {
+      "label": "editor",
+      "file_type": "code",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L31",
+      "id": "editor_editorextensions_test_editor",
+      "community": 1,
+      "norm_label": "editor"
+    },
+    {
+      "label": "editorExtensions.ts",
+      "file_type": "code",
+      "source_file": "components/Editor/editorExtensions.ts",
+      "source_location": "L1",
+      "id": "components_editor_editorextensions_ts",
+      "community": 1,
+      "norm_label": "editorextensions.ts"
+    },
+    {
+      "label": "FontSize",
+      "file_type": "code",
+      "source_file": "components/Editor/editorExtensions.ts",
+      "source_location": "L23",
+      "id": "editor_editorextensions_fontsize",
+      "community": 1,
+      "norm_label": "fontsize"
+    },
+    {
+      "label": "buildEditorExtensions()",
+      "file_type": "code",
+      "source_file": "components/Editor/editorExtensions.ts",
+      "source_location": "L46",
+      "id": "editor_editorextensions_buildeditorextensions",
+      "community": 1,
+      "norm_label": "buildeditorextensions()"
+    },
+    {
       "label": "GhostTextExtension.ts",
       "file_type": "code",
       "source_file": "components/Editor/GhostTextExtension.ts",
@@ -1399,6 +1507,33 @@
       "norm_label": "ghosttext"
     },
     {
+      "label": "PageBreakExtension.ts",
+      "file_type": "code",
+      "source_file": "components/Editor/PageBreakExtension.ts",
+      "source_location": "L1",
+      "id": "components_editor_pagebreakextension_ts",
+      "community": 1,
+      "norm_label": "pagebreakextension.ts"
+    },
+    {
+      "label": "Commands",
+      "file_type": "code",
+      "source_file": "components/Editor/PageBreakExtension.ts",
+      "source_location": "L17",
+      "id": "editor_pagebreakextension_commands",
+      "community": 1,
+      "norm_label": "commands"
+    },
+    {
+      "label": "PageBreak",
+      "file_type": "code",
+      "source_file": "components/Editor/PageBreakExtension.ts",
+      "source_location": "L25",
+      "id": "editor_pagebreakextension_pagebreak",
+      "community": 1,
+      "norm_label": "pagebreak"
+    },
+    {
       "label": "ProjectEditor.tsx",
       "file_type": "code",
       "source_file": "components/Editor/ProjectEditor.tsx",
@@ -1411,7 +1546,7 @@
       "label": "PaymentModal",
       "file_type": "code",
       "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L17",
+      "source_location": "L26",
       "id": "editor_projecteditor_paymentmodal",
       "community": 9,
       "norm_label": "paymentmodal"
@@ -1420,25 +1555,16 @@
       "label": "ProjectEditorProps",
       "file_type": "code",
       "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L29",
+      "source_location": "L39",
       "id": "editor_projecteditor_projecteditorprops",
       "community": 9,
       "norm_label": "projecteditorprops"
     },
     {
-      "label": "escapeHTML()",
-      "file_type": "code",
-      "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L34",
-      "id": "editor_projecteditor_escapehtml",
-      "community": 9,
-      "norm_label": "escapehtml()"
-    },
-    {
       "label": "wrapChapterContent()",
       "file_type": "code",
       "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L40",
+      "source_location": "L46",
       "id": "editor_projecteditor_wrapchaptercontent",
       "community": 9,
       "norm_label": "wrapchaptercontent()"
@@ -1447,25 +1573,16 @@
       "label": "appendSection()",
       "file_type": "code",
       "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L49",
+      "source_location": "L54",
       "id": "editor_projecteditor_appendsection",
       "community": 9,
       "norm_label": "appendsection()"
     },
     {
-      "label": "reorderChapterSectionsInHTML()",
-      "file_type": "code",
-      "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L68",
-      "id": "editor_projecteditor_reorderchaptersectionsinhtml",
-      "community": 9,
-      "norm_label": "reorderchaptersectionsinhtml()"
-    },
-    {
       "label": "SortableSection()",
       "file_type": "code",
       "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L117",
+      "source_location": "L67",
       "id": "editor_projecteditor_sortablesection",
       "community": 9,
       "norm_label": "sortablesection()"
@@ -1474,10 +1591,73 @@
       "label": "ProjectEditor()",
       "file_type": "code",
       "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L170",
+      "source_location": "L120",
       "id": "editor_projecteditor_projecteditor",
       "community": 2,
       "norm_label": "projecteditor()"
+    },
+    {
+      "label": "StructureEditor.tsx",
+      "file_type": "code",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L1",
+      "id": "components_editor_structureeditor_tsx",
+      "community": 6,
+      "norm_label": "structureeditor.tsx"
+    },
+    {
+      "label": "StructureEditorProps",
+      "file_type": "code",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L27",
+      "id": "editor_structureeditor_structureeditorprops",
+      "community": 6,
+      "norm_label": "structureeditorprops"
+    },
+    {
+      "label": "genId()",
+      "file_type": "code",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L37",
+      "id": "editor_structureeditor_genid",
+      "community": 6,
+      "norm_label": "genid()"
+    },
+    {
+      "label": "DraftRow",
+      "file_type": "code",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L39",
+      "id": "editor_structureeditor_draftrow",
+      "community": 6,
+      "norm_label": "draftrow"
+    },
+    {
+      "label": "DraftChapter",
+      "file_type": "code",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L40",
+      "id": "editor_structureeditor_draftchapter",
+      "community": 6,
+      "norm_label": "draftchapter"
+    },
+    {
+      "label": "SortableRow()",
+      "file_type": "code",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L47",
+      "id": "editor_structureeditor_sortablerow",
+      "community": 6,
+      "norm_label": "sortablerow()"
+    },
+    {
+      "label": "StructureEditor()",
+      "file_type": "code",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L89",
+      "id": "editor_structureeditor_structureeditor",
+      "community": 6,
+      "norm_label": "structureeditor()"
     },
     {
       "label": "TableOfContents.tsx",
@@ -1510,7 +1690,7 @@
       "label": "SortableSection()",
       "file_type": "code",
       "source_file": "components/Editor/TableOfContents.tsx",
-      "source_location": "L41",
+      "source_location": "L42",
       "id": "editor_tableofcontents_sortablesection",
       "community": 9,
       "norm_label": "sortablesection()"
@@ -1519,7 +1699,7 @@
       "label": "TableOfContents()",
       "file_type": "code",
       "source_file": "components/Editor/TableOfContents.tsx",
-      "source_location": "L106",
+      "source_location": "L108",
       "id": "editor_tableofcontents_tableofcontents",
       "community": 9,
       "norm_label": "tableofcontents()"
@@ -1534,19 +1714,10 @@
       "norm_label": "wordeditor.tsx"
     },
     {
-      "label": "FontSize",
-      "file_type": "code",
-      "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L98",
-      "id": "editor_wordeditor_fontsize",
-      "community": 1,
-      "norm_label": "fontsize"
-    },
-    {
       "label": "EditorState",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L197",
+      "source_location": "L157",
       "id": "editor_wordeditor_editorstate",
       "community": 1,
       "norm_label": "editorstate"
@@ -1555,7 +1726,7 @@
       "label": "useEditorStore",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L202",
+      "source_location": "L162",
       "id": "editor_wordeditor_useeditorstore",
       "community": 1,
       "norm_label": "useeditorstore"
@@ -1564,7 +1735,7 @@
       "label": "cn()",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L210",
+      "source_location": "L170",
       "id": "editor_wordeditor_cn",
       "community": 1,
       "norm_label": "cn()"
@@ -1573,7 +1744,7 @@
       "label": "debounce()",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L215",
+      "source_location": "L175",
       "id": "editor_wordeditor_debounce",
       "community": 1,
       "norm_label": "debounce()"
@@ -1582,7 +1753,7 @@
       "label": "Separator()",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L223",
+      "source_location": "L183",
       "id": "editor_wordeditor_separator",
       "community": 1,
       "norm_label": "separator()"
@@ -1591,7 +1762,7 @@
       "label": "ToolbarButtonProps",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L245",
+      "source_location": "L205",
       "id": "editor_wordeditor_toolbarbuttonprops",
       "community": 1,
       "norm_label": "toolbarbuttonprops"
@@ -1600,7 +1771,7 @@
       "label": "ToolbarButton",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L254",
+      "source_location": "L214",
       "id": "editor_wordeditor_toolbarbutton",
       "community": 1,
       "norm_label": "toolbarbutton"
@@ -1609,7 +1780,7 @@
       "label": "LinkButton",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L277",
+      "source_location": "L237",
       "id": "editor_wordeditor_linkbutton",
       "community": 1,
       "norm_label": "linkbutton"
@@ -1618,7 +1789,7 @@
       "label": "FONT_FAMILIES",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L338",
+      "source_location": "L298",
       "id": "editor_wordeditor_font_families",
       "community": 1,
       "norm_label": "font_families"
@@ -1627,7 +1798,7 @@
       "label": "FontFamilySelector",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L345",
+      "source_location": "L305",
       "id": "editor_wordeditor_fontfamilyselector",
       "community": 1,
       "norm_label": "fontfamilyselector"
@@ -1636,7 +1807,7 @@
       "label": "FONT_SIZES",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L393",
+      "source_location": "L353",
       "id": "editor_wordeditor_font_sizes",
       "community": 1,
       "norm_label": "font_sizes"
@@ -1645,7 +1816,7 @@
       "label": "FontSizeSelector",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L395",
+      "source_location": "L355",
       "id": "editor_wordeditor_fontsizeselector",
       "community": 1,
       "norm_label": "fontsizeselector"
@@ -1654,7 +1825,7 @@
       "label": "TextColorPicker",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L442",
+      "source_location": "L402",
       "id": "editor_wordeditor_textcolorpicker",
       "community": 1,
       "norm_label": "textcolorpicker"
@@ -1663,7 +1834,7 @@
       "label": "HighlightPicker",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L473",
+      "source_location": "L433",
       "id": "editor_wordeditor_highlightpicker",
       "community": 1,
       "norm_label": "highlightpicker"
@@ -1672,7 +1843,7 @@
       "label": "useWordCount()",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L521",
+      "source_location": "L481",
       "id": "editor_wordeditor_usewordcount",
       "community": 1,
       "norm_label": "usewordcount()"
@@ -1681,7 +1852,7 @@
       "label": "ToolbarProps",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L543",
+      "source_location": "L503",
       "id": "editor_wordeditor_toolbarprops",
       "community": 1,
       "norm_label": "toolbarprops"
@@ -1690,7 +1861,7 @@
       "label": "Toolbar",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L551",
+      "source_location": "L511",
       "id": "editor_wordeditor_toolbar",
       "community": 1,
       "norm_label": "toolbar"
@@ -1699,7 +1870,7 @@
       "label": "EditorAreaProps",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L651",
+      "source_location": "L611",
       "id": "editor_wordeditor_editorareaprops",
       "community": 1,
       "norm_label": "editorareaprops"
@@ -1708,7 +1879,7 @@
       "label": "EditorArea()",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L661",
+      "source_location": "L621",
       "id": "editor_wordeditor_editorarea",
       "community": 1,
       "norm_label": "editorarea()"
@@ -1717,7 +1888,7 @@
       "label": "WordEditorProps",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L877",
+      "source_location": "L820",
       "id": "editor_wordeditor_wordeditorprops",
       "community": 1,
       "norm_label": "wordeditorprops"
@@ -1726,7 +1897,7 @@
       "label": "WordEditor()",
       "file_type": "code",
       "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L898",
+      "source_location": "L841",
       "id": "editor_wordeditor_wordeditor",
       "community": 1,
       "norm_label": "wordeditor()"
@@ -1737,7 +1908,7 @@
       "source_file": "components/Landing/LandingPage.tsx",
       "source_location": "L1",
       "id": "components_landing_landingpage_tsx",
-      "community": 6,
+      "community": 2,
       "norm_label": "landingpage.tsx"
     },
     {
@@ -1746,7 +1917,7 @@
       "source_file": "components/Landing/LandingPage.tsx",
       "source_location": "L25",
       "id": "landing_landingpage_landingpage",
-      "community": 6,
+      "community": 2,
       "norm_label": "landingpage()"
     },
     {
@@ -1755,7 +1926,7 @@
       "source_file": "components/Landing/LandingPage.tsx",
       "source_location": "L325",
       "id": "landing_landingpage_featurecard",
-      "community": 6,
+      "community": 2,
       "norm_label": "featurecard()"
     },
     {
@@ -1764,7 +1935,7 @@
       "source_file": "components/Landing/LandingPage.tsx",
       "source_location": "L335",
       "id": "landing_landingpage_stepcard",
-      "community": 6,
+      "community": 2,
       "norm_label": "stepcard()"
     },
     {
@@ -1773,7 +1944,7 @@
       "source_file": "components/Landing/LandingPage.tsx",
       "source_location": "L350",
       "id": "landing_landingpage_pricingitem",
-      "community": 6,
+      "community": 2,
       "norm_label": "pricingitem()"
     },
     {
@@ -1782,7 +1953,7 @@
       "source_file": "components/Landing/LandingPage.tsx",
       "source_location": "L359",
       "id": "landing_landingpage_footer",
-      "community": 6,
+      "community": 2,
       "norm_label": "footer()"
     },
     {
@@ -1917,7 +2088,7 @@
       "source_file": "components/Layout/OfflineBanner.tsx",
       "source_location": "L1",
       "id": "components_layout_offlinebanner_tsx",
-      "community": 8,
+      "community": 24,
       "norm_label": "offlinebanner.tsx"
     },
     {
@@ -1926,7 +2097,7 @@
       "source_file": "components/Layout/OfflineBanner.tsx",
       "source_location": "L15",
       "id": "layout_offlinebanner_offlinebanner",
-      "community": 8,
+      "community": 24,
       "norm_label": "offlinebanner()"
     },
     {
@@ -2070,7 +2241,7 @@
       "source_file": "components/Premium/PremiumLock.tsx",
       "source_location": "L1",
       "id": "components_premium_premiumlock_tsx",
-      "community": 8,
+      "community": 2,
       "norm_label": "premiumlock.tsx"
     },
     {
@@ -2079,7 +2250,7 @@
       "source_file": "components/Premium/PremiumLock.tsx",
       "source_location": "L6",
       "id": "premium_premiumlock_premiumlockprops",
-      "community": 8,
+      "community": 2,
       "norm_label": "premiumlockprops"
     },
     {
@@ -2088,7 +2259,7 @@
       "source_file": "components/Premium/PremiumLock.tsx",
       "source_location": "L12",
       "id": "premium_premiumlock_premiumlock",
-      "community": 8,
+      "community": 2,
       "norm_label": "premiumlock()"
     },
     {
@@ -2149,7 +2320,7 @@
       "label": "PaymentModal",
       "file_type": "code",
       "source_file": "components/ProjectWizard/ProjectWizard.tsx",
-      "source_location": "L14",
+      "source_location": "L16",
       "id": "projectwizard_projectwizard_paymentmodal",
       "community": 2,
       "norm_label": "paymentmodal"
@@ -2158,7 +2329,7 @@
       "label": "ProjectWizardProps",
       "file_type": "code",
       "source_file": "components/ProjectWizard/ProjectWizard.tsx",
-      "source_location": "L16",
+      "source_location": "L18",
       "id": "projectwizard_projectwizard_projectwizardprops",
       "community": 2,
       "norm_label": "projectwizardprops"
@@ -2167,7 +2338,7 @@
       "label": "ProjectWizard()",
       "file_type": "code",
       "source_file": "components/ProjectWizard/ProjectWizard.tsx",
-      "source_location": "L18",
+      "source_location": "L20",
       "id": "projectwizard_projectwizard_projectwizard",
       "community": 2,
       "norm_label": "projectwizard()"
@@ -2241,7 +2412,7 @@
       "source_file": "context/AuthContext.tsx",
       "source_location": "L1",
       "id": "context_authcontext_tsx",
-      "community": 8,
+      "community": 2,
       "norm_label": "authcontext.tsx"
     },
     {
@@ -2250,7 +2421,7 @@
       "source_file": "context/AuthContext.tsx",
       "source_location": "L7",
       "id": "context_authcontext_authcontexttype",
-      "community": 8,
+      "community": 2,
       "norm_label": "authcontexttype"
     },
     {
@@ -2259,7 +2430,7 @@
       "source_file": "context/AuthContext.tsx",
       "source_location": "L13",
       "id": "context_authcontext_authcontext",
-      "community": 8,
+      "community": 2,
       "norm_label": "authcontext"
     },
     {
@@ -2268,7 +2439,7 @@
       "source_file": "context/AuthContext.tsx",
       "source_location": "L15",
       "id": "context_authcontext_authprovider",
-      "community": 8,
+      "community": 2,
       "norm_label": "authprovider()"
     },
     {
@@ -2277,7 +2448,7 @@
       "source_file": "context/AuthContext.tsx",
       "source_location": "L86",
       "id": "context_authcontext_useauth",
-      "community": 8,
+      "community": 2,
       "norm_label": "useauth()"
     },
     {
@@ -2383,7 +2554,7 @@
       "label": "sanitize()",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L192",
+      "source_location": "L174",
       "id": "functions_index_sanitize",
       "community": 3,
       "norm_label": "sanitize()"
@@ -2392,7 +2563,7 @@
       "label": "sanitizeLong()",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L198",
+      "source_location": "L180",
       "id": "functions_index_sanitizelong",
       "community": 3,
       "norm_label": "sanitizelong()"
@@ -2401,7 +2572,7 @@
       "label": "buildReferencesPrompt()",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L207",
+      "source_location": "L189",
       "id": "functions_index_buildreferencesprompt",
       "community": 3,
       "norm_label": "buildreferencesprompt()"
@@ -2410,7 +2581,7 @@
       "label": "buildAppendicesPrompt()",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L224",
+      "source_location": "L206",
       "id": "functions_index_buildappendicesprompt",
       "community": 3,
       "norm_label": "buildappendicesprompt()"
@@ -2419,7 +2590,7 @@
       "label": "extractJSON()",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L242",
+      "source_location": "L247",
       "id": "functions_index_extractjson",
       "community": 3,
       "norm_label": "extractjson()"
@@ -2428,7 +2599,7 @@
       "label": "recordFailedPayment()",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L269",
+      "source_location": "L274",
       "id": "functions_index_recordfailedpayment",
       "community": 3,
       "norm_label": "recordfailedpayment()"
@@ -2437,7 +2608,7 @@
       "label": "hash",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L297",
+      "source_location": "L302",
       "id": "functions_index_hash",
       "community": 3,
       "norm_label": "hash"
@@ -2446,7 +2617,7 @@
       "label": "paymentIntentRef",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L324",
+      "source_location": "L329",
       "id": "functions_index_paymentintentref",
       "community": 3,
       "norm_label": "paymentintentref"
@@ -2455,7 +2626,7 @@
       "label": "paymentRef",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L366",
+      "source_location": "L371",
       "id": "functions_index_paymentref",
       "community": 3,
       "norm_label": "paymentref"
@@ -2464,7 +2635,7 @@
       "label": "userRef",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L382",
+      "source_location": "L387",
       "id": "functions_index_userref",
       "community": 3,
       "norm_label": "userref"
@@ -2473,7 +2644,7 @@
       "label": "amountKobo",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L433",
+      "source_location": "L438",
       "id": "functions_index_amountkobo",
       "community": 3,
       "norm_label": "amountkobo"
@@ -2482,7 +2653,7 @@
       "label": "ai",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L464",
+      "source_location": "L469",
       "id": "functions_index_ai",
       "community": 3,
       "norm_label": "ai"
@@ -2491,7 +2662,7 @@
       "label": "verifyToken()",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L519",
+      "source_location": "L524",
       "id": "functions_index_verifytoken",
       "community": 3,
       "norm_label": "verifytoken()"
@@ -2500,7 +2671,7 @@
       "label": "titleUpper",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L565",
+      "source_location": "L595",
       "id": "functions_index_titleupper",
       "community": 3,
       "norm_label": "titleupper"
@@ -2509,7 +2680,7 @@
       "label": "isReferences",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L566",
+      "source_location": "L596",
       "id": "functions_index_isreferences",
       "community": 3,
       "norm_label": "isreferences"
@@ -2518,7 +2689,7 @@
       "label": "isAppendices",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L567",
+      "source_location": "L597",
       "id": "functions_index_isappendices",
       "community": 3,
       "norm_label": "isappendices"
@@ -2527,7 +2698,7 @@
       "label": "topic",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L789",
+      "source_location": "L760",
       "id": "functions_index_topic",
       "community": 3,
       "norm_label": "topic"
@@ -2536,7 +2707,7 @@
       "label": "studentName",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L792",
+      "source_location": "L763",
       "id": "functions_index_studentname",
       "community": 3,
       "norm_label": "studentname"
@@ -2545,7 +2716,7 @@
       "label": "matricNumber",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L793",
+      "source_location": "L764",
       "id": "functions_index_matricnumber",
       "community": 3,
       "norm_label": "matricnumber"
@@ -2554,7 +2725,7 @@
       "label": "supervisorName",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L794",
+      "source_location": "L765",
       "id": "functions_index_supervisorname",
       "community": 3,
       "norm_label": "supervisorname"
@@ -2563,7 +2734,7 @@
       "label": "institutionType",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L795",
+      "source_location": "L766",
       "id": "functions_index_institutiontype",
       "community": 3,
       "norm_label": "institutiontype"
@@ -2572,7 +2743,7 @@
       "label": "outline",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L807",
+      "source_location": "L778",
       "id": "functions_index_outline",
       "community": 3,
       "norm_label": "outline"
@@ -2581,7 +2752,7 @@
       "label": "chapterMap",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L814",
+      "source_location": "L785",
       "id": "functions_index_chaptermap",
       "community": 3,
       "norm_label": "chaptermap"
@@ -2590,7 +2761,7 @@
       "label": "upper",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L816",
+      "source_location": "L787",
       "id": "functions_index_upper",
       "community": 3,
       "norm_label": "upper"
@@ -2599,7 +2770,7 @@
       "label": "newProjectRef",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L829",
+      "source_location": "L800",
       "id": "functions_index_newprojectref",
       "community": 3,
       "norm_label": "newprojectref"
@@ -2608,7 +2779,7 @@
       "label": "userData",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L842",
+      "source_location": "L813",
       "id": "functions_index_userdata",
       "community": 3,
       "norm_label": "userdata"
@@ -2617,7 +2788,7 @@
       "label": "credits",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L844",
+      "source_location": "L815",
       "id": "functions_index_credits",
       "community": 3,
       "norm_label": "credits"
@@ -2626,7 +2797,7 @@
       "label": "updates",
       "file_type": "code",
       "source_file": "functions/index.js",
-      "source_location": "L849",
+      "source_location": "L820",
       "id": "functions_index_updates",
       "community": 3,
       "norm_label": "updates"
@@ -2817,7 +2988,7 @@
       "source_file": "hooks/useonlinestatus.ts",
       "source_location": "L1",
       "id": "hooks_useonlinestatus_ts",
-      "community": 8,
+      "community": 24,
       "norm_label": "useonlinestatus.ts"
     },
     {
@@ -2826,7 +2997,7 @@
       "source_file": "hooks/useonlinestatus.ts",
       "source_location": "L14",
       "id": "hooks_useonlinestatus_useonlinestatus",
-      "community": 8,
+      "community": 24,
       "norm_label": "useonlinestatus()"
     },
     {
@@ -2835,7 +3006,7 @@
       "source_file": "hooks/usePremium.ts",
       "source_location": "L1",
       "id": "hooks_usepremium_ts",
-      "community": 8,
+      "community": 2,
       "norm_label": "usepremium.ts"
     },
     {
@@ -2844,7 +3015,7 @@
       "source_file": "hooks/usePremium.ts",
       "source_location": "L4",
       "id": "hooks_usepremium_usepremium",
-      "community": 8,
+      "community": 2,
       "norm_label": "usepremium()"
     },
     {
@@ -3127,6 +3298,24 @@
       "norm_label": "elaboratecontentstream()"
     },
     {
+      "label": "htmlCleaner.test.ts",
+      "file_type": "code",
+      "source_file": "services/htmlCleaner.test.ts",
+      "source_location": "L1",
+      "id": "services_htmlcleaner_test_ts",
+      "community": 9,
+      "norm_label": "htmlcleaner.test.ts"
+    },
+    {
+      "label": "out",
+      "file_type": "code",
+      "source_file": "services/htmlCleaner.test.ts",
+      "source_location": "L13",
+      "id": "services_htmlcleaner_test_out",
+      "community": 9,
+      "norm_label": "out"
+    },
+    {
       "label": "htmlCleaner.ts",
       "file_type": "code",
       "source_file": "services/htmlCleaner.ts",
@@ -3170,6 +3359,366 @@
       "id": "services_htmlcleaner_cleanhtml",
       "community": 9,
       "norm_label": "cleanhtml()"
+    },
+    {
+      "label": "cleanDocumentHTML()",
+      "file_type": "code",
+      "source_file": "services/htmlCleaner.ts",
+      "source_location": "L92",
+      "id": "services_htmlcleaner_cleandocumenthtml",
+      "community": 9,
+      "norm_label": "cleandocumenthtml()"
+    },
+    {
+      "label": "outlineReconciler.test.ts",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L1",
+      "id": "services_outlinereconciler_test_ts",
+      "community": 6,
+      "norm_label": "outlinereconciler.test.ts"
+    },
+    {
+      "label": "{ preamble, blocks }",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L32",
+      "id": "services_outlinereconciler_test_preamble_blocks",
+      "community": 6,
+      "norm_label": "{ preamble, blocks }"
+    },
+    {
+      "label": "{ blocks }",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L53",
+      "id": "services_outlinereconciler_test_blocks",
+      "community": 6,
+      "norm_label": "{ blocks }"
+    },
+    {
+      "label": "out",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L60",
+      "id": "services_outlinereconciler_test_out",
+      "community": 6,
+      "norm_label": "out"
+    },
+    {
+      "label": "titles",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L65",
+      "id": "services_outlinereconciler_test_titles",
+      "community": 6,
+      "norm_label": "titles"
+    },
+    {
+      "label": "order",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L71",
+      "id": "services_outlinereconciler_test_order",
+      "community": 6,
+      "norm_label": "order"
+    },
+    {
+      "label": "once",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L72",
+      "id": "services_outlinereconciler_test_once",
+      "community": 6,
+      "norm_label": "once"
+    },
+    {
+      "label": "twice",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L73",
+      "id": "services_outlinereconciler_test_twice",
+      "community": 6,
+      "norm_label": "twice"
+    },
+    {
+      "label": "makeProject()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L214",
+      "id": "services_outlinereconciler_test_makeproject",
+      "community": 6,
+      "norm_label": "makeproject()"
+    },
+    {
+      "label": "drafts",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L232",
+      "id": "services_outlinereconciler_test_drafts",
+      "community": 6,
+      "norm_label": "drafts"
+    },
+    {
+      "label": "errors",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L252",
+      "id": "services_outlinereconciler_test_errors",
+      "community": 6,
+      "norm_label": "errors"
+    },
+    {
+      "label": "drafts2",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L266",
+      "id": "services_outlinereconciler_test_drafts2",
+      "community": 6,
+      "norm_label": "drafts2"
+    },
+    {
+      "label": "project",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L280",
+      "id": "services_outlinereconciler_test_project",
+      "community": 6,
+      "norm_label": "project"
+    },
+    {
+      "label": "dels",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L286",
+      "id": "services_outlinereconciler_test_dels",
+      "community": 6,
+      "norm_label": "dels"
+    },
+    {
+      "label": "applied",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L301",
+      "id": "services_outlinereconciler_test_applied",
+      "community": 6,
+      "norm_label": "applied"
+    },
+    {
+      "label": "outlineReconciler.ts",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L1",
+      "id": "services_outlinereconciler_ts",
+      "community": 6,
+      "norm_label": "outlinereconciler.ts"
+    },
+    {
+      "label": "escapeHTML()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L19",
+      "id": "services_outlinereconciler_escapehtml",
+      "community": 9,
+      "norm_label": "escapehtml()"
+    },
+    {
+      "label": "decodeEntities()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L22",
+      "id": "services_outlinereconciler_decodeentities",
+      "community": 6,
+      "norm_label": "decodeentities()"
+    },
+    {
+      "label": "stripTrailingBreak()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L27",
+      "id": "services_outlinereconciler_striptrailingbreak",
+      "community": 6,
+      "norm_label": "striptrailingbreak()"
+    },
+    {
+      "label": "H2Block",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L33",
+      "id": "services_outlinereconciler_h2block",
+      "community": 6,
+      "norm_label": "h2block"
+    },
+    {
+      "label": "ParsedChapterHTML",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L40",
+      "id": "services_outlinereconciler_parsedchapterhtml",
+      "community": 6,
+      "norm_label": "parsedchapterhtml"
+    },
+    {
+      "label": "parseH2Blocks()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L45",
+      "id": "services_outlinereconciler_parseh2blocks",
+      "community": 6,
+      "norm_label": "parseh2blocks()"
+    },
+    {
+      "label": "stitch()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L64",
+      "id": "services_outlinereconciler_stitch",
+      "community": 6,
+      "norm_label": "stitch()"
+    },
+    {
+      "label": "renameSectionsInHTML()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L73",
+      "id": "services_outlinereconciler_renamesectionsinhtml",
+      "community": 6,
+      "norm_label": "renamesectionsinhtml()"
+    },
+    {
+      "label": "renameSectionInHTML()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L98",
+      "id": "services_outlinereconciler_renamesectioninhtml",
+      "community": 6,
+      "norm_label": "renamesectioninhtml()"
+    },
+    {
+      "label": "deleteSectionFromHTML()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L103",
+      "id": "services_outlinereconciler_deletesectionfromhtml",
+      "community": 6,
+      "norm_label": "deletesectionfromhtml()"
+    },
+    {
+      "label": "renameChapterInHTML()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L116",
+      "id": "services_outlinereconciler_renamechapterinhtml",
+      "community": 6,
+      "norm_label": "renamechapterinhtml()"
+    },
+    {
+      "label": "isLockedChapter()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L133",
+      "id": "services_outlinereconciler_islockedchapter",
+      "community": 6,
+      "norm_label": "islockedchapter()"
+    },
+    {
+      "label": "reorderChapterSectionsInHTML()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L138",
+      "id": "services_outlinereconciler_reorderchaptersectionsinhtml",
+      "community": 6,
+      "norm_label": "reorderchaptersectionsinhtml()"
+    },
+    {
+      "label": "SectionDraft",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L164",
+      "id": "services_outlinereconciler_sectiondraft",
+      "community": 6,
+      "norm_label": "sectiondraft"
+    },
+    {
+      "label": "ChapterDraft",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L170",
+      "id": "services_outlinereconciler_chapterdraft",
+      "community": 6,
+      "norm_label": "chapterdraft"
+    },
+    {
+      "label": "StructureEdits",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L178",
+      "id": "services_outlinereconciler_structureedits",
+      "community": 6,
+      "norm_label": "structureedits"
+    },
+    {
+      "label": "outlineToDrafts()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L180",
+      "id": "services_outlinereconciler_outlinetodrafts",
+      "community": 6,
+      "norm_label": "outlinetodrafts()"
+    },
+    {
+      "label": "editsToOutline()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L194",
+      "id": "services_outlinereconciler_editstooutline",
+      "community": 6,
+      "norm_label": "editstooutline()"
+    },
+    {
+      "label": "validateStructureEdits()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L203",
+      "id": "services_outlinereconciler_validatestructureedits",
+      "community": 6,
+      "norm_label": "validatestructureedits()"
+    },
+    {
+      "label": "survivingOriginalNames()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L242",
+      "id": "services_outlinereconciler_survivingoriginalnames",
+      "community": 6,
+      "norm_label": "survivingoriginalnames()"
+    },
+    {
+      "label": "findContentBearingDeletions()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L249",
+      "id": "services_outlinereconciler_findcontentbearingdeletions",
+      "community": 6,
+      "norm_label": "findcontentbearingdeletions()"
+    },
+    {
+      "label": "AppliedStructure",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L270",
+      "id": "services_outlinereconciler_appliedstructure",
+      "community": 6,
+      "norm_label": "appliedstructure"
+    },
+    {
+      "label": "applyStructureChanges()",
+      "file_type": "code",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L284",
+      "id": "services_outlinereconciler_applystructurechanges",
+      "community": 6,
+      "norm_label": "applystructurechanges()"
     },
     {
       "label": "CLAUDE.md",
@@ -3242,6 +3791,591 @@
       "id": "projectmate_readme_license",
       "community": 5,
       "norm_label": "license"
+    },
+    {
+      "label": "2026-06-11-editable-outline-structure.md",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1",
+      "id": "docs_superpowers_plans_2026_06_11_editable_outline_structure_md",
+      "community": 4,
+      "norm_label": "2026-06-11-editable-outline-structure.md"
+    },
+    {
+      "label": "Editable Outline Structure Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1",
+      "id": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "community": 4,
+      "norm_label": "editable outline structure implementation plan"
+    },
+    {
+      "label": "Task 1: Test tooling (vitest + jsdom)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L24",
+      "id": "plans_2026_06_11_editable_outline_structure_task_1_test_tooling_vitest_jsdom",
+      "community": 4,
+      "norm_label": "task 1: test tooling (vitest + jsdom)"
+    },
+    {
+      "label": "code:ts (import { defineConfig } from 'vitest/config';)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L39",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_1",
+      "community": 4,
+      "norm_label": "code:ts (import { defineconfig } from 'vitest/config';)"
+    },
+    {
+      "label": "code:json (\"scripts\": {)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L54",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_2",
+      "community": 4,
+      "norm_label": "code:json (\"scripts\": {)"
+    },
+    {
+      "label": "code:ts (import { describe, it, expect } from 'vitest';)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L68",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_3",
+      "community": 4,
+      "norm_label": "code:ts (import { describe, it, expect } from 'vitest';)"
+    },
+    {
+      "label": "code:bash (git add package.json package-lock.json vitest.config.ts serv)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L85",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_4",
+      "community": 4,
+      "norm_label": "code:bash (git add package.json package-lock.json vitest.config.ts serv)"
+    },
+    {
+      "label": "Task 2: Reconciler core \u2014 parsing, stitching, reorder (extracted + fixed)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L92",
+      "id": "plans_2026_06_11_editable_outline_structure_task_2_reconciler_core_parsing_stitching_reorder_extracted_fixed",
+      "community": 4,
+      "norm_label": "task 2: reconciler core \u2014 parsing, stitching, reorder (extracted + fixed)"
+    },
+    {
+      "label": "code:ts (import { describe, it, expect } from 'vitest';)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L103",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_5",
+      "community": 4,
+      "norm_label": "code:ts (import { describe, it, expect } from 'vitest';)"
+    },
+    {
+      "label": "code:ts (/**)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L178",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_6",
+      "community": 4,
+      "norm_label": "code:ts (/**)"
+    },
+    {
+      "label": "code:tsx (import {)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L272",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_7",
+      "community": 4,
+      "norm_label": "code:tsx (import {)"
+    },
+    {
+      "label": "code:bash (git add services/outlineReconciler.ts services/outlineReconc)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L291",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_8",
+      "community": 4,
+      "norm_label": "code:bash (git add services/outlinereconciler.ts services/outlinereconc)"
+    },
+    {
+      "label": "Task 3: Reconciler \u2014 rename/delete HTML operations",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L298",
+      "id": "plans_2026_06_11_editable_outline_structure_task_3_reconciler_rename_delete_html_operations",
+      "community": 4,
+      "norm_label": "task 3: reconciler \u2014 rename/delete html operations"
+    },
+    {
+      "label": "code:ts (describe('renameSectionInHTML', () => {)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L308",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_9",
+      "community": 4,
+      "norm_label": "code:ts (describe('renamesectioninhtml', () => {)"
+    },
+    {
+      "label": "code:ts (export const renameSectionInHTML = (html: string, oldName: s)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L377",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_10",
+      "community": 4,
+      "norm_label": "code:ts (export const renamesectioninhtml = (html: string, oldname: s)"
+    },
+    {
+      "label": "code:bash (git add services/outlineReconciler.ts services/outlineReconc)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L423",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_11",
+      "community": 4,
+      "norm_label": "code:bash (git add services/outlinereconciler.ts services/outlinereconc)"
+    },
+    {
+      "label": "Task 4: Reconciler \u2014 drafts, validation, content-deletion detection, atomic apply",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L430",
+      "id": "plans_2026_06_11_editable_outline_structure_task_4_reconciler_drafts_validation_content_deletion_detection_atomic_apply",
+      "community": 4,
+      "norm_label": "task 4: reconciler \u2014 drafts, validation, content-deletion detection, atomic apply"
+    },
+    {
+      "label": "code:ts (const makeProject = (): Project => ({)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L440",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_12",
+      "community": 4,
+      "norm_label": "code:ts (const makeproject = (): project => ({)"
+    },
+    {
+      "label": "code:ts (// \u2500\u2500\u2500 Draft model for the StructureEditor \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L569",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_13",
+      "community": 4,
+      "norm_label": "code:ts (// \u2500\u2500\u2500 draft model for the structureeditor \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500)"
+    },
+    {
+      "label": "code:bash (git add services/outlineReconciler.ts services/outlineReconc)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L725",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_14",
+      "community": 4,
+      "norm_label": "code:bash (git add services/outlinereconciler.ts services/outlinereconc)"
+    },
+    {
+      "label": "Task 5: StructureEditor component",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L732",
+      "id": "plans_2026_06_11_editable_outline_structure_task_5_structureeditor_component",
+      "community": 4,
+      "norm_label": "task 5: structureeditor component"
+    },
+    {
+      "label": "code:tsx (import React, { useMemo, useState } from 'react';)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L743",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_15",
+      "community": 4,
+      "norm_label": "code:tsx (import react, { usememo, usestate } from 'react';)"
+    },
+    {
+      "label": "code:bash (git add components/Editor/StructureEditor.tsx)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L989",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_16",
+      "community": 4,
+      "norm_label": "code:bash (git add components/editor/structureeditor.tsx)"
+    },
+    {
+      "label": "Task 6: Editor integration",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L996",
+      "id": "plans_2026_06_11_editable_outline_structure_task_6_editor_integration",
+      "community": 4,
+      "norm_label": "task 6: editor integration"
+    },
+    {
+      "label": "code:tsx (AlertCircle, Zap, GripVertical, Bot, Send, Sparkles, X, Chec)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1007",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_17",
+      "community": 4,
+      "norm_label": "code:tsx (alertcircle, zap, gripvertical, bot, send, sparkles, x, chec)"
+    },
+    {
+      "label": "code:tsx (import {)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1013",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_18",
+      "community": 4,
+      "norm_label": "code:tsx (import {)"
+    },
+    {
+      "label": "code:tsx (const [isStructureOpen, setIsStructureOpen] = useState(false)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1027",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_19",
+      "community": 4,
+      "norm_label": "code:tsx (const [isstructureopen, setisstructureopen] = usestate(false)"
+    },
+    {
+      "label": "code:tsx (// \u2500\u2500 Structure editing \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1035",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_20",
+      "community": 4,
+      "norm_label": "code:tsx (// \u2500\u2500 structure editing \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500)"
+    },
+    {
+      "label": "code:tsx (<div className=\"flex items-center gap-1 ml-2 min-w-0\">)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1070",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_21",
+      "community": 4,
+      "norm_label": "code:tsx (<div classname=\"flex items-center gap-1 ml-2 min-w-0\">)"
+    },
+    {
+      "label": "code:tsx ({isStructureOpen && project && ()",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1091",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_22",
+      "community": 4,
+      "norm_label": "code:tsx ({isstructureopen && project && ()"
+    },
+    {
+      "label": "code:bash (git add components/Editor/ProjectEditor.tsx)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1110",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_23",
+      "community": 4,
+      "norm_label": "code:bash (git add components/editor/projecteditor.tsx)"
+    },
+    {
+      "label": "Task 7: Wizard Step 4 integration",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1117",
+      "id": "plans_2026_06_11_editable_outline_structure_task_7_wizard_step_4_integration",
+      "community": 4,
+      "norm_label": "task 7: wizard step 4 integration"
+    },
+    {
+      "label": "code:tsx (import StructureEditor from '../Editor/StructureEditor';)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1127",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_24",
+      "community": 4,
+      "norm_label": "code:tsx (import structureeditor from '../editor/structureeditor';)"
+    },
+    {
+      "label": "code:tsx (const [isStructureOpen, setIsStructureOpen] = useState(false)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1134",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_25",
+      "community": 4,
+      "norm_label": "code:tsx (const [isstructureopen, setisstructureopen] = usestate(false)"
+    },
+    {
+      "label": "code:tsx (// Customize structure before the credit is spent \u2014 edits th)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1142",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_26",
+      "community": 4,
+      "norm_label": "code:tsx (// customize structure before the credit is spent \u2014 edits th)"
+    },
+    {
+      "label": "code:tsx ({isStructureOpen && ()",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1157",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_27",
+      "community": 4,
+      "norm_label": "code:tsx ({isstructureopen && ()"
+    },
+    {
+      "label": "code:tsx (<button)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1169",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_28",
+      "community": 4,
+      "norm_label": "code:tsx (<button)"
+    },
+    {
+      "label": "code:bash (git add components/ProjectWizard/ProjectWizard.tsx)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1186",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_29",
+      "community": 4,
+      "norm_label": "code:bash (git add components/projectwizard/projectwizard.tsx)"
+    },
+    {
+      "label": "Task 8: Outline-aware AI prompts (functions/index.js)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1193",
+      "id": "plans_2026_06_11_editable_outline_structure_task_8_outline_aware_ai_prompts_functions_index_js",
+      "community": 4,
+      "norm_label": "task 8: outline-aware ai prompts (functions/index.js)"
+    },
+    {
+      "label": "code:js (// Writing rules for the standard Nigerian-format section ty)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1202",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_30",
+      "community": 4,
+      "norm_label": "code:js (// writing rules for the standard nigerian-format section ty)"
+    },
+    {
+      "label": "code:js (try {)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1229",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_31",
+      "community": 4,
+      "norm_label": "code:js (try {)"
+    },
+    {
+      "label": "code:js (let projectData;)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1239",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_32",
+      "community": 4,
+      "norm_label": "code:js (let projectdata;)"
+    },
+    {
+      "label": "code:js (const structureBlock = customSections.length)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1262",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_33",
+      "community": 4,
+      "norm_label": "code:js (const structureblock = customsections.length)"
+    },
+    {
+      "label": "code:js (${structureBlock})",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1275",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_34",
+      "community": 4,
+      "norm_label": "code:js (${structureblock})"
+    },
+    {
+      "label": "code:js (${KNOWN_SECTION_RULES})",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1288",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_35",
+      "community": 4,
+      "norm_label": "code:js (${known_section_rules})"
+    },
+    {
+      "label": "code:bash (git add functions/index.js)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1299",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_36",
+      "community": 4,
+      "norm_label": "code:bash (git add functions/index.js)"
+    },
+    {
+      "label": "Task 9: Final verification + graph refresh",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1306",
+      "id": "plans_2026_06_11_editable_outline_structure_task_9_final_verification_graph_refresh",
+      "community": 4,
+      "norm_label": "task 9: final verification + graph refresh"
+    },
+    {
+      "label": "code:bash (git add -A)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1325",
+      "id": "plans_2026_06_11_editable_outline_structure_codeblock_37",
+      "community": 4,
+      "norm_label": "code:bash (git add -a)"
+    },
+    {
+      "label": "Out of scope (per spec)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1347",
+      "id": "plans_2026_06_11_editable_outline_structure_out_of_scope_per_spec",
+      "community": 4,
+      "norm_label": "out of scope (per spec)"
+    },
+    {
+      "label": "2026-06-11-editable-outline-structure-design.md",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L1",
+      "id": "docs_superpowers_specs_2026_06_11_editable_outline_structure_design_md",
+      "community": 23,
+      "norm_label": "2026-06-11-editable-outline-structure-design.md"
+    },
+    {
+      "label": "Editable Outline Structure \u2014 Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L1",
+      "id": "specs_2026_06_11_editable_outline_structure_design_editable_outline_structure_design",
+      "community": 23,
+      "norm_label": "editable outline structure \u2014 design"
+    },
+    {
+      "label": "Problem",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L7",
+      "id": "specs_2026_06_11_editable_outline_structure_design_problem",
+      "community": 23,
+      "norm_label": "problem"
+    },
+    {
+      "label": "Decisions (made with owner)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L11",
+      "id": "specs_2026_06_11_editable_outline_structure_design_decisions_made_with_owner",
+      "community": 23,
+      "norm_label": "decisions (made with owner)"
+    },
+    {
+      "label": "Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L18",
+      "id": "specs_2026_06_11_editable_outline_structure_design_design",
+      "community": 23,
+      "norm_label": "design"
+    },
+    {
+      "label": "Data model",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L20",
+      "id": "specs_2026_06_11_editable_outline_structure_design_data_model",
+      "community": 23,
+      "norm_label": "data model"
+    },
+    {
+      "label": "Content reconciliation \u2014 `services/outlineReconciler.ts` (new)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L32",
+      "id": "specs_2026_06_11_editable_outline_structure_design_content_reconciliation_services_outlinereconciler_ts_new",
+      "community": 23,
+      "norm_label": "content reconciliation \u2014 `services/outlinereconciler.ts` (new)"
+    },
+    {
+      "label": "UI \u2014 `components/Editor/StructureEditor.tsx` (new, shared)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L46",
+      "id": "specs_2026_06_11_editable_outline_structure_design_ui_components_editor_structureeditor_tsx_new_shared",
+      "community": 23,
+      "norm_label": "ui \u2014 `components/editor/structureeditor.tsx` (new, shared)"
+    },
+    {
+      "label": "AI prompt changes \u2014 `functions/index.js`",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L55",
+      "id": "specs_2026_06_11_editable_outline_structure_design_ai_prompt_changes_functions_index_js",
+      "community": 23,
+      "norm_label": "ai prompt changes \u2014 `functions/index.js`"
+    },
+    {
+      "label": "Validation",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L64",
+      "id": "specs_2026_06_11_editable_outline_structure_design_validation",
+      "community": 23,
+      "norm_label": "validation"
+    },
+    {
+      "label": "Out of scope (YAGNI)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L70",
+      "id": "specs_2026_06_11_editable_outline_structure_design_out_of_scope_yagni",
+      "community": 23,
+      "norm_label": "out of scope (yagni)"
+    },
+    {
+      "label": "Testing",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L76",
+      "id": "specs_2026_06_11_editable_outline_structure_design_testing",
+      "community": 23,
+      "norm_label": "testing"
+    },
+    {
+      "label": "Files touched",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L81",
+      "id": "specs_2026_06_11_editable_outline_structure_design_files_touched",
+      "community": 23,
+      "norm_label": "files touched"
+    },
+    {
+      "label": "escapeHTML()",
+      "file_type": "code",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L34",
+      "community": 9,
+      "norm_label": "escapehtml()",
+      "id": "editor_projecteditor_escapehtml"
+    },
+    {
+      "label": "reorderChapterSectionsInHTML()",
+      "file_type": "code",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L68",
+      "community": 9,
+      "norm_label": "reorderchaptersectionsinhtml()",
+      "id": "editor_projecteditor_reorderchaptersectionsinhtml"
+    },
+    {
+      "label": "FontSize",
+      "file_type": "code",
+      "source_file": "components/Editor/WordEditor.tsx",
+      "source_location": "L98",
+      "community": 1,
+      "norm_label": "fontsize",
+      "id": "editor_wordeditor_fontsize"
     },
     {
       "label": "generateRef()",
@@ -4808,6 +5942,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "projectmate_package_scripts",
+      "target": "projectmate_package_scripts_test",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
       "source_location": "L7",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -5648,6 +6792,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "projectmate_package_devdependencies",
+      "target": "projectmate_package_devdependencies_jsdom",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
       "source_location": "L59",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -5673,6 +6827,16 @@
       "confidence_score": 1.0,
       "source": "projectmate_package_devdependencies",
       "target": "projectmate_package_devdependencies_vite_plugin_pwa"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "projectmate_package_devdependencies",
+      "target": "projectmate_package_devdependencies_vitest",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -5981,6 +7145,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "types_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "components/Editor/TableOfContents.tsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -6074,6 +7249,28 @@
       "confidence_score": 1.0,
       "source": "services_exportservice_ts",
       "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "types_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "types_ts",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -6189,12 +7386,45 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "projectmate_types_chapter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "projectmate_types_chapter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "components/Editor/ProjectEditor.tsx",
       "source_location": "L7",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "components_editor_projecteditor_tsx",
       "target": "projectmate_types_projectoutline"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "projectmate_types_projectoutline",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -6211,12 +7441,34 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "projectmate_types_projectoutline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "components/ProjectWizard/ProjectWizard.tsx",
       "source_location": "L9",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "components_projectwizard_projectwizard_tsx",
       "target": "projectmate_types_institutiontype"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "projectmate_types_institutiontype",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -6250,6 +7502,28 @@
       "confidence_score": 1.0,
       "source": "services_exportservice_ts",
       "target": "projectmate_types_project"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "projectmate_types_project",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "projectmate_types_project",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -6472,6 +7746,176 @@
       "target": "editor_a4editor_a4editorprops"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_test_ts",
+      "target": "services_outlinereconciler_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_test_ts",
+      "target": "components_editor_editorextensions_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_test_ts",
+      "target": "editor_editorextensions_buildeditorextensions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_test_ts",
+      "target": "editor_editorextensions_test_extensions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_test_ts",
+      "target": "editor_editorextensions_test_roundtrip",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_test_ts",
+      "target": "editor_editorextensions_test_out",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.test.ts",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_test_ts",
+      "target": "editor_editorextensions_test_editor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.ts",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_ts",
+      "target": "components_editor_ghosttextextension_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.ts",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_ts",
+      "target": "editor_ghosttextextension_ghosttext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_ts",
+      "target": "components_editor_pagebreakextension_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_ts",
+      "target": "editor_pagebreakextension_pagebreak",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_ts",
+      "target": "editor_editorextensions_fontsize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/editorExtensions.ts",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "components_editor_editorextensions_ts",
+      "target": "editor_editorextensions_buildeditorextensions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/WordEditor.tsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "components_editor_wordeditor_tsx",
+      "target": "components_editor_editorextensions_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/WordEditor.tsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "components_editor_wordeditor_tsx",
+      "target": "editor_editorextensions_buildeditorextensions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "components/Editor/WordEditor.tsx",
+      "source_location": "L655",
+      "weight": 1.0,
+      "source": "editor_wordeditor_editorarea",
+      "target": "editor_editorextensions_buildeditorextensions"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/Editor/GhostTextExtension.ts",
@@ -6532,6 +7976,37 @@
       "confidence_score": 1.0,
       "source": "components_editor_wordeditor_tsx",
       "target": "editor_ghosttextextension_ghosttext"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/PageBreakExtension.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_pagebreakextension_ts",
+      "target": "services_outlinereconciler_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/PageBreakExtension.ts",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "components_editor_pagebreakextension_ts",
+      "target": "editor_pagebreakextension_commands",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/PageBreakExtension.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "components_editor_pagebreakextension_ts",
+      "target": "editor_pagebreakextension_pagebreak",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -6598,6 +8073,94 @@
       "confidence_score": 1.0,
       "source": "components_editor_projecteditor_tsx",
       "target": "services_htmlcleaner_cleanhtml"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "services_htmlcleaner_cleandocumenthtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "services_outlinereconciler_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "services_outlinereconciler_escapehtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "services_outlinereconciler_reorderchaptersectionsinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "services_outlinereconciler_structureedits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "services_outlinereconciler_findcontentbearingdeletions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "services_outlinereconciler_applystructurechanges",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "services_outlinereconciler_validatestructureedits",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -6687,6 +8250,17 @@
       "target": "editor_wordeditor_useeditorstore"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "components_editor_structureeditor_tsx",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/Editor/ProjectEditor.tsx",
@@ -6695,16 +8269,6 @@
       "confidence_score": 1.0,
       "source": "components_editor_projecteditor_tsx",
       "target": "editor_projecteditor_projecteditorprops"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L33",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_editor_projecteditor_tsx",
-      "target": "editor_projecteditor_escapehtml"
     },
     {
       "relation": "contains",
@@ -6730,16 +8294,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L67",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_editor_projecteditor_tsx",
-      "target": "editor_projecteditor_reorderchaptersectionsinhtml"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Editor/ProjectEditor.tsx",
       "source_location": "L62",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -6757,6 +8311,26 @@
       "target": "editor_projecteditor_projecteditor"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "editor_projecteditor_escapehtml"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L67",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_editor_projecteditor_tsx",
+      "target": "editor_projecteditor_reorderchaptersectionsinhtml"
+    },
+    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -6771,23 +8345,12 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
-      "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L40",
-      "weight": 1.0,
       "confidence_score": 1.0,
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L47",
+      "weight": 1.0,
       "source": "editor_projecteditor_wrapchaptercontent",
-      "target": "editor_projecteditor_escapehtml"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Editor/ProjectEditor.tsx",
-      "source_location": "L57",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "editor_projecteditor_appendsection",
-      "target": "editor_projecteditor_escapehtml"
+      "target": "services_outlinereconciler_escapehtml"
     },
     {
       "relation": "calls",
@@ -6804,12 +8367,45 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L40",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "editor_projecteditor_wrapchaptercontent",
+      "target": "editor_projecteditor_escapehtml"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "editor_projecteditor_appendsection",
+      "target": "services_outlinereconciler_escapehtml"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "components/Editor/ProjectEditor.tsx",
       "source_location": "L57",
       "weight": 1.0,
       "source": "editor_projecteditor_appendsection",
       "target": "services_htmlcleaner_cleanhtml"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/ProjectEditor.tsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "editor_projecteditor_appendsection",
+      "target": "editor_projecteditor_escapehtml"
     },
     {
       "relation": "contains",
@@ -6831,6 +8427,132 @@
       "weight": 1.0,
       "source": "editor_projecteditor_projecteditor",
       "target": "hooks_usefirestore_usefirestore"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "services_outlinereconciler_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "services_outlinereconciler_structureedits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "services_outlinereconciler_sectiondraft",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "services_outlinereconciler_outlinetodrafts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "services_outlinereconciler_validatestructureedits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "editor_structureeditor_structureeditorprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "editor_structureeditor_genid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "editor_structureeditor_draftrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "editor_structureeditor_draftchapter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "editor_structureeditor_sortablerow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/StructureEditor.tsx",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "components_editor_structureeditor_tsx",
+      "target": "editor_structureeditor_structureeditor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ProjectWizard/ProjectWizard.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "components_projectwizard_projectwizard_tsx",
+      "target": "components_editor_structureeditor_tsx",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6871,16 +8593,6 @@
       "confidence_score": 1.0,
       "source": "components_editor_tableofcontents_tsx",
       "target": "editor_tableofcontents_tableofcontents"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/Editor/WordEditor.tsx",
-      "source_location": "L98",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_editor_wordeditor_tsx",
-      "target": "editor_wordeditor_fontsize"
     },
     {
       "relation": "contains",
@@ -7091,6 +8803,16 @@
       "confidence_score": 1.0,
       "source": "components_editor_wordeditor_tsx",
       "target": "editor_wordeditor_wordeditor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Editor/WordEditor.tsx",
+      "source_location": "L98",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_editor_wordeditor_tsx",
+      "target": "editor_wordeditor_fontsize"
     },
     {
       "relation": "calls",
@@ -7724,6 +9446,39 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "components/ProjectWizard/ProjectWizard.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "components_projectwizard_projectwizard_tsx",
+      "target": "services_outlinereconciler_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ProjectWizard/ProjectWizard.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "components_projectwizard_projectwizard_tsx",
+      "target": "services_outlinereconciler_structureedits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ProjectWizard/ProjectWizard.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "components_projectwizard_projectwizard_tsx",
+      "target": "services_outlinereconciler_editstooutline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ProjectWizard/ProjectWizard.tsx",
       "source_location": "L11",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -7971,9 +9726,9 @@
       "source_file": "functions/index.js",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "functions_index_js",
-      "target": "functions_index_applycors",
-      "confidence_score": 1.0
+      "target": "functions_index_applycors"
     },
     {
       "relation": "contains",
@@ -9233,6 +10988,71 @@
       "target": "services_geminiservice_fetchwithauth"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/htmlCleaner.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_htmlcleaner_test_ts",
+      "target": "services_htmlcleaner_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/htmlCleaner.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_htmlcleaner_test_ts",
+      "target": "services_htmlcleaner_cleanhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/htmlCleaner.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_htmlcleaner_test_ts",
+      "target": "services_htmlcleaner_cleandocumenthtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/htmlCleaner.test.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "services_htmlcleaner_test_ts",
+      "target": "services_outlinereconciler_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/htmlCleaner.test.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "services_htmlcleaner_test_ts",
+      "target": "services_outlinereconciler_parseh2blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/htmlCleaner.test.ts",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "services_htmlcleaner_test_ts",
+      "target": "services_htmlcleaner_test_out",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "services/htmlCleaner.ts",
@@ -9276,6 +11096,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "services/htmlCleaner.ts",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "services_htmlcleaner_ts",
+      "target": "services_htmlcleaner_cleandocumenthtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/htmlCleaner.ts",
       "source_location": "L19",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -9308,6 +11138,17 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "services/htmlCleaner.ts",
+      "source_location": "L94",
+      "weight": 1.0,
+      "source": "services_htmlcleaner_cleandocumenthtml",
+      "target": "services_htmlcleaner_sanitize",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/htmlCleaner.ts",
       "source_location": "L57",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -9324,6 +11165,761 @@
       "confidence_score": 1.0,
       "source": "services_htmlcleaner_cleanhtml",
       "target": "services_htmlcleaner_stripdisallowedtags"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_escapehtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_parseh2blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_reorderchaptersectionsinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_renamesectioninhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_renamesectionsinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_deletesectionfromhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_renamechapterinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_islockedchapter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_outlinetodrafts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_editstooutline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_validatestructureedits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_findcontentbearingdeletions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_applystructurechanges",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_preamble_blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L190",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_out",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_titles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_order",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_once",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_twice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L214",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_makeproject",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L381",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_drafts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L252",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_errors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L266",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_drafts2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L394",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_project",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L286",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_dels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.test.ts",
+      "source_location": "L395",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_test_ts",
+      "target": "services_outlinereconciler_test_applied",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_escapehtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_decodeentities",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_striptrailingbreak",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_h2block",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_parsedchapterhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L45",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_parseh2blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_stitch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_renamesectionsinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L98",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_renamesectioninhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_deletesectionfromhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_renamechapterinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L133",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_islockedchapter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L138",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_reorderchaptersectionsinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L164",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_sectiondraft",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L170",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_chapterdraft",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L178",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_structureedits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L180",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_outlinetodrafts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L194",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_editstooutline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_validatestructureedits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L242",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_survivingoriginalnames",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L249",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_findcontentbearingdeletions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L270",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_appliedstructure",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L284",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_ts",
+      "target": "services_outlinereconciler_applystructurechanges",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_parseh2blocks",
+      "target": "services_outlinereconciler_decodeentities",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_parseh2blocks",
+      "target": "services_outlinereconciler_striptrailingbreak",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_renamesectionsinhtml",
+      "target": "services_outlinereconciler_parseh2blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_deletesectionfromhtml",
+      "target": "services_outlinereconciler_parseh2blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L118",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_renamechapterinhtml",
+      "target": "services_outlinereconciler_parseh2blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L140",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_reorderchaptersectionsinhtml",
+      "target": "services_outlinereconciler_parseh2blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L258",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_findcontentbearingdeletions",
+      "target": "services_outlinereconciler_parseh2blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L300",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_applystructurechanges",
+      "target": "services_outlinereconciler_parseh2blocks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_renamesectionsinhtml",
+      "target": "services_outlinereconciler_stitch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_deletesectionfromhtml",
+      "target": "services_outlinereconciler_stitch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_renamechapterinhtml",
+      "target": "services_outlinereconciler_stitch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L157",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_reorderchaptersectionsinhtml",
+      "target": "services_outlinereconciler_stitch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L303",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_applystructurechanges",
+      "target": "services_outlinereconciler_stitch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_renamesectioninhtml",
+      "target": "services_outlinereconciler_renamesectionsinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L315",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_applystructurechanges",
+      "target": "services_outlinereconciler_renamesectionsinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L323",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_applystructurechanges",
+      "target": "services_outlinereconciler_renamechapterinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L213",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_validatestructureedits",
+      "target": "services_outlinereconciler_islockedchapter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L318",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_applystructurechanges",
+      "target": "services_outlinereconciler_reorderchaptersectionsinhtml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L344",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_applystructurechanges",
+      "target": "services_outlinereconciler_editstooutline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L257",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_findcontentbearingdeletions",
+      "target": "services_outlinereconciler_survivingoriginalnames",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "services/outlineReconciler.ts",
+      "source_location": "L298",
+      "weight": 1.0,
+      "source": "services_outlinereconciler_applystructurechanges",
+      "target": "services_outlinereconciler_survivingoriginalnames",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9386,6 +11982,606 @@
       "target": "projectmate_readme_license"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_06_11_editable_outline_structure_md",
+      "target": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_task_1_test_tooling_vitest_jsdom",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_task_2_reconciler_core_parsing_stitching_reorder_extracted_fixed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L298",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_task_3_reconciler_rename_delete_html_operations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L430",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_task_4_reconciler_drafts_validation_content_deletion_detection_atomic_apply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L732",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_task_5_structureeditor_component",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L996",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_task_6_editor_integration",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1117",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_task_7_wizard_step_4_integration",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1193",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_task_8_outline_aware_ai_prompts_functions_index_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1306",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_task_9_final_verification_graph_refresh",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1347",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_editable_outline_structure_implementation_plan",
+      "target": "plans_2026_06_11_editable_outline_structure_out_of_scope_per_spec",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_1_test_tooling_vitest_jsdom",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_1_test_tooling_vitest_jsdom",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_1_test_tooling_vitest_jsdom",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_3",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L85",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_1_test_tooling_vitest_jsdom",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_4",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_2_reconciler_core_parsing_stitching_reorder_extracted_fixed",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_5",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L178",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_2_reconciler_core_parsing_stitching_reorder_extracted_fixed",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_6",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L272",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_2_reconciler_core_parsing_stitching_reorder_extracted_fixed",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_7",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L291",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_2_reconciler_core_parsing_stitching_reorder_extracted_fixed",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_8",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L308",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_3_reconciler_rename_delete_html_operations",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_9",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L377",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_3_reconciler_rename_delete_html_operations",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_10",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L423",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_3_reconciler_rename_delete_html_operations",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_11",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L440",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_4_reconciler_drafts_validation_content_deletion_detection_atomic_apply",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_12",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L569",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_4_reconciler_drafts_validation_content_deletion_detection_atomic_apply",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_13",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L725",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_4_reconciler_drafts_validation_content_deletion_detection_atomic_apply",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_14",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L743",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_5_structureeditor_component",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_15",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L989",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_5_structureeditor_component",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_16",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1007",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_6_editor_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_17",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1013",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_6_editor_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_18",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1027",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_6_editor_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_19",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1035",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_6_editor_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_20",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1070",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_6_editor_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_21",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1091",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_6_editor_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_22",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1110",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_6_editor_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_23",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1127",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_7_wizard_step_4_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_24",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1134",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_7_wizard_step_4_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_25",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1142",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_7_wizard_step_4_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_26",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1157",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_7_wizard_step_4_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_27",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1169",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_7_wizard_step_4_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_28",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1186",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_7_wizard_step_4_integration",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_29",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1202",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_8_outline_aware_ai_prompts_functions_index_js",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_30",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1229",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_8_outline_aware_ai_prompts_functions_index_js",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_31",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1239",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_8_outline_aware_ai_prompts_functions_index_js",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_32",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1262",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_8_outline_aware_ai_prompts_functions_index_js",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_33",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1275",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_8_outline_aware_ai_prompts_functions_index_js",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_34",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1288",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_8_outline_aware_ai_prompts_functions_index_js",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_35",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1299",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_8_outline_aware_ai_prompts_functions_index_js",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_36",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-06-11-editable-outline-structure.md",
+      "source_location": "L1325",
+      "weight": 1.0,
+      "source": "plans_2026_06_11_editable_outline_structure_task_9_final_verification_graph_refresh",
+      "target": "plans_2026_06_11_editable_outline_structure_codeblock_37",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_06_11_editable_outline_structure_design_md",
+      "target": "specs_2026_06_11_editable_outline_structure_design_editable_outline_structure_design",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_editable_outline_structure_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_problem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_editable_outline_structure_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_decisions_made_with_owner",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_editable_outline_structure_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_design",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_editable_outline_structure_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_out_of_scope_yagni",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_editable_outline_structure_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_testing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_editable_outline_structure_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_files_touched",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_data_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_content_reconciliation_services_outlinereconciler_ts_new",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_ui_components_editor_structureeditor_tsx_new_shared",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_ai_prompt_changes_functions_index_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-06-11-editable-outline-structure-design.md",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "specs_2026_06_11_editable_outline_structure_design_design",
+      "target": "specs_2026_06_11_editable_outline_structure_design_validation",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -9397,5 +12593,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ed1771132ec33512154e44fc181b426c665e87f4"
+  "built_at_commit": "cfbd527caaeed948458fe7804bab273fc01684a1"
 }

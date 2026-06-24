@@ -35,8 +35,8 @@
     "semantic_hash": "1f549fcb275525d1344d59d0038a5150"
   },
   "C:\\Users\\IKA\\ProjectMate\\package.json": {
-    "mtime": 1779246563.2570238,
-    "ast_hash": "40c8dda4c939f0a9546c409babb10538",
+    "mtime": 1781149952.9395258,
+    "ast_hash": "f720c696f86ae4f6999ed7d7c408e4ea",
     "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\postcss.config.js": {
@@ -64,6 +64,11 @@
     "ast_hash": "03aa0ad198a3fe7a311cb1137a52fb3d",
     "semantic_hash": "03aa0ad198a3fe7a311cb1137a52fb3d"
   },
+  "C:\\Users\\IKA\\ProjectMate\\vitest.config.ts": {
+    "mtime": 1781188892.9501722,
+    "ast_hash": "cff58555f80f49fa112e82bc61681a54",
+    "semantic_hash": ""
+  },
   "C:\\Users\\IKA\\ProjectMate\\.claude\\settings.json": {
     "mtime": 1779162669.000242,
     "ast_hash": "e99d00f34528b94fcaaa41a2ab1c1654",
@@ -89,24 +94,44 @@
     "ast_hash": "fc220379bb5b5940c7be91f3758bba0c",
     "semantic_hash": "fc220379bb5b5940c7be91f3758bba0c"
   },
+  "C:\\Users\\IKA\\ProjectMate\\components\\Editor\\editorExtensions.test.ts": {
+    "mtime": 1781189148.7215054,
+    "ast_hash": "5816d217db875ab6f74254df55a4ee6e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\IKA\\ProjectMate\\components\\Editor\\editorExtensions.ts": {
+    "mtime": 1781189089.6450026,
+    "ast_hash": "978aa90528ba098aaa74321efb919819",
+    "semantic_hash": ""
+  },
   "C:\\Users\\IKA\\ProjectMate\\components\\Editor\\GhostTextExtension.ts": {
-    "mtime": 1776181505.8131926,
-    "ast_hash": "eeeb5014e2f6ef4292adc611ece0e5fa",
-    "semantic_hash": "eeeb5014e2f6ef4292adc611ece0e5fa"
+    "mtime": 1781187483.7366056,
+    "ast_hash": "712a6f469aca349721a0226d3d451f24",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\IKA\\ProjectMate\\components\\Editor\\PageBreakExtension.ts": {
+    "mtime": 1781189082.5562623,
+    "ast_hash": "f9ebe286f75791d0525fc1bd882a0052",
+    "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\components\\Editor\\ProjectEditor.tsx": {
-    "mtime": 1779253900.9448986,
-    "ast_hash": "b0fd9791dca544d5f16a3d1007485cca",
+    "mtime": 1781215400.611824,
+    "ast_hash": "e8a803cce0b27329bc8fdb72c1166afe",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\IKA\\ProjectMate\\components\\Editor\\StructureEditor.tsx": {
+    "mtime": 1781215380.2270765,
+    "ast_hash": "631fa044df864699ab74aba7a5bfd4d1",
     "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\components\\Editor\\TableOfContents.tsx": {
-    "mtime": 1776173191.4586914,
-    "ast_hash": "c2399440a5c8e3a8e6bb6ae3fa4c4943",
-    "semantic_hash": "c2399440a5c8e3a8e6bb6ae3fa4c4943"
+    "mtime": 1781213246.9089906,
+    "ast_hash": "5a38fbdba22047ba566d2af76e877def",
+    "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\components\\Editor\\WordEditor.tsx": {
-    "mtime": 1779335799.2227843,
-    "ast_hash": "75e775c1c1ffa86ca9cd65465e0af8a1",
+    "mtime": 1781189217.887693,
+    "ast_hash": "c920aecacc0457b9d1c2183157a3f801",
     "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\components\\Landing\\LandingPage.tsx": {
@@ -150,8 +175,8 @@
     "semantic_hash": "a829ecde7cf73b830acc50157bc2cf02"
   },
   "C:\\Users\\IKA\\ProjectMate\\components\\ProjectWizard\\ProjectWizard.tsx": {
-    "mtime": 1779253921.2071078,
-    "ast_hash": "42c9f0f505bd2052d23aa047b6e8e89a",
+    "mtime": 1781217473.4055681,
+    "ast_hash": "fca7bdad3b08fce6c22b7ad64bc49005",
     "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\components\\PwaInstall\\InstallPrompt.tsx": {
@@ -165,8 +190,8 @@
     "semantic_hash": "2e3f0e57eea4666505cd3e7376619207"
   },
   "C:\\Users\\IKA\\ProjectMate\\functions\\index.js": {
-    "mtime": 1779335786.0944977,
-    "ast_hash": "b29e69465f4384ac8c2f8eac557668c5",
+    "mtime": 1781219059.2125537,
+    "ast_hash": "9aeb7cd8290db40cea61c4a79c28a201",
     "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\functions\\package.json": {
@@ -204,9 +229,24 @@
     "ast_hash": "470570e22d42a976647cfa5ac41fa1b9",
     "semantic_hash": ""
   },
+  "C:\\Users\\IKA\\ProjectMate\\services\\htmlCleaner.test.ts": {
+    "mtime": 1781192299.6805964,
+    "ast_hash": "f9cbe2bb29833715771e47b25cf5732c",
+    "semantic_hash": ""
+  },
   "C:\\Users\\IKA\\ProjectMate\\services\\htmlCleaner.ts": {
-    "mtime": 1779246613.3235102,
-    "ast_hash": "05165e9519390cc792726b91e0c2a6a8",
+    "mtime": 1781192193.738965,
+    "ast_hash": "40506e33b9f0dc09e0e884b5a05490f9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\IKA\\ProjectMate\\services\\outlineReconciler.test.ts": {
+    "mtime": 1781213099.2739475,
+    "ast_hash": "aab52a6fd47f0dad6471f99fab4adf7e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\IKA\\ProjectMate\\services\\outlineReconciler.ts": {
+    "mtime": 1781213087.137208,
+    "ast_hash": "6f4e2f2b0cc818ff6697436d85798660",
     "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\CLAUDE.md": {
@@ -215,14 +255,24 @@
     "semantic_hash": "747e73a5e1af4b72c0d65c9169c23199"
   },
   "C:\\Users\\IKA\\ProjectMate\\index.html": {
-    "mtime": 1776517612.6962411,
-    "ast_hash": "36c1f7284737172f601a03428cd06e6a",
-    "semantic_hash": "36c1f7284737172f601a03428cd06e6a"
+    "mtime": 1781213163.8292859,
+    "ast_hash": "a0f9fd90884432116685f749fd8ed3a7",
+    "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\README.md": {
     "mtime": 1775836684.850284,
     "ast_hash": "2f1407519c595022d04072bfe78e2a9b",
     "semantic_hash": "2f1407519c595022d04072bfe78e2a9b"
+  },
+  "C:\\Users\\IKA\\ProjectMate\\docs\\superpowers\\plans\\2026-06-11-editable-outline-structure.md": {
+    "mtime": 1781191933.1633112,
+    "ast_hash": "d1b7144995e8fc02ec0152dd7b1cdf19",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\IKA\\ProjectMate\\docs\\superpowers\\specs\\2026-06-11-editable-outline-structure-design.md": {
+    "mtime": 1781147702.9861364,
+    "ast_hash": "6198484eac4da6081832dc8552525865",
+    "semantic_hash": ""
   },
   "C:\\Users\\IKA\\ProjectMate\\public\\apple-touch-icon.png": {
     "mtime": 1776531156.0,

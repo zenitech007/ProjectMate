@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ChevronLeft, Loader2, Wand2, ChevronRight, BookOpen,
-  AlertCircle, Zap, GripVertical, Bot, Send, Sparkles, X, CheckCircle2
+  AlertCircle, Zap, GripVertical, Bot, Send, Sparkles, X, CheckCircle2, Settings2
 } from 'lucide-react';
 import { UserProfile, Project, ProjectOutline } from '../../types';
 import {
@@ -10,12 +10,22 @@ import {
   generateSectionContentStream,
   elaborateContentStream
 } from '../../services/geminiService';
-import { cleanHTML } from '../../services/htmlCleaner';
+import { cleanHTML, cleanDocumentHTML } from '../../services/htmlCleaner';
+import {
+  PAGE_BREAK_HTML,
+  escapeHTML,
+  reorderChapterSectionsInHTML,
+  StructureEdits,
+  findContentBearingDeletions,
+  applyStructureChanges,
+  validateStructureEdits,
+} from '../../services/outlineReconciler';
 import { exportToDocx, exportToPdf } from '../../services/exportService';
 import { useFirestore } from '../../hooks/useFirestore';
 // Lazy — defers vendor-paystack (~116 kB) until the user actually clicks "Top up".
 const PaymentModal = lazy(() => import('../Payments/PaymentModal'));
 import WordEditor, { useEditorStore } from './WordEditor';
+import StructureEditor from './StructureEditor';
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
   useSensor, useSensors, DragEndEvent
@@ -30,10 +40,6 @@ interface ProjectEditorProps {
   user: UserProfile;
 }
 
-// ─── Helper: HTML-escape a string to prevent XSS via titles ─────────────────
-const escapeHTML = (str: string): string =>
-  str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
 // ─── Helper: build a chapter's full HTML from streamed AI text ───────────────
 // Wraps the generated content with the chapter title as an <h1> at the top.
 // The AI is told NOT to include the chapter title, so this adds it cleanly once.
@@ -45,7 +51,6 @@ const wrapChapterContent = (chapterTitle: string, bodyHTML: string): string => {
 // ─── Helper: append a section to existing chapter HTML ──────────────────────
 // Adds a page break before the section heading, then the body.
 // The AI is told NOT to repeat the section title, so we add it once here.
-const PAGE_BREAK_HTML = '<div data-page-break="" class="pm-page-break"></div>';
 const appendSection = (
   existing: string,
   sectionTitle: string,
@@ -56,61 +61,6 @@ const appendSection = (
   // Section heading (h2), then cleaned body (AI should not repeat the heading)
   const sectionHTML = `<h2>${escapeHTML(sectionTitle)}</h2>${cleanHTML(bodyHTML)}`;
   return existing + pageBreak + sectionHTML;
-};
-
-// ─── Helper: reorder section blocks inside a chapter's rendered HTML ────────
-// `<h2>` headings demarcate section boundaries. We split the chapter body on
-// those headings, match each block to its title (entity-decoded), then
-// re-stitch in the new order with page-break separators between blocks.
-// Any section title in `newOrder` that doesn't appear in the HTML is skipped
-// (e.g. ungenerated sections). Any block found in HTML but not in newOrder
-// is defensively appended at the end.
-const reorderChapterSectionsInHTML = (html: string, newOrder: string[]): string => {
-  if (!html || newOrder.length === 0) return html;
-
-  const h2Matches: Array<{ title: string; start: number }> = [];
-  const h2Pattern = /<h2[^>]*>([\s\S]*?)<\/h2>/gi;
-  let m: RegExpExecArray | null;
-  const decoder = document.createElement('div');
-  while ((m = h2Pattern.exec(html)) !== null) {
-    decoder.innerHTML = m[1];
-    const title = (decoder.textContent || '').trim();
-    h2Matches.push({ title, start: m.index });
-  }
-  if (h2Matches.length === 0) return html;
-
-  // Preamble: everything before the first <h2> (chapter <h1>, intro paragraphs)
-  const preamble = html.slice(0, h2Matches[0].start);
-
-  // Strip a trailing page-break div from a section block (it belongs BETWEEN
-  // blocks, not as part of any individual block).
-  const stripTrailingBreak = (s: string): string =>
-    s.endsWith(PAGE_BREAK_HTML) ? s.slice(0, -PAGE_BREAK_HTML.length) : s;
-
-  const titleToBlock = new Map<string, string>();
-  for (let i = 0; i < h2Matches.length; i++) {
-    const start = h2Matches[i].start;
-    const end = i + 1 < h2Matches.length ? h2Matches[i + 1].start : html.length;
-    titleToBlock.set(h2Matches[i].title, stripTrailingBreak(html.slice(start, end)));
-  }
-
-  const orderedBlocks: string[] = [];
-  const used = new Set<string>();
-  for (const title of newOrder) {
-    const block = titleToBlock.get(title);
-    if (block && !used.has(title)) {
-      orderedBlocks.push(block);
-      used.add(title);
-    }
-  }
-  // Defensive: append any block whose title wasn't in newOrder (e.g. a
-  // section title was edited externally — keep the content rather than drop it).
-  for (const [title, block] of titleToBlock) {
-    if (!used.has(title)) orderedBlocks.push(block);
-  }
-
-  const stitched = orderedBlocks.join(PAGE_BREAK_HTML);
-  return preamble + (preamble.trim() && stitched ? PAGE_BREAK_HTML : '') + stitched;
 };
 
 // ─── Sortable section row ────────────────────────────────────────────────────
@@ -182,6 +132,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
   const [showPayment, setShowPayment] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [isStructureOpen, setIsStructureOpen] = useState(false);
   const [copilotQuery, setCopilotQuery] = useState('');
   const [toast, setToast] = useState<string | null>(null);
 
@@ -243,7 +194,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         const cleanChapters: typeof proj.chapters = {};
         for (const [k, ch] of Object.entries(proj.chapters || {})) {
           cleanChapters[k] = ch.content
-            ? { ...ch, content: cleanHTML(ch.content) }
+            ? { ...ch, content: cleanDocumentHTML(ch.content) }
             : ch;
         }
         const cleanProject = { ...proj, outline: cleanOutline, chapters: cleanChapters };
@@ -316,6 +267,17 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     if (autosaveTimer.current) {
       window.clearTimeout(autosaveTimer.current);
       autosaveTimer.current = null;
+      // Flush the pending write before generating — the server reads the
+      // project doc (outline) and the stream result will overwrite chapter
+      // state, so a discarded debounce here would lose edits server-side.
+      try {
+        await updateProject(project.id, { chapters: project.chapters, outline: project.outline });
+      } catch {
+        if (isMountedRef.current) {
+          setSaveStatus('unsaved');
+          lastFailedProject.current = project;
+        }
+      }
     }
 
     // Snapshot the chapter so a mid-stream failure can be rolled back.
@@ -383,6 +345,10 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         });
       }
       chapterBackupRef.current = null;
+      // Persist the restored state — the pre-stream flush/clear means no
+      // timer is armed, and without this a tab close would lose the restore
+      // (and any structure edit that rode the same in-memory state).
+      setProject(current => { if (current) triggerAutosave(current); return current; });
       if (!isAbort && isMountedRef.current) showToast(e?.message || 'Generation interrupted');
     } finally {
       if (abortControllerRef.current === controller) abortControllerRef.current = null;
@@ -405,6 +371,17 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     if (autosaveTimer.current) {
       window.clearTimeout(autosaveTimer.current);
       autosaveTimer.current = null;
+      // Flush the pending write before generating — the server reads the
+      // project doc (outline) and the stream result will overwrite chapter
+      // state, so a discarded debounce here would lose edits server-side.
+      try {
+        await updateProject(project.id, { chapters: project.chapters, outline: project.outline });
+      } catch {
+        if (isMountedRef.current) {
+          setSaveStatus('unsaved');
+          lastFailedProject.current = project;
+        }
+      }
     }
 
     // Capture the chapter's content at stream start. Every chunk re-renders
@@ -463,6 +440,10 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         });
       }
       chapterBackupRef.current = null;
+      // Persist the restored state — the pre-stream flush/clear means no
+      // timer is armed, and without this a tab close would lose the restore
+      // (and any structure edit that rode the same in-memory state).
+      setProject(current => { if (current) triggerAutosave(current); return current; });
       if (!isAbort && isMountedRef.current) showToast(e?.message || 'Generation interrupted');
     } finally {
       if (abortControllerRef.current === controller) abortControllerRef.current = null;
@@ -486,6 +467,17 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     if (autosaveTimer.current) {
       window.clearTimeout(autosaveTimer.current);
       autosaveTimer.current = null;
+      // Flush the pending write before generating — the server reads the
+      // project doc (outline) and the stream result will overwrite chapter
+      // state, so a discarded debounce here would lose edits server-side.
+      try {
+        await updateProject(project.id, { chapters: project.chapters, outline: project.outline });
+      } catch {
+        if (isMountedRef.current) {
+          setSaveStatus('unsaved');
+          lastFailedProject.current = project;
+        }
+      }
     }
 
     // Snapshot HTML before & after cursor using ProseMirror DOMSerializer
@@ -559,6 +551,10 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         });
       }
       chapterBackupRef.current = null;
+      // Persist the restored state — the pre-stream flush/clear means no
+      // timer is armed, and without this a tab close would lose the restore
+      // (and any structure edit that rode the same in-memory state).
+      setProject(current => { if (current) triggerAutosave(current); return current; });
       if (!isAbort) {
         console.error('Copilot error:', e);
         if (isMountedRef.current) showToast(e?.message || 'Generation interrupted');
@@ -633,6 +629,63 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
     triggerAutosave(updated);
   };
 
+  // ── Structure editing ────────────────────────────────────────────────────
+  const closeStructureEditor = useCallback(() => setIsStructureOpen(false), []);
+
+  const handleStructureSave = async (edits: StructureEdits) => {
+    if (!project || isGeneratingRef.current) return;
+
+    if (validateStructureEdits(edits).length > 0) return; // modal's Save gate should prevent this
+
+    const deletions = findContentBearingDeletions(project, edits);
+    if (deletions.length > 0) {
+      const shown = deletions.slice(0, 10);
+      const more = deletions.length - shown.length;
+      const list = shown.map(d => `• ${d.section}  (${d.chapter})`).join('\n')
+        + (more > 0 ? `\n…and ${more} more section${more === 1 ? '' : 's'}` : '');
+      const ok = window.confirm(
+        `These sections already have content that will be permanently removed:\n\n${list}\n\nDelete them?`
+      );
+      if (!ok) return;
+    }
+
+    try {
+      const applied = applyStructureChanges(project, edits);
+      const updated = { ...project, outline: applied.outline, chapters: applied.chapters };
+      setProject(updated);
+      // Keep the open chapter selected across a rename. Object.hasOwn because
+      // chapter titles are user-controlled keys (a chapter titled "constructor"
+      // must not hit Object.prototype).
+      if (Object.hasOwn(applied.renamedChapters, activeChapter)) {
+        setActiveChapter(applied.renamedChapters[activeChapter]);
+      } else if (!Object.hasOwn(applied.chapters, activeChapter)) {
+        setActiveChapter(applied.outline[0]?.title || '');
+      }
+      setIsStructureOpen(false);
+      // Persist IMMEDIATELY (not debounced): generation reads the outline
+      // server-side, so a pending debounce here would let a quick
+      // "customize → generate" race serve the model a stale structure.
+      if (autosaveTimer.current) {
+        window.clearTimeout(autosaveTimer.current);
+        autosaveTimer.current = null;
+      }
+      setSaveStatus('saving');
+      try {
+        await updateProject(updated.id, { chapters: updated.chapters, outline: updated.outline });
+        if (isMountedRef.current) setSaveStatus('saved');
+      } catch {
+        if (isMountedRef.current) {
+          setSaveStatus('unsaved');
+          lastFailedProject.current = updated;
+        }
+      }
+      showToast('Structure updated');
+    } catch (e) {
+      console.error('Structure apply failed:', e);
+      showToast('Could not apply structure changes');
+    }
+  };
+
   // ── Error / loading ─────────────────────────────────────────────────────────
   if (error) return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 gap-4 p-6">
@@ -664,6 +717,15 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
         </Suspense>
       )}
 
+      {isStructureOpen && project && (
+        <StructureEditor
+          outline={project.outline}
+          onSave={handleStructureSave}
+          onClose={closeStructureEditor}
+          saveDisabled={generating}
+        />
+      )}
+
       {/* ── Toast ──────────────────────────────────────────────────────── */}
       {toast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-100 bg-slate-900 text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-200">
@@ -684,9 +746,20 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ user }) => {
             <ChevronLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
             Library
           </button>
-          <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 truncate max-w-24 ml-2">
-            {project.department}
-          </span>
+          <div className="flex items-center gap-1 ml-2 min-w-0">
+            <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 truncate max-w-20">
+              {project.department}
+            </span>
+            <button
+              onClick={() => setIsStructureOpen(true)}
+              disabled={generating}
+              title="Customize structure"
+              aria-label="Customize chapter and section structure"
+              className="shrink-0 p-1.5 text-slate-400 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-40"
+            >
+              <Settings2 className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         {/* TOC */}
